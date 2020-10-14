@@ -13,20 +13,25 @@ library(R2jags)
 ```
 
 ```{r}
-president_polls <- read_csv("president_polls.csv") %>% 
-  filter(candidate_party %in% c("DEM", "REP"))
-colnames(president_polls)
+president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
+  mutate(pct = biden / (biden + trump) *100) %>% 
+  filter(population %in% c("lv","rv")) %>% 
+  mutate(state = ifelse(state == "--","US",state))
+
+#colnames(president_polls)
 
 president_polls <- president_polls %>% 
-  mutate(start_date = mdy(start_date),
-         end_date = mdy(end_date),
-         election_date = mdy(election_date)) %>% 
-  mutate(days_to_election = election_date - end_date)
+  mutate(start.date = mdy(start.date),
+         end.date = mdy(end.date),
+         election_date = "2020-11-03" %>% as.Date(),
+         days_to_election = election_date - end.date)
 
-mdy(start_date)
+president_polls <- president_polls[president_polls$start.date >= "2020-07-01",]
+#president_polls <- president_polls[president_polls$fte_grade <= "C-",]
+nrow(president_polls)
 ```
 
-````{r data_list,eval=TRUE}
+```{r data_list,eval=TRUE}
 states <- president_polls$state %>% unique
 y <- president_polls$pct
 r <- match(president_polls$state,states)
@@ -34,41 +39,115 @@ t <- president_polls$days_to_election + 1
 N_polls <- y %>% length
 N_states <- states %>% length
 N_days <- t %>% max
-jags_data <- list(y=y,t=t,r=r,
-                  N_polls=N_polls,N_states=N_states,N_days=N_days)
+jags_data <- list(y=y,t=t,r=r,N_polls=N_polls,N_states=N_states,N_days=N_days)
 ```
 
 
 ```{r model,eval = TRUE}
 model <- function(){
-  for(k in 1:N_polls){
-    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
-    p[k] = beta[r[k],t[k]] 
+for(k in 1:N_polls){
+  y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
+  p[k] = beta[r[k],t[k]] 
+}
+for(j in 2:N_days){
+  for(i in 1:N_states){
+    beta[i,j] ~ dnorm(beta[i,j-1],pow(sigma2_beta[i],-1))
   }
-  for(j in 2:N_days){
-    for(i in 1:N_states){
-      beta[i,j] ~ dnorm(beta[i,j-1],pow(sigma2_beta[i],-1))
-    }
-  }
+}
   
-  #EXERCISE: add hierarhciacl prior for sigma2_beta and sigma2_y, i.e. sigma2_beta[j] all come from a common distribution 
-  for(j in 1:N_states){
-      sigma2_y[j] = 1/sigma2_y_inv[j]
-      sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
-      
-      sigma2_beta[j] = 1/sigma2_beta_inv[j]
-      sigma2_beta_inv[j] ~ dgamma(nu_beta,nu_beta*tau_beta) 
-      
-      beta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+#EXERCISE: add hierarhciacl prior for sigma2_beta and sigma2_y, i.e. sigma2_beta[j] all come from a common distribution 
+for(j in 1:N_states){
+  sigma2_y[j] = 1/sigma2_y_inv[j]
+  sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+  
+  sigma2_beta[j] = 1/sigma2_beta_inv[j]
+  sigma2_beta_inv[j] ~ dgamma(nu_beta,nu_beta*tau_beta) 
+  beta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
   }
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
-  
+
   nu_beta ~ dunif(0,100)
   tau_beta ~ dunif(0,100)
-  
+
   mu0 ~ dnorm(50,pow(7.5,-2))
   sigma2_0 = 1/sigma2_0_inv
   sigma2_0_inv ~ dgamma(.5,.5)
+}
+```
+
+```{r}
+jags_sims <- jags(data = jags_data,model.file = model,parameters.to.save = c("beta","sigma2_beta",
+                                                                             "p","sigma2_y"),
+                  n.iter = 10000)
+#jags_sims %>% saveRDS("jags_sims.Rds")
+
+poll_plot_data <- tibble(y=jags_data$y,t=jags_data$t %>% as.integer(),state = states[jags_data$r])
+beta_plot_data <- lapply(1:N_states,function(st){
+  sims <- jags_sims$BUGSoutput$sims.list$beta[,st,]
+  data.frame(state = states[st],t=1:N_days,mean=colMeans(sims),lb=apply(sims,2,quantile,probs=.025),ub=apply(sims,2,quantile,probs=.975))
+}) %>% 
+  bind_rows()
+left_join(beta_plot_data,poll_plot_data) %>% 
+  ggplot(aes(x=t)) + 
+  geom_line(aes(y=mean)) + 
+  geom_ribbon(aes(ymin = lb,ymax = ub),alpha = .2) + 
+  geom_point(aes(y=y)) + 
+  scale_x_reverse() + 
+  facet_wrap(~ state)
+
+
+
+`%notin%` <- Negate(`%in%`)
+elec_sims <- jags_sims$BUGSoutput$sims.list$beta[,,1]
+colnames(elec_sims) <- states
+(elec_sims) %>% colMeans() #P(Biden Win) each state
+
+elec_sims <- as.data.frame(elec_sims)
+elec_sims <- elec_sims[,order(colnames(elec_sims))]
+
+for (s in colnames(elec_sims)) {
+  colName <- paste0(s,"_Winner")
+  elec_sims[,colName] <- elec_sims[,s] > 50
+  elec_sims[,colName] <- as.numeric(elec_sims[,colName])
+}
+
+elec_sims <- elec_sims %>% select(-c("US","US_Winner")) 
+electoral_data <- read.csv("Electoral_College.csv")
+electoral_data <- electoral_data %>% filter(Year == 2020)
+electoral_data$State_Abbrev <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                                 "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                                 "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                                 "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                                 "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+
+predicted_states_winner_colnames <- colnames(elec_sims)[str_detect(colnames(elec_sims), "_Winner")]
+predicted_states_abbrev_colnames <- colnames(elec_sims)[!str_detect(colnames(elec_sims), "_Winner")]
+
+predicted_states <- electoral_data %>% filter(State_Abbrev %in% predicted_states_abbrev_colnames)
+electoral_votes <- as.matrix(predicted_states$Votes)
+
+elec_sims_winners <- elec_sims %>% select(colnames(elec_sims)[str_detect(colnames(elec_sims), "_Winner")])
+
+elec_sims_matrix <- as.matrix(elec_sims_winners)
+
+remaining_states <- setdiff(electoral_data$State_Abbrev,colnames(elec_sims))
+electoral_data %>% filter(State_Abbrev %in% remaining_states)
+definitely_democratic <- c(3,20,4)
+
+final_results <- (elec_sims_matrix %*% electoral_votes + sum(definitely_democratic))
+summary(final_results)
+hist(final_results)
+mean(final_results >= 270)
+sd(final_results)
+dim(elec_sims_matrix)
+dim(electoral_votes)
+```
+
+
+
+```{r}
+for(i in 1:10) {
+  print("I want to cry or drink")
 }
 ```
