@@ -26,8 +26,14 @@ president_polls <- president_polls %>%
          election_date = "2020-11-03" %>% as.Date(),
          days_to_election = election_date - end.date)
 
+
 president_polls <- president_polls[president_polls$start.date >= "2020-07-01",]
-#president_polls <- president_polls[president_polls$fte_grade <= "C-",]
+# president_polls <- president_polls[president_polls$state == "US",]
+# president_polls <- president_polls[president_polls$fte_grade <= "C-",]
+mean(president_polls$biden)
+sd(president_polls$biden)
+mean(president_polls$trump)
+sd(president_polls$trump)
 nrow(president_polls)
 ```
 
@@ -136,6 +142,7 @@ electoral_data %>% filter(State_Abbrev %in% remaining_states)
 definitely_democratic <- c(3,20,4)
 
 final_results <- (elec_sims_matrix %*% electoral_votes + sum(definitely_democratic))
+
 summary(final_results)
 hist(final_results)
 mean(final_results >= 270)
@@ -151,3 +158,50 @@ for(i in 1:10) {
   print("I want to cry or drink")
 }
 ```
+
+```{r}
+nc_voter <- read_rds("ncvoter_Statewide_small.rds")
+head(nc_voter)
+nc_voter %>% filter(voted_party_cd %in% c("REP", "DEM")) %>% group_by(cong_dist_abbrv, voted_party_cd)
+nc_voter$voter_reg_num
+nc_reg_data$voter_reg_num
+
+nc_voter$voter_reg_num <- as.string(nc_voter$voter_reg_num)
+nc_voter$voter_reg_num <- substr(nc_voter$voter_reg_num,6,12)
+
+nc_voter$voter_reg_num[1,]
+nc_reg_data <- read_rds("ncvhis_Statewide_small.rds")
+head(nc_reg_data)
+head(nc_voter)
+colnames(nc_reg_data)
+colnames(nc_voter)
+merge(nc_voter,nc_reg_data,by="voter_reg_num")
+nc_voter$voter_reg_num
+nc_reg_data$voter_reg_num
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
