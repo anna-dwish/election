@@ -5,6 +5,7 @@ date: "10/13/2020"
 output: html_document
 ---
 
+
 (1) to predict the outcome of the presidential election
 (2) to predict whether the US Senate remains in Republican control
 (3) to predict the electoral college vote
