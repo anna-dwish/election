@@ -1,0 +1,436 @@
+---
+title: "goals"
+author: "Steven Herrera"
+date: "10/13/2020"
+output: html_document
+---
+
+(1) to predict the outcome of the presidential election
+(2) to predict whether the US Senate remains in Republican control
+(3) to predict the electoral college vote
+
+things to consider:
+need to be 18 to vote
+need to be a US citizen
+all 435 seats in the house are up for election
+33 seats in the senate are up for election (out of 100)
+electoral college votes to win (need 270/538) which are based on states' success, determined by federal reps*
+* exception is Maine and Nebraska
+
+senate: 
+12/45 current seats are up for grabs with dems
+23/53 current seats are up for grabs with reps
+2 independents aren't going up in elections
+35 in total/100 going up for election
+
+
+```{r}
+
+```
+
+
+(4) to predict the outcomes of all NC Congressional elections (the 13 federal Representatives to Congress)
+(5) to predict the outcome of the NC Senate election, including characterization of uncertainty in predictions
+
+things to consider:
+13 fed reps (3 dems, 9 repubs, 1 vacant)
+41 of 435 are contested rep races - 20 dems, 20 reps, 1 libertarian (source: Ballotpedia) How?
+- 2018 margin of victory
+- 2016 presidential election in the district
+- whether the incumbent is seeking re-election
+- first term?
+Note: could look at amount of money donated to campaign (satellite spending/influencer donations)
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Case Study: Berkeley Admissions 
+
+In fall 1973, the University of California, Berkeley’s graduate division admitted 44% of male applicants and 35% of female applicants. School administrators were concerned about the potential for bias (and lawsuits!) and asked statistics professor Peter Bickel to examine the data more carefully.
+
+<br>
+
+We have a subset of the admissions data for 6 departments.  Previously, we used a fixed effects model to analyze the data. Now we'll use a random effects approach, and we'll also look at coding of binomial models with grouped data (efficient for data storage and perhaps helpful in election case study).
+
+##
+
+```{r loaddata,message=FALSE,warning=FALSE,cache=TRUE}
+library(rethinking)
+data(UCBadmit)
+d <- UCBadmit
+detach(package:rethinking,unload=T)
+library(tidyverse)
+library(brms)
+d <-
+  d%>%
+  mutate(male=ifelse(applicant.gender=="male",1,0),
+         dept_id = rep(1:6, each = 2))
+d$successrate=d$admit/d$applications
+sum(d$admit[d$male==1])/sum(d$applications[d$male==1])
+sum(d$admit[d$male==0])/sum(d$applications[d$male==0])
+```
+
+We see in this subset of departments that roughly 45% of male applicants were admitted, while only 30% of female applicants were admitted.
+
+##
+
+Because admissions decisions for graduate school are made on a departmental level (not at the school level), it makes sense to examine results of applications by department. Note the data are in grouped format (counts by gender and department) instead of in individual-level (one line per applicant) format.
+
+```{r explore}
+d[,c(1,2,3,4,7)]
+```
+
+Hmm, what's going on here?
+
+##
+
+Following McElreath's analysis in *Statistical Rethinking*, we start fitting a simple logistic regression model and examine diagnostic measures.
+
+The model for department $i$ and gender $j$ with $n_{admit,ij}$ of $n_{ij}$ applicants admitted is given as:
+
+$n_{admit,ij} \sim \text{Binomial}(n_{ij},p_{ij})~~~$
+$\text{logit}(p_{ij})=\alpha+\beta\text{male}_{j}$
+
+$\alpha \sim N(0,3^2)$ and $\beta \sim N(0,1)$
+
+Prior motivation: note the intercept and slope are typically on different scales. The intercept prior is fairly flat. For the slope prior, note that $e^2=7.4$ and $e^{-2}=0.14$, and we really don't expect the male effect to be stronger than this (roughly 95% of the prior mass is between odds ratios of 0.14 and 7.4).
+
+##
+
+```{r logreg,cache=TRUE,message=FALSE}
+library(brms)
+adm1 <-
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male ,
+      prior = c(prior(normal(0, 3), class = Intercept),
+                prior(normal(0, 1), class = b)),
+      iter = 2500, warmup = 500, cores = 2, chains = 2,
+      seed = 10)
+summary(adm1)
+```
+
+Here it appears male applicants have $e^{0.61}=1.8$ (95% credible interval (1.6, 2.1)) times the odds of admission as female applicants.
+
+##
+
+We can also put this on the probability scale.
+
+```{r probscale,cache=TRUE}
+post <- posterior_samples(adm1)
+
+post %>%
+  mutate(p_admit_male   = inv_logit_scaled(b_Intercept + b_male),
+         p_admit_female = inv_logit_scaled(b_Intercept),
+         diff_admit     = p_admit_male - p_admit_female) %>%
+  summarise(`2.5%`  = quantile(diff_admit, probs = .025),
+            `50%`   = median(diff_admit),
+            `97.5%` = quantile(diff_admit, probs = .975))
+```
+
+Overall it appears the median probability of admission was 14 percentage points higher for males.
+
+## Model Checking
+
+Here we take some posterior predictions and plot against the observed proportions in the data. 
+
+```{r modcheck,eval=FALSE,message=FALSE, warning=FALSE}
+#library(dutchmasters)
+library(ggplot2)
+d <-
+  d %>%
+  mutate(case = factor(1:12))
+
+p <- 
+  predict(adm1) %>% 
+  as_tibble() %>% 
+  bind_cols(d)
+
+d_text <-
+  d %>%
+  group_by(dept) %>%
+  summarise(case  = mean(as.numeric(case)),
+            admit = mean(admit / applications) + .05)
+
+ggplot(data = d, aes(x = case, y = admit / applications)) +
+  geom_pointrange(data = p, 
+                  aes(y    = Estimate / applications,
+                      ymin = Q2.5     / applications ,
+                      ymax = Q97.5    / applications),
+                  color = '#2F4F4F',
+                  shape = 1, alpha = 1/3) +
+  geom_point(color = '#b34a00') +
+  geom_line(aes(group = dept),
+            color = '#b34a00') +
+  geom_text(data = d_text,
+            aes(y = admit, label = dept),
+            color = '#b34a00',
+            family = "serif") +
+  coord_cartesian(ylim = 0:1) +
+  labs(y     = "Proportion admitted",
+       title = "Posterior validation check") +
+  theme(axis.ticks.x = element_blank())
+
+```
+
+##
+
+
+```{r modcheck2,echo=FALSE,out.width="60%",cache=TRUE,message=FALSE,warning=FALSE}
+#library(dutchmasters)
+library(ggplot2)
+d <-
+  d %>%
+  mutate(case = factor(1:12))
+
+p <- 
+  predict(adm1) %>% 
+  as_tibble() %>% 
+  bind_cols(d)
+
+d_text <-
+  d %>%
+  group_by(dept) %>%
+  summarise(case  = mean(as.numeric(case)),
+            admit = mean(admit / applications) + .05)
+
+ggplot(data = d, aes(x = case, y = admit / applications)) +
+  geom_pointrange(data = p, 
+                  aes(y    = Estimate / applications,
+                      ymin = Q2.5     / applications ,
+                      ymax = Q97.5    / applications),
+                  color ='#2F4F4F',
+                  shape = 1, alpha = 1/3) +
+  geom_point(color ='#b34a00') +
+  geom_line(aes(group = dept),
+            color ='#b34a00') +
+  geom_text(data = d_text,
+            aes(y = admit, label = dept),
+            color = '#b34a00',
+            family = "serif") +
+  coord_cartesian(ylim = 0:1) +
+  labs(y     = "Proportion admitted",
+       title = "Posterior validation check") +
+  theme(axis.ticks.x = element_blank())
+
+```
+
+The orange lines connect observed proportions admitted in each department (odd numbers indicate males; even females). The grey circles indicate point and interval estimates of the model-predicted proportion admitted. Clearly the model fits the data poorly.
+
+## Varying Intercepts
+
+Based on the plot, we have some big departmental differences. Let's specify department as a random effect in the model.
+
+
+$n_{admit,ij} \sim \text{Binomial}(n_{ij},p_{ij})~~~$
+$\text{logit}(p_{ij})=\alpha_{0i}+\beta\text{male}_{j}$
+$\alpha_{0i} \sim N(\alpha,\sigma) ~~~ \sigma \sim \text{HalfCauchy}(0,1)$
+$\alpha \sim N(0,3^2)$ and $\beta \sim N(0,1)$
+
+##
+
+```{r admrint,eval=FALSE}
+adm2 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 | dept_id),
+      prior = c(prior(normal(0, 3), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 4500, warmup = 500, chains = 3, cores = 3,
+      seed = 13,
+      control = list(adapt_delta = 0.99))
+```
+
+
+##
+
+
+```{r admrint2,echo=FALSE,cache=TRUE}
+adm2 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 | dept_id),
+      prior = c(prior(normal(0, 3), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 4500, warmup = 500, chains = 3, cores = 3,
+      seed = 13,
+      control = list(adapt_delta = 0.99))
+adm2$fit #will give estimates of alpha, beta, sigma, b_{0i}=\alpha_{0i}-\alpha
+```
+
+In this model we see no evidence of a difference in admissions probabilities by gender though we do see big departmental variability. 
+
+##
+
+Let's evaluate whether we need a random effect for gender.
+
+```{r gendeff,eval=FALSE}
+adm3 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 + male | dept_id),
+      prior = c(prior(normal(0, 3), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd),
+                prior(lkj(2), class = cor)),
+      iter = 5000, warmup = 1000, chains = 4, cores = 4,
+      seed = 13,
+      control = list(adapt_delta = .99,
+                     max_treedepth = 12))
+adm3$fit
+```
+
+##
+
+```{r gendeffb,echo=FALSE,cache=TRUE}
+adm3 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 + male | dept_id),
+      prior = c(prior(normal(0, 3^2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd),
+                prior(lkj(2), class = cor)),
+      iter = 5000, warmup = 1000, chains = 4, cores = 4,
+      seed = 13,
+      control = list(adapt_delta = .99,
+                     max_treedepth = 12))
+adm3$fit
+```
+
+##
+
+Before we get too excited let's look at some diagnostics.
+
+```{r diag, eval=FALSE}
+post <- posterior_samples(adm3, add_chain = T)
+
+post %>% 
+  select(-lp__) %>% 
+  gather(key, value, -chain, -iter) %>% 
+  mutate(chain = as.character(chain)) %>% 
+
+  ggplot(aes(x = iter, y = value, group = chain, color = chain)) +
+  geom_line(size = 1/15) +
+  scale_color_manual(values = c("#80A0C7", "#B1934A", "#A65141", "#EEDA9D")) +
+  scale_x_continuous(NULL, breaks = c(1001, 5000)) +
+  ylab(NULL) +
+  theme(legend.position  = c(.825, .06),
+        legend.direction = "horizontal") +
+  facet_wrap(~key, ncol = 3, scales = "free_y")
+```
+
+##
+
+```{r diag2, echo=FALSE,cache=TRUE,message=FALSE,warning=FALSE}
+#our friend Kurz's code
+theme_pearl_earring <-
+  theme(text       = element_text(color = "#E8DCCF", family = "Courier"),
+        strip.text = element_text(color = "#E8DCCF", family = "Courier"),
+        axis.text  = element_text(color = "#E8DCCF"),
+        axis.ticks = element_line(color = "#E8DCCF"),
+        line       = element_line(color = "#E8DCCF"),
+        plot.background   = element_rect(fill = "#100F14", color = "transparent"),
+        panel.background  = element_rect(fill = "#100F14", color = "#E8DCCF"),
+        strip.background  = element_rect(fill = "#100F14", color = "transparent"),
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = "#100F14", color = "transparent"),
+        legend.key        = element_rect(fill = "#100F14", color = "transparent"),
+        axis.line = element_blank())
+
+post <- posterior_samples(adm3, add_chain = T)
+
+post %>% 
+  select(-lp__) %>% 
+  gather(key, value, -chain, -iter) %>% 
+  mutate(chain = as.character(chain)) %>% 
+
+  ggplot(aes(x = iter, y = value, group = chain, color = chain)) +
+  geom_line(size = 1/15) +
+  scale_color_manual(values = c("#80A0C7", "#B1934A", "#A65141", "#EEDA9D")) +
+  scale_x_continuous(NULL, breaks = c(1001, 5000)) +
+  ylab(NULL) +
+  theme_pearl_earring +
+  theme(legend.position  = c(.825, .06),
+        legend.direction = "horizontal") +
+  facet_wrap(~key, ncol = 3, scales = "free_y")
+```
+
+##
+
+```{r plots,eval=FALSE}
+rbind(coef(adm3)$dept_id[, , 1],
+      coef(adm3)$dept_id[, , 2]) %>% 
+  as_tibble() %>% 
+  mutate(param   = c(paste("Intercept", 1:6), paste("male", 1:6)),
+         reorder = c(6:1, 12:7)) %>% 
+
+  # plot
+  ggplot(aes(x = reorder(param, reorder))) +
+  geom_hline(yintercept = 0, linetype = 3, color = "#8B9DAF") +
+  geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5, y = Estimate, color = reorder < 7),
+                  shape = 20, size = 3/4) +
+  scale_color_manual(values = c("#394165", "#A65141")) +
+  xlab(NULL) +
+  coord_flip() +
+  theme_pearl_earring +
+  theme(legend.position = "none",
+        axis.ticks.y    = element_blank(),
+        axis.text.y     = element_text(hjust = 0))
+```
+
+
+##
+
+```{r plots2,echo=FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+rbind(coef(adm3)$dept_id[, , 1],
+      coef(adm3)$dept_id[, , 2]) %>% 
+  as_tibble() %>% 
+  mutate(param   = c(paste("Intercept", 1:6), paste("male", 1:6)),
+         reorder = c(6:1, 12:7)) %>% 
+
+  # plot
+  ggplot(aes(x = reorder(param, reorder))) +
+  geom_hline(yintercept = 0, linetype = 3, color = "#8B9DAF") +
+  geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5, y = Estimate, color = reorder < 7),
+                  shape = 20, size = 3/4) +
+  scale_color_manual(values = c("#394165", "#A65141")) +
+  xlab(NULL) +
+  coord_flip() +
+  theme_pearl_earring +
+  theme(legend.position = "none",
+        axis.ticks.y    = element_blank(),
+        axis.text.y     = element_text(hjust = 0))
+```
+
+We see much more variability in the random intercepts than in the random slopes.
+
+## What happened at Berkeley?
+
+What happened at Berkeley?  It actually doesn't require too much sophisticated modeling. What we're seeing is Simpson's paradox.
+
+```{r datapeek}
+d[,c(1,2,3,4,8)]
+```
+
+##
+
+In the raw data, women had higher acceptance probabilities in 4 of the 6 departments. However, the departments to which they applied in higher numbers were the departments that had lower overall acceptance rates. 
+
+<br>
+
+What happened is that women were more likely to apply do departments like English, which have trouble supporting grad students, and they were less likely to apply to STEM departments, which had more plentiful funding for graduate students. The men, on the other hand, were much more likely to apply to the STEM departments that had higher acceptance rates.
+
