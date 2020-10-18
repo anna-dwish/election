@@ -1,0 +1,3925 @@
+county_desc,race_ethnicity,age_bin,Likely,unlikely,total
+ALAMANCE,Hispanic Any Race,18-29,1029,1312,2341
+ALAMANCE,Hispanic Any Race,30-39,613,345,958
+ALAMANCE,Hispanic Any Race,40-49,553,210,763
+ALAMANCE,Hispanic Any Race,50-64,754,205,959
+ALAMANCE,Hispanic Any Race,65+,276,83,359
+ALAMANCE,Non-Hispanic American Indian,18-29,13,11,24
+ALAMANCE,Non-Hispanic American Indian,30-39,24,17,41
+ALAMANCE,Non-Hispanic American Indian,40-49,27,8,35
+ALAMANCE,Non-Hispanic American Indian,50-64,81,10,91
+ALAMANCE,Non-Hispanic American Indian,65+,33,2,35
+ALAMANCE,Non-Hispanic Asian,18-29,76,119,195
+ALAMANCE,Non-Hispanic Asian,30-39,84,51,135
+ALAMANCE,Non-Hispanic Asian,40-49,101,30,131
+ALAMANCE,Non-Hispanic Asian,50-64,114,39,153
+ALAMANCE,Non-Hispanic Asian,65+,42,21,63
+ALAMANCE,Non-Hispanic Black,18-29,1558,2053,3611
+ALAMANCE,Non-Hispanic Black,30-39,2498,1151,3649
+ALAMANCE,Non-Hispanic Black,40-49,2956,776,3732
+ALAMANCE,Non-Hispanic Black,50-64,5705,948,6653
+ALAMANCE,Non-Hispanic Black,65+,5402,451,5853
+ALAMANCE,Non-Hispanic Mixed,18-29,102,95,197
+ALAMANCE,Non-Hispanic Mixed,30-39,53,35,88
+ALAMANCE,Non-Hispanic Mixed,40-49,52,5,57
+ALAMANCE,Non-Hispanic Mixed,50-64,47,8,55
+ALAMANCE,Non-Hispanic Mixed,65+,36,1,37
+ALAMANCE,Non-Hispanic Other,18-29,121,211,332
+ALAMANCE,Non-Hispanic Other,30-39,114,73,187
+ALAMANCE,Non-Hispanic Other,40-49,153,51,204
+ALAMANCE,Non-Hispanic Other,50-64,216,60,276
+ALAMANCE,Non-Hispanic Other,65+,133,31,164
+ALAMANCE,Non-Hispanic White,18-29,5641,5523,11164
+ALAMANCE,Non-Hispanic White,30-39,8369,2909,11278
+ALAMANCE,Non-Hispanic White,40-49,10965,2273,13238
+ALAMANCE,Non-Hispanic White,50-64,24504,2942,27446
+ALAMANCE,Non-Hispanic White,65+,28383,2602,30985
+ALAMANCE,Undetermined,18-29,3092,4071,7163
+ALAMANCE,Undetermined,30-39,4367,2014,6381
+ALAMANCE,Undetermined,40-49,4781,1265,6046
+ALAMANCE,Undetermined,50-64,8192,1747,9939
+ALAMANCE,Undetermined,65+,6171,1007,7178
+ALEXANDER,Hispanic Any Race,18-29,56,132,188
+ALEXANDER,Hispanic Any Race,30-39,39,26,65
+ALEXANDER,Hispanic Any Race,40-49,38,16,54
+ALEXANDER,Hispanic Any Race,50-64,54,20,74
+ALEXANDER,Hispanic Any Race,65+,36,9,45
+ALEXANDER,Non-Hispanic American Indian,18-29,2,2,4
+ALEXANDER,Non-Hispanic American Indian,30-39,2,3,5
+ALEXANDER,Non-Hispanic American Indian,40-49,4,1,5
+ALEXANDER,Non-Hispanic American Indian,50-64,15,3,18
+ALEXANDER,Non-Hispanic American Indian,65+,6,3,9
+ALEXANDER,Non-Hispanic Asian,18-29,8,47,55
+ALEXANDER,Non-Hispanic Asian,30-39,9,17,26
+ALEXANDER,Non-Hispanic Asian,40-49,9,5,14
+ALEXANDER,Non-Hispanic Asian,50-64,18,13,31
+ALEXANDER,Non-Hispanic Asian,65+,7,3,10
+ALEXANDER,Non-Hispanic Black,18-29,53,92,145
+ALEXANDER,Non-Hispanic Black,30-39,82,58,140
+ALEXANDER,Non-Hispanic Black,40-49,119,45,164
+ALEXANDER,Non-Hispanic Black,50-64,316,56,372
+ALEXANDER,Non-Hispanic Black,65+,369,32,401
+ALEXANDER,Non-Hispanic Mixed,18-29,4,6,10
+ALEXANDER,Non-Hispanic Mixed,30-39,1,4,5
+ALEXANDER,Non-Hispanic Mixed,40-49,8,0,8
+ALEXANDER,Non-Hispanic Mixed,50-64,12,0,12
+ALEXANDER,Non-Hispanic Mixed,65+,3,0,3
+ALEXANDER,Non-Hispanic Other,18-29,6,24,30
+ALEXANDER,Non-Hispanic Other,30-39,6,5,11
+ALEXANDER,Non-Hispanic Other,40-49,20,2,22
+ALEXANDER,Non-Hispanic Other,50-64,30,12,42
+ALEXANDER,Non-Hispanic Other,65+,25,8,33
+ALEXANDER,Non-Hispanic White,18-29,2026,1738,3764
+ALEXANDER,Non-Hispanic White,30-39,2637,732,3369
+ALEXANDER,Non-Hispanic White,40-49,3911,589,4500
+ALEXANDER,Non-Hispanic White,50-64,8298,1014,9312
+ALEXANDER,Non-Hispanic White,65+,9550,735,10285
+ALEXANDER,Undetermined,18-29,409,296,705
+ALEXANDER,Undetermined,30-39,516,213,729
+ALEXANDER,Undetermined,40-49,690,152,842
+ALEXANDER,Undetermined,50-64,1036,212,1248
+ALEXANDER,Undetermined,65+,952,116,1068
+ALLEGHANY,Hispanic Any Race,18-29,26,66,92
+ALLEGHANY,Hispanic Any Race,30-39,14,14,28
+ALLEGHANY,Hispanic Any Race,40-49,10,12,22
+ALLEGHANY,Hispanic Any Race,50-64,30,23,53
+ALLEGHANY,Hispanic Any Race,65+,21,10,31
+ALLEGHANY,Non-Hispanic American Indian,30-39,0,1,1
+ALLEGHANY,Non-Hispanic American Indian,40-49,2,0,2
+ALLEGHANY,Non-Hispanic American Indian,50-64,2,1,3
+ALLEGHANY,Non-Hispanic American Indian,65+,0,1,1
+ALLEGHANY,Non-Hispanic Asian,18-29,0,1,1
+ALLEGHANY,Non-Hispanic Asian,50-64,0,1,1
+ALLEGHANY,Non-Hispanic Asian,65+,1,0,1
+ALLEGHANY,Non-Hispanic Black,18-29,1,8,9
+ALLEGHANY,Non-Hispanic Black,30-39,3,2,5
+ALLEGHANY,Non-Hispanic Black,40-49,6,5,11
+ALLEGHANY,Non-Hispanic Black,50-64,37,2,39
+ALLEGHANY,Non-Hispanic Black,65+,36,3,39
+ALLEGHANY,Non-Hispanic Mixed,18-29,1,2,3
+ALLEGHANY,Non-Hispanic Mixed,30-39,2,0,2
+ALLEGHANY,Non-Hispanic Mixed,65+,2,0,2
+ALLEGHANY,Non-Hispanic Other,18-29,3,5,8
+ALLEGHANY,Non-Hispanic Other,30-39,1,2,3
+ALLEGHANY,Non-Hispanic Other,40-49,0,3,3
+ALLEGHANY,Non-Hispanic Other,50-64,4,2,6
+ALLEGHANY,Non-Hispanic Other,65+,4,0,4
+ALLEGHANY,Non-Hispanic White,18-29,392,467,859
+ALLEGHANY,Non-Hispanic White,30-39,625,189,814
+ALLEGHANY,Non-Hispanic White,40-49,911,171,1082
+ALLEGHANY,Non-Hispanic White,50-64,2424,265,2689
+ALLEGHANY,Non-Hispanic White,65+,3705,350,4055
+ALLEGHANY,Undetermined,18-29,125,133,258
+ALLEGHANY,Undetermined,30-39,153,76,229
+ALLEGHANY,Undetermined,40-49,219,53,272
+ALLEGHANY,Undetermined,50-64,420,110,530
+ALLEGHANY,Undetermined,65+,590,109,699
+ANSON,Hispanic Any Race,18-29,10,40,50
+ANSON,Hispanic Any Race,30-39,5,7,12
+ANSON,Hispanic Any Race,40-49,8,1,9
+ANSON,Hispanic Any Race,50-64,8,7,15
+ANSON,Hispanic Any Race,65+,4,3,7
+ANSON,Non-Hispanic American Indian,18-29,1,2,3
+ANSON,Non-Hispanic American Indian,30-39,2,0,2
+ANSON,Non-Hispanic American Indian,40-49,3,6,9
+ANSON,Non-Hispanic American Indian,50-64,6,4,10
+ANSON,Non-Hispanic American Indian,65+,4,1,5
+ANSON,Non-Hispanic Asian,18-29,3,20,23
+ANSON,Non-Hispanic Asian,30-39,2,9,11
+ANSON,Non-Hispanic Asian,40-49,3,5,8
+ANSON,Non-Hispanic Asian,50-64,4,1,5
+ANSON,Non-Hispanic Asian,65+,4,2,6
+ANSON,Non-Hispanic Black,18-29,471,747,1218
+ANSON,Non-Hispanic Black,30-39,679,429,1108
+ANSON,Non-Hispanic Black,40-49,907,331,1238
+ANSON,Non-Hispanic Black,50-64,2178,379,2557
+ANSON,Non-Hispanic Black,65+,2171,297,2468
+ANSON,Non-Hispanic Mixed,30-39,2,1,3
+ANSON,Non-Hispanic Mixed,50-64,1,0,1
+ANSON,Non-Hispanic Mixed,65+,2,0,2
+ANSON,Non-Hispanic Other,18-29,9,15,24
+ANSON,Non-Hispanic Other,30-39,8,10,18
+ANSON,Non-Hispanic Other,40-49,7,3,10
+ANSON,Non-Hispanic Other,50-64,7,9,16
+ANSON,Non-Hispanic Other,65+,7,1,8
+ANSON,Non-Hispanic White,18-29,379,535,914
+ANSON,Non-Hispanic White,30-39,646,284,930
+ANSON,Non-Hispanic White,40-49,961,240,1201
+ANSON,Non-Hispanic White,50-64,2364,371,2735
+ANSON,Non-Hispanic White,65+,3282,387,3669
+ANSON,Undetermined,18-29,621,588,1209
+ANSON,Undetermined,30-39,684,397,1081
+ANSON,Undetermined,40-49,639,297,936
+ANSON,Undetermined,50-64,1205,389,1594
+ANSON,Undetermined,65+,916,265,1181
+ASHE,Hispanic Any Race,18-29,45,55,100
+ASHE,Hispanic Any Race,30-39,25,21,46
+ASHE,Hispanic Any Race,40-49,30,10,40
+ASHE,Hispanic Any Race,50-64,37,17,54
+ASHE,Hispanic Any Race,65+,23,5,28
+ASHE,Non-Hispanic American Indian,18-29,2,0,2
+ASHE,Non-Hispanic American Indian,30-39,2,3,5
+ASHE,Non-Hispanic American Indian,40-49,4,0,4
+ASHE,Non-Hispanic American Indian,50-64,2,1,3
+ASHE,Non-Hispanic American Indian,65+,3,0,3
+ASHE,Non-Hispanic Asian,18-29,1,4,5
+ASHE,Non-Hispanic Asian,30-39,8,3,11
+ASHE,Non-Hispanic Asian,40-49,2,4,6
+ASHE,Non-Hispanic Asian,50-64,8,3,11
+ASHE,Non-Hispanic Asian,65+,9,1,10
+ASHE,Non-Hispanic Black,18-29,1,15,16
+ASHE,Non-Hispanic Black,30-39,5,6,11
+ASHE,Non-Hispanic Black,40-49,19,8,27
+ASHE,Non-Hispanic Black,50-64,17,3,20
+ASHE,Non-Hispanic Black,65+,16,5,21
+ASHE,Non-Hispanic Mixed,18-29,1,2,3
+ASHE,Non-Hispanic Mixed,30-39,2,0,2
+ASHE,Non-Hispanic Mixed,50-64,0,1,1
+ASHE,Non-Hispanic Mixed,65+,2,0,2
+ASHE,Non-Hispanic Other,18-29,3,11,14
+ASHE,Non-Hispanic Other,30-39,7,2,9
+ASHE,Non-Hispanic Other,40-49,17,1,18
+ASHE,Non-Hispanic Other,50-64,26,1,27
+ASHE,Non-Hispanic Other,65+,20,5,25
+ASHE,Non-Hispanic White,18-29,1334,1133,2467
+ASHE,Non-Hispanic White,30-39,1841,573,2414
+ASHE,Non-Hispanic White,40-49,2834,525,3359
+ASHE,Non-Hispanic White,50-64,6424,785,7209
+ASHE,Non-Hispanic White,65+,9264,908,10172
+ASHE,Undetermined,18-29,310,261,571
+ASHE,Undetermined,30-39,453,194,647
+ASHE,Undetermined,40-49,436,138,574
+ASHE,Undetermined,50-64,908,201,1109
+ASHE,Undetermined,65+,1077,166,1243
+AVERY,Hispanic Any Race,18-29,20,29,49
+AVERY,Hispanic Any Race,30-39,9,14,23
+AVERY,Hispanic Any Race,40-49,9,3,12
+AVERY,Hispanic Any Race,50-64,11,6,17
+AVERY,Hispanic Any Race,65+,5,3,8
+AVERY,Non-Hispanic American Indian,18-29,1,1,2
+AVERY,Non-Hispanic American Indian,30-39,4,1,5
+AVERY,Non-Hispanic American Indian,40-49,3,0,3
+AVERY,Non-Hispanic American Indian,50-64,2,2,4
+AVERY,Non-Hispanic American Indian,65+,6,0,6
+AVERY,Non-Hispanic Asian,18-29,0,3,3
+AVERY,Non-Hispanic Asian,30-39,0,1,1
+AVERY,Non-Hispanic Asian,40-49,3,5,8
+AVERY,Non-Hispanic Asian,50-64,2,0,2
+AVERY,Non-Hispanic Black,18-29,9,26,35
+AVERY,Non-Hispanic Black,30-39,3,6,9
+AVERY,Non-Hispanic Black,40-49,2,0,2
+AVERY,Non-Hispanic Black,50-64,4,2,6
+AVERY,Non-Hispanic Black,65+,10,2,12
+AVERY,Non-Hispanic Mixed,18-29,8,3,11
+AVERY,Non-Hispanic Mixed,30-39,2,1,3
+AVERY,Non-Hispanic Mixed,65+,2,0,2
+AVERY,Non-Hispanic Other,18-29,1,10,11
+AVERY,Non-Hispanic Other,30-39,0,1,1
+AVERY,Non-Hispanic Other,40-49,6,1,7
+AVERY,Non-Hispanic Other,50-64,10,5,15
+AVERY,Non-Hispanic Other,65+,9,0,9
+AVERY,Non-Hispanic White,18-29,773,669,1442
+AVERY,Non-Hispanic White,30-39,1113,338,1451
+AVERY,Non-Hispanic White,40-49,1729,292,2021
+AVERY,Non-Hispanic White,50-64,3498,503,4001
+AVERY,Non-Hispanic White,65+,5391,621,6012
+AVERY,Undetermined,18-29,282,391,673
+AVERY,Undetermined,30-39,273,197,470
+AVERY,Undetermined,40-49,346,135,481
+AVERY,Undetermined,50-64,570,181,751
+AVERY,Undetermined,65+,741,187,928
+BEAUFORT,Hispanic Any Race,18-29,79,253,332
+BEAUFORT,Hispanic Any Race,30-39,63,25,88
+BEAUFORT,Hispanic Any Race,40-49,32,17,49
+BEAUFORT,Hispanic Any Race,50-64,47,32,79
+BEAUFORT,Hispanic Any Race,65+,27,7,34
+BEAUFORT,Non-Hispanic American Indian,18-29,3,3,6
+BEAUFORT,Non-Hispanic American Indian,30-39,10,0,10
+BEAUFORT,Non-Hispanic American Indian,40-49,3,1,4
+BEAUFORT,Non-Hispanic American Indian,50-64,5,0,5
+BEAUFORT,Non-Hispanic American Indian,65+,14,1,15
+BEAUFORT,Non-Hispanic Asian,18-29,0,3,3
+BEAUFORT,Non-Hispanic Asian,30-39,2,4,6
+BEAUFORT,Non-Hispanic Asian,40-49,4,0,4
+BEAUFORT,Non-Hispanic Asian,50-64,8,4,12
+BEAUFORT,Non-Hispanic Asian,65+,9,0,9
+BEAUFORT,Non-Hispanic Black,18-29,453,811,1264
+BEAUFORT,Non-Hispanic Black,30-39,587,362,949
+BEAUFORT,Non-Hispanic Black,40-49,881,289,1170
+BEAUFORT,Non-Hispanic Black,50-64,2084,348,2432
+BEAUFORT,Non-Hispanic Black,65+,2732,237,2969
+BEAUFORT,Non-Hispanic Mixed,18-29,12,15,27
+BEAUFORT,Non-Hispanic Mixed,30-39,7,2,9
+BEAUFORT,Non-Hispanic Mixed,40-49,4,1,5
+BEAUFORT,Non-Hispanic Mixed,50-64,7,2,9
+BEAUFORT,Non-Hispanic Mixed,65+,4,0,4
+BEAUFORT,Non-Hispanic Other,18-29,21,76,97
+BEAUFORT,Non-Hispanic Other,30-39,13,20,33
+BEAUFORT,Non-Hispanic Other,40-49,17,16,33
+BEAUFORT,Non-Hispanic Other,50-64,42,8,50
+BEAUFORT,Non-Hispanic Other,65+,41,13,54
+BEAUFORT,Non-Hispanic White,18-29,1340,1674,3014
+BEAUFORT,Non-Hispanic White,30-39,1940,747,2687
+BEAUFORT,Non-Hispanic White,40-49,3237,639,3876
+BEAUFORT,Non-Hispanic White,50-64,7382,1053,8435
+BEAUFORT,Non-Hispanic White,65+,11692,1116,12808
+BEAUFORT,Undetermined,18-29,803,829,1632
+BEAUFORT,Undetermined,30-39,1202,550,1752
+BEAUFORT,Undetermined,40-49,1370,405,1775
+BEAUFORT,Undetermined,50-64,2743,540,3283
+BEAUFORT,Undetermined,65+,3148,434,3582
+BERTIE,Hispanic Any Race,18-29,4,14,18
+BERTIE,Hispanic Any Race,30-39,1,3,4
+BERTIE,Hispanic Any Race,40-49,7,3,10
+BERTIE,Hispanic Any Race,50-64,12,4,16
+BERTIE,Hispanic Any Race,65+,1,2,3
+BERTIE,Non-Hispanic American Indian,18-29,0,2,2
+BERTIE,Non-Hispanic American Indian,30-39,5,0,5
+BERTIE,Non-Hispanic American Indian,40-49,5,1,6
+BERTIE,Non-Hispanic American Indian,50-64,1,1,2
+BERTIE,Non-Hispanic American Indian,65+,2,1,3
+BERTIE,Non-Hispanic Asian,18-29,0,7,7
+BERTIE,Non-Hispanic Asian,30-39,1,1,2
+BERTIE,Non-Hispanic Asian,40-49,2,3,5
+BERTIE,Non-Hispanic Asian,50-64,6,4,10
+BERTIE,Non-Hispanic Black,18-29,465,786,1251
+BERTIE,Non-Hispanic Black,30-39,630,366,996
+BERTIE,Non-Hispanic Black,40-49,891,265,1156
+BERTIE,Non-Hispanic Black,50-64,2534,381,2915
+BERTIE,Non-Hispanic Black,65+,2715,311,3026
+BERTIE,Non-Hispanic Mixed,18-29,3,5,8
+BERTIE,Non-Hispanic Mixed,40-49,4,1,5
+BERTIE,Non-Hispanic Mixed,50-64,4,0,4
+BERTIE,Non-Hispanic Other,18-29,2,4,6
+BERTIE,Non-Hispanic Other,30-39,5,2,7
+BERTIE,Non-Hispanic Other,40-49,0,2,2
+BERTIE,Non-Hispanic Other,50-64,5,5,10
+BERTIE,Non-Hispanic Other,65+,8,0,8
+BERTIE,Non-Hispanic White,18-29,286,237,523
+BERTIE,Non-Hispanic White,30-39,426,143,569
+BERTIE,Non-Hispanic White,40-49,571,107,678
+BERTIE,Non-Hispanic White,50-64,1646,187,1833
+BERTIE,Non-Hispanic White,65+,2402,245,2647
+BERTIE,Undetermined,18-29,310,393,703
+BERTIE,Undetermined,30-39,549,282,831
+BERTIE,Undetermined,40-49,497,165,662
+BERTIE,Undetermined,50-64,896,233,1129
+BERTIE,Undetermined,65+,842,148,990
+BLADEN,Hispanic Any Race,18-29,80,183,263
+BLADEN,Hispanic Any Race,30-39,40,47,87
+BLADEN,Hispanic Any Race,40-49,40,27,67
+BLADEN,Hispanic Any Race,50-64,60,22,82
+BLADEN,Hispanic Any Race,65+,16,13,29
+BLADEN,Non-Hispanic American Indian,18-29,23,35,58
+BLADEN,Non-Hispanic American Indian,30-39,43,45,88
+BLADEN,Non-Hispanic American Indian,40-49,37,23,60
+BLADEN,Non-Hispanic American Indian,50-64,89,29,118
+BLADEN,Non-Hispanic American Indian,65+,53,19,72
+BLADEN,Non-Hispanic Asian,18-29,0,3,3
+BLADEN,Non-Hispanic Asian,30-39,0,1,1
+BLADEN,Non-Hispanic Asian,40-49,1,1,2
+BLADEN,Non-Hispanic Asian,50-64,3,3,6
+BLADEN,Non-Hispanic Asian,65+,3,0,3
+BLADEN,Non-Hispanic Black,18-29,588,608,1196
+BLADEN,Non-Hispanic Black,30-39,729,296,1025
+BLADEN,Non-Hispanic Black,40-49,1035,233,1268
+BLADEN,Non-Hispanic Black,50-64,2342,312,2654
+BLADEN,Non-Hispanic Black,65+,2889,204,3093
+BLADEN,Non-Hispanic Mixed,18-29,8,20,28
+BLADEN,Non-Hispanic Mixed,30-39,8,3,11
+BLADEN,Non-Hispanic Mixed,40-49,6,1,7
+BLADEN,Non-Hispanic Mixed,50-64,1,4,5
+BLADEN,Non-Hispanic Mixed,65+,3,2,5
+BLADEN,Non-Hispanic Other,18-29,10,17,27
+BLADEN,Non-Hispanic Other,30-39,18,5,23
+BLADEN,Non-Hispanic Other,40-49,13,3,16
+BLADEN,Non-Hispanic Other,50-64,26,8,34
+BLADEN,Non-Hispanic Other,65+,12,1,13
+BLADEN,Non-Hispanic White,18-29,934,880,1814
+BLADEN,Non-Hispanic White,30-39,1336,421,1757
+BLADEN,Non-Hispanic White,40-49,2221,412,2633
+BLADEN,Non-Hispanic White,50-64,4335,537,4872
+BLADEN,Non-Hispanic White,65+,5710,485,6195
+BLADEN,Undetermined,18-29,641,734,1375
+BLADEN,Undetermined,30-39,932,415,1347
+BLADEN,Undetermined,40-49,855,316,1171
+BLADEN,Undetermined,50-64,1503,435,1938
+BLADEN,Undetermined,65+,1337,306,1643
+BRUNSWICK,Hispanic Any Race,18-29,68,509,577
+BRUNSWICK,Hispanic Any Race,30-39,75,210,285
+BRUNSWICK,Hispanic Any Race,40-49,71,180,251
+BRUNSWICK,Hispanic Any Race,50-64,107,230,337
+BRUNSWICK,Hispanic Any Race,65+,56,138,194
+BRUNSWICK,Non-Hispanic American Indian,18-29,3,38,41
+BRUNSWICK,Non-Hispanic American Indian,30-39,6,28,34
+BRUNSWICK,Non-Hispanic American Indian,40-49,14,27,41
+BRUNSWICK,Non-Hispanic American Indian,50-64,40,38,78
+BRUNSWICK,Non-Hispanic American Indian,65+,24,26,50
+BRUNSWICK,Non-Hispanic Asian,18-29,0,40,40
+BRUNSWICK,Non-Hispanic Asian,30-39,6,30,36
+BRUNSWICK,Non-Hispanic Asian,40-49,12,26,38
+BRUNSWICK,Non-Hispanic Asian,50-64,21,47,68
+BRUNSWICK,Non-Hispanic Asian,65+,18,47,65
+BRUNSWICK,Non-Hispanic Black,18-29,159,899,1058
+BRUNSWICK,Non-Hispanic Black,30-39,409,637,1046
+BRUNSWICK,Non-Hispanic Black,40-49,724,488,1212
+BRUNSWICK,Non-Hispanic Black,50-64,1781,713,2494
+BRUNSWICK,Non-Hispanic Black,65+,2480,518,2998
+BRUNSWICK,Non-Hispanic Mixed,18-29,15,51,66
+BRUNSWICK,Non-Hispanic Mixed,30-39,10,24,34
+BRUNSWICK,Non-Hispanic Mixed,40-49,9,11,20
+BRUNSWICK,Non-Hispanic Mixed,50-64,7,13,20
+BRUNSWICK,Non-Hispanic Mixed,65+,16,13,29
+BRUNSWICK,Non-Hispanic Other,18-29,10,144,154
+BRUNSWICK,Non-Hispanic Other,30-39,17,65,82
+BRUNSWICK,Non-Hispanic Other,40-49,46,48,94
+BRUNSWICK,Non-Hispanic Other,50-64,67,78,145
+BRUNSWICK,Non-Hispanic Other,65+,95,80,175
+BRUNSWICK,Non-Hispanic White,18-29,1007,5928,6935
+BRUNSWICK,Non-Hispanic White,30-39,2174,4700,6874
+BRUNSWICK,Non-Hispanic White,40-49,3984,4226,8210
+BRUNSWICK,Non-Hispanic White,50-64,10497,11659,22156
+BRUNSWICK,Non-Hispanic White,65+,25888,18461,44349
+BRUNSWICK,Undetermined,18-29,667,4204,4871
+BRUNSWICK,Undetermined,30-39,1287,3697,4984
+BRUNSWICK,Undetermined,40-49,1670,3226,4896
+BRUNSWICK,Undetermined,50-64,3672,8007,11679
+BRUNSWICK,Undetermined,65+,7739,10227,17966
+BUNCOMBE,Hispanic Any Race,18-29,954,1060,2014
+BUNCOMBE,Hispanic Any Race,30-39,814,374,1188
+BUNCOMBE,Hispanic Any Race,40-49,700,192,892
+BUNCOMBE,Hispanic Any Race,50-64,697,181,878
+BUNCOMBE,Hispanic Any Race,65+,343,87,430
+BUNCOMBE,Non-Hispanic American Indian,18-29,34,26,60
+BUNCOMBE,Non-Hispanic American Indian,30-39,43,19,62
+BUNCOMBE,Non-Hispanic American Indian,40-49,34,20,54
+BUNCOMBE,Non-Hispanic American Indian,50-64,77,23,100
+BUNCOMBE,Non-Hispanic American Indian,65+,49,8,57
+BUNCOMBE,Non-Hispanic Asian,18-29,121,105,226
+BUNCOMBE,Non-Hispanic Asian,30-39,160,77,237
+BUNCOMBE,Non-Hispanic Asian,40-49,154,47,201
+BUNCOMBE,Non-Hispanic Asian,50-64,167,50,217
+BUNCOMBE,Non-Hispanic Asian,65+,128,24,152
+BUNCOMBE,Non-Hispanic Black,18-29,707,862,1569
+BUNCOMBE,Non-Hispanic Black,30-39,961,621,1582
+BUNCOMBE,Non-Hispanic Black,40-49,1185,435,1620
+BUNCOMBE,Non-Hispanic Black,50-64,2336,521,2857
+BUNCOMBE,Non-Hispanic Black,65+,2889,268,3157
+BUNCOMBE,Non-Hispanic Mixed,18-29,192,148,340
+BUNCOMBE,Non-Hispanic Mixed,30-39,174,49,223
+BUNCOMBE,Non-Hispanic Mixed,40-49,115,22,137
+BUNCOMBE,Non-Hispanic Mixed,50-64,79,22,101
+BUNCOMBE,Non-Hispanic Mixed,65+,49,12,61
+BUNCOMBE,Non-Hispanic Other,18-29,226,287,513
+BUNCOMBE,Non-Hispanic Other,30-39,397,193,590
+BUNCOMBE,Non-Hispanic Other,40-49,423,114,537
+BUNCOMBE,Non-Hispanic Other,50-64,531,99,630
+BUNCOMBE,Non-Hispanic Other,65+,503,78,581
+BUNCOMBE,Non-Hispanic White,18-29,11597,8970,20567
+BUNCOMBE,Non-Hispanic White,30-39,21497,7528,29025
+BUNCOMBE,Non-Hispanic White,40-49,25921,4937,30858
+BUNCOMBE,Non-Hispanic White,50-64,47396,6105,53501
+BUNCOMBE,Non-Hispanic White,65+,61136,6316,67452
+BUNCOMBE,Undetermined,18-29,9708,8307,18015
+BUNCOMBE,Undetermined,30-39,13935,6040,19975
+BUNCOMBE,Undetermined,40-49,11877,3432,15309
+BUNCOMBE,Undetermined,50-64,16251,4266,20517
+BUNCOMBE,Undetermined,65+,17063,3080,20143
+BURKE,Hispanic Any Race,18-29,197,339,536
+BURKE,Hispanic Any Race,30-39,114,88,202
+BURKE,Hispanic Any Race,40-49,115,42,157
+BURKE,Hispanic Any Race,50-64,169,60,229
+BURKE,Hispanic Any Race,65+,55,20,75
+BURKE,Non-Hispanic American Indian,18-29,1,8,9
+BURKE,Non-Hispanic American Indian,30-39,7,4,11
+BURKE,Non-Hispanic American Indian,40-49,11,4,15
+BURKE,Non-Hispanic American Indian,50-64,20,5,25
+BURKE,Non-Hispanic American Indian,65+,19,1,20
+BURKE,Non-Hispanic Asian,18-29,73,217,290
+BURKE,Non-Hispanic Asian,30-39,71,110,181
+BURKE,Non-Hispanic Asian,40-49,41,29,70
+BURKE,Non-Hispanic Asian,50-64,65,41,106
+BURKE,Non-Hispanic Asian,65+,32,13,45
+BURKE,Non-Hispanic Black,18-29,200,304,504
+BURKE,Non-Hispanic Black,30-39,267,162,429
+BURKE,Non-Hispanic Black,40-49,414,111,525
+BURKE,Non-Hispanic Black,50-64,1062,137,1199
+BURKE,Non-Hispanic Black,65+,1258,75,1333
+BURKE,Non-Hispanic Mixed,18-29,15,22,37
+BURKE,Non-Hispanic Mixed,30-39,17,4,21
+BURKE,Non-Hispanic Mixed,40-49,10,2,12
+BURKE,Non-Hispanic Mixed,50-64,6,1,7
+BURKE,Non-Hispanic Mixed,65+,9,3,12
+BURKE,Non-Hispanic Other,18-29,57,148,205
+BURKE,Non-Hispanic Other,30-39,54,32,86
+BURKE,Non-Hispanic Other,40-49,58,48,106
+BURKE,Non-Hispanic Other,50-64,116,65,181
+BURKE,Non-Hispanic Other,65+,70,29,99
+BURKE,Non-Hispanic White,18-29,3488,3650,7138
+BURKE,Non-Hispanic White,30-39,5013,1864,6877
+BURKE,Non-Hispanic White,40-49,7391,1587,8978
+BURKE,Non-Hispanic White,50-64,17145,2342,19487
+BURKE,Non-Hispanic White,65+,20572,2031,22603
+BURKE,Undetermined,18-29,968,1666,2634
+BURKE,Undetermined,30-39,1247,750,1997
+BURKE,Undetermined,40-49,1175,588,1763
+BURKE,Undetermined,50-64,2390,838,3228
+BURKE,Undetermined,65+,2048,529,2577
+CABARRUS,Hispanic Any Race,18-29,230,2074,2304
+CABARRUS,Hispanic Any Race,30-39,195,898,1093
+CABARRUS,Hispanic Any Race,40-49,237,845,1082
+CABARRUS,Hispanic Any Race,50-64,254,858,1112
+CABARRUS,Hispanic Any Race,65+,102,352,454
+CABARRUS,Non-Hispanic American Indian,18-29,4,38,42
+CABARRUS,Non-Hispanic American Indian,30-39,7,39,46
+CABARRUS,Non-Hispanic American Indian,40-49,13,53,66
+CABARRUS,Non-Hispanic American Indian,50-64,34,57,91
+CABARRUS,Non-Hispanic American Indian,65+,34,17,51
+CABARRUS,Non-Hispanic Asian,18-29,31,257,288
+CABARRUS,Non-Hispanic Asian,30-39,49,313,362
+CABARRUS,Non-Hispanic Asian,40-49,85,451,536
+CABARRUS,Non-Hispanic Asian,50-64,68,227,295
+CABARRUS,Non-Hispanic Asian,65+,42,110,152
+CABARRUS,Non-Hispanic Black,18-29,668,4121,4789
+CABARRUS,Non-Hispanic Black,30-39,788,3120,3908
+CABARRUS,Non-Hispanic Black,40-49,1460,3374,4834
+CABARRUS,Non-Hispanic Black,50-64,2818,3127,5945
+CABARRUS,Non-Hispanic Black,65+,2397,1294,3691
+CABARRUS,Non-Hispanic Mixed,18-29,26,140,166
+CABARRUS,Non-Hispanic Mixed,30-39,29,74,103
+CABARRUS,Non-Hispanic Mixed,40-49,24,61,85
+CABARRUS,Non-Hispanic Mixed,50-64,16,30,46
+CABARRUS,Non-Hispanic Mixed,65+,9,10,19
+CABARRUS,Non-Hispanic Other,18-29,87,474,561
+CABARRUS,Non-Hispanic Other,30-39,53,261,314
+CABARRUS,Non-Hispanic Other,40-49,107,266,373
+CABARRUS,Non-Hispanic Other,50-64,166,263,429
+CABARRUS,Non-Hispanic Other,65+,111,129,240
+CABARRUS,Non-Hispanic White,18-29,2193,12144,14337
+CABARRUS,Non-Hispanic White,30-39,3097,9981,13078
+CABARRUS,Non-Hispanic White,40-49,7054,9787,16841
+CABARRUS,Non-Hispanic White,50-64,20364,11597,31961
+CABARRUS,Non-Hispanic White,65+,22709,7216,29925
+CABARRUS,Undetermined,18-29,631,8372,9003
+CABARRUS,Undetermined,30-39,1149,7529,8678
+CABARRUS,Undetermined,40-49,1929,7127,9056
+CABARRUS,Undetermined,50-64,2866,7929,10795
+CABARRUS,Undetermined,65+,2093,4327,6420
+CALDWELL,Hispanic Any Race,18-29,0,421,421
+CALDWELL,Hispanic Any Race,30-39,0,147,147
+CALDWELL,Hispanic Any Race,40-49,3,112,115
+CALDWELL,Hispanic Any Race,50-64,7,171,178
+CALDWELL,Hispanic Any Race,65+,3,63,66
+CALDWELL,Non-Hispanic American Indian,18-29,0,7,7
+CALDWELL,Non-Hispanic American Indian,30-39,0,9,9
+CALDWELL,Non-Hispanic American Indian,40-49,0,2,2
+CALDWELL,Non-Hispanic American Indian,50-64,5,15,20
+CALDWELL,Non-Hispanic American Indian,65+,8,4,12
+CALDWELL,Non-Hispanic Asian,18-29,0,28,28
+CALDWELL,Non-Hispanic Asian,30-39,0,24,24
+CALDWELL,Non-Hispanic Asian,40-49,0,16,16
+CALDWELL,Non-Hispanic Asian,50-64,0,32,32
+CALDWELL,Non-Hispanic Asian,65+,0,8,8
+CALDWELL,Non-Hispanic Black,18-29,0,508,508
+CALDWELL,Non-Hispanic Black,30-39,12,309,321
+CALDWELL,Non-Hispanic Black,40-49,183,249,432
+CALDWELL,Non-Hispanic Black,50-64,483,292,775
+CALDWELL,Non-Hispanic Black,65+,620,172,792
+CALDWELL,Non-Hispanic Mixed,18-29,0,32,32
+CALDWELL,Non-Hispanic Mixed,30-39,0,17,17
+CALDWELL,Non-Hispanic Mixed,40-49,0,9,9
+CALDWELL,Non-Hispanic Mixed,50-64,4,6,10
+CALDWELL,Non-Hispanic Mixed,65+,5,5,10
+CALDWELL,Non-Hispanic Other,18-29,0,115,115
+CALDWELL,Non-Hispanic Other,30-39,1,46,47
+CALDWELL,Non-Hispanic Other,40-49,6,34,40
+CALDWELL,Non-Hispanic Other,50-64,19,43,62
+CALDWELL,Non-Hispanic Other,65+,26,26,52
+CALDWELL,Non-Hispanic White,18-29,0,6820,6820
+CALDWELL,Non-Hispanic White,30-39,213,5026,5239
+CALDWELL,Non-Hispanic White,40-49,3316,4166,7482
+CALDWELL,Non-Hispanic White,50-64,10105,6169,16274
+CALDWELL,Non-Hispanic White,65+,13597,4884,18481
+CALDWELL,Undetermined,18-29,0,1241,1241
+CALDWELL,Undetermined,30-39,2,1214,1216
+CALDWELL,Undetermined,40-49,53,1157,1210
+CALDWELL,Undetermined,50-64,171,2057,2228
+CALDWELL,Undetermined,65+,157,1719,1876
+CAMDEN,Hispanic Any Race,18-29,2,8,10
+CAMDEN,Hispanic Any Race,30-39,3,9,12
+CAMDEN,Hispanic Any Race,40-49,2,5,7
+CAMDEN,Hispanic Any Race,50-64,14,2,16
+CAMDEN,Hispanic Any Race,65+,2,1,3
+CAMDEN,Non-Hispanic American Indian,18-29,0,1,1
+CAMDEN,Non-Hispanic American Indian,30-39,3,0,3
+CAMDEN,Non-Hispanic American Indian,50-64,5,1,6
+CAMDEN,Non-Hispanic American Indian,65+,1,0,1
+CAMDEN,Non-Hispanic Asian,18-29,1,2,3
+CAMDEN,Non-Hispanic Asian,30-39,0,1,1
+CAMDEN,Non-Hispanic Asian,40-49,4,2,6
+CAMDEN,Non-Hispanic Asian,50-64,1,1,2
+CAMDEN,Non-Hispanic Asian,65+,2,0,2
+CAMDEN,Non-Hispanic Black,18-29,18,12,30
+CAMDEN,Non-Hispanic Black,30-39,50,16,66
+CAMDEN,Non-Hispanic Black,40-49,69,18,87
+CAMDEN,Non-Hispanic Black,50-64,253,29,282
+CAMDEN,Non-Hispanic Black,65+,351,33,384
+CAMDEN,Non-Hispanic Mixed,18-29,1,1,2
+CAMDEN,Non-Hispanic Mixed,30-39,1,0,1
+CAMDEN,Non-Hispanic Mixed,40-49,0,1,1
+CAMDEN,Non-Hispanic Mixed,50-64,4,1,5
+CAMDEN,Non-Hispanic Mixed,65+,0,1,1
+CAMDEN,Non-Hispanic Other,18-29,2,4,6
+CAMDEN,Non-Hispanic Other,30-39,0,1,1
+CAMDEN,Non-Hispanic Other,40-49,2,0,2
+CAMDEN,Non-Hispanic Other,50-64,10,2,12
+CAMDEN,Non-Hispanic Other,65+,13,2,15
+CAMDEN,Non-Hispanic White,18-29,120,154,274
+CAMDEN,Non-Hispanic White,30-39,239,125,364
+CAMDEN,Non-Hispanic White,40-49,500,137,637
+CAMDEN,Non-Hispanic White,50-64,1376,195,1571
+CAMDEN,Non-Hispanic White,65+,1479,169,1648
+CAMDEN,Undetermined,18-29,527,703,1230
+CAMDEN,Undetermined,30-39,722,443,1165
+CAMDEN,Undetermined,40-49,931,338,1269
+CAMDEN,Undetermined,50-64,1434,436,1870
+CAMDEN,Undetermined,65+,798,165,963
+CARTERET,Hispanic Any Race,18-29,63,133,196
+CARTERET,Hispanic Any Race,30-39,85,63,148
+CARTERET,Hispanic Any Race,40-49,80,37,117
+CARTERET,Hispanic Any Race,50-64,133,31,164
+CARTERET,Hispanic Any Race,65+,69,17,86
+CARTERET,Non-Hispanic American Indian,18-29,1,6,7
+CARTERET,Non-Hispanic American Indian,30-39,6,9,15
+CARTERET,Non-Hispanic American Indian,40-49,8,6,14
+CARTERET,Non-Hispanic American Indian,50-64,29,11,40
+CARTERET,Non-Hispanic American Indian,65+,16,4,20
+CARTERET,Non-Hispanic Asian,18-29,25,35,60
+CARTERET,Non-Hispanic Asian,30-39,15,17,32
+CARTERET,Non-Hispanic Asian,40-49,15,9,24
+CARTERET,Non-Hispanic Asian,50-64,38,12,50
+CARTERET,Non-Hispanic Asian,65+,28,8,36
+CARTERET,Non-Hispanic Black,18-29,125,271,396
+CARTERET,Non-Hispanic Black,30-39,200,138,338
+CARTERET,Non-Hispanic Black,40-49,267,101,368
+CARTERET,Non-Hispanic Black,50-64,799,105,904
+CARTERET,Non-Hispanic Black,65+,855,93,948
+CARTERET,Non-Hispanic Mixed,18-29,20,16,36
+CARTERET,Non-Hispanic Mixed,30-39,15,5,20
+CARTERET,Non-Hispanic Mixed,40-49,7,1,8
+CARTERET,Non-Hispanic Mixed,50-64,19,5,24
+CARTERET,Non-Hispanic Mixed,65+,7,1,8
+CARTERET,Non-Hispanic Other,18-29,24,55,79
+CARTERET,Non-Hispanic Other,30-39,38,31,69
+CARTERET,Non-Hispanic Other,40-49,39,14,53
+CARTERET,Non-Hispanic Other,50-64,86,11,97
+CARTERET,Non-Hispanic Other,65+,53,9,62
+CARTERET,Non-Hispanic White,18-29,2448,3316,5764
+CARTERET,Non-Hispanic White,30-39,4355,1875,6230
+CARTERET,Non-Hispanic White,40-49,5989,1460,7449
+CARTERET,Non-Hispanic White,50-64,16325,2290,18615
+CARTERET,Non-Hispanic White,65+,21978,2241,24219
+CARTERET,Undetermined,18-29,890,766,1656
+CARTERET,Undetermined,30-39,1346,665,2011
+CARTERET,Undetermined,40-49,1579,462,2041
+CARTERET,Undetermined,50-64,3760,654,4414
+CARTERET,Undetermined,65+,4239,541,4780
+CASWELL,Hispanic Any Race,18-29,47,38,85
+CASWELL,Hispanic Any Race,30-39,26,8,34
+CASWELL,Hispanic Any Race,40-49,12,13,25
+CASWELL,Hispanic Any Race,50-64,35,9,44
+CASWELL,Hispanic Any Race,65+,7,5,12
+CASWELL,Non-Hispanic American Indian,18-29,1,1,2
+CASWELL,Non-Hispanic American Indian,30-39,0,1,1
+CASWELL,Non-Hispanic American Indian,40-49,2,1,3
+CASWELL,Non-Hispanic American Indian,50-64,5,1,6
+CASWELL,Non-Hispanic Asian,18-29,1,2,3
+CASWELL,Non-Hispanic Asian,30-39,0,1,1
+CASWELL,Non-Hispanic Asian,40-49,2,1,3
+CASWELL,Non-Hispanic Asian,50-64,3,2,5
+CASWELL,Non-Hispanic Asian,65+,0,1,1
+CASWELL,Non-Hispanic Black,18-29,275,312,587
+CASWELL,Non-Hispanic Black,30-39,306,156,462
+CASWELL,Non-Hispanic Black,40-49,632,123,755
+CASWELL,Non-Hispanic Black,50-64,1607,164,1771
+CASWELL,Non-Hispanic Black,65+,2340,178,2518
+CASWELL,Non-Hispanic Mixed,18-29,4,4,8
+CASWELL,Non-Hispanic Mixed,30-39,2,1,3
+CASWELL,Non-Hispanic Mixed,40-49,3,2,5
+CASWELL,Non-Hispanic Mixed,50-64,8,0,8
+CASWELL,Non-Hispanic Mixed,65+,6,0,6
+CASWELL,Non-Hispanic Other,18-29,5,8,13
+CASWELL,Non-Hispanic Other,30-39,5,4,9
+CASWELL,Non-Hispanic Other,40-49,8,2,10
+CASWELL,Non-Hispanic Other,50-64,18,3,21
+CASWELL,Non-Hispanic Other,65+,14,3,17
+CASWELL,Non-Hispanic White,18-29,674,670,1344
+CASWELL,Non-Hispanic White,30-39,843,292,1135
+CASWELL,Non-Hispanic White,40-49,1420,291,1711
+CASWELL,Non-Hispanic White,50-64,3335,408,3743
+CASWELL,Non-Hispanic White,65+,3746,434,4180
+CASWELL,Undetermined,18-29,412,333,745
+CASWELL,Undetermined,30-39,600,251,851
+CASWELL,Undetermined,40-49,545,164,709
+CASWELL,Undetermined,50-64,1213,252,1465
+CASWELL,Undetermined,65+,898,182,1080
+CATAWBA,Hispanic Any Race,18-29,2,1691,1693
+CATAWBA,Hispanic Any Race,30-39,0,636,636
+CATAWBA,Hispanic Any Race,40-49,10,493,503
+CATAWBA,Hispanic Any Race,50-64,23,533,556
+CATAWBA,Hispanic Any Race,65+,10,207,217
+CATAWBA,Non-Hispanic American Indian,18-29,1,12,13
+CATAWBA,Non-Hispanic American Indian,30-39,0,14,14
+CATAWBA,Non-Hispanic American Indian,40-49,4,16,20
+CATAWBA,Non-Hispanic American Indian,50-64,16,21,37
+CATAWBA,Non-Hispanic American Indian,65+,7,8,15
+CATAWBA,Non-Hispanic Asian,18-29,1,624,625
+CATAWBA,Non-Hispanic Asian,30-39,1,443,444
+CATAWBA,Non-Hispanic Asian,40-49,5,206,211
+CATAWBA,Non-Hispanic Asian,50-64,19,177,196
+CATAWBA,Non-Hispanic Asian,65+,8,95,103
+CATAWBA,Non-Hispanic Black,18-29,1,1494,1495
+CATAWBA,Non-Hispanic Black,30-39,20,1206,1226
+CATAWBA,Non-Hispanic Black,40-49,516,978,1494
+CATAWBA,Non-Hispanic Black,50-64,1394,1156,2550
+CATAWBA,Non-Hispanic Black,65+,1667,525,2192
+CATAWBA,Non-Hispanic Mixed,18-29,0,116,116
+CATAWBA,Non-Hispanic Mixed,30-39,0,40,40
+CATAWBA,Non-Hispanic Mixed,40-49,11,15,26
+CATAWBA,Non-Hispanic Mixed,50-64,10,18,28
+CATAWBA,Non-Hispanic Mixed,65+,4,5,9
+CATAWBA,Non-Hispanic Other,18-29,0,378,378
+CATAWBA,Non-Hispanic Other,30-39,0,170,170
+CATAWBA,Non-Hispanic Other,40-49,20,197,217
+CATAWBA,Non-Hispanic Other,50-64,73,228,301
+CATAWBA,Non-Hispanic Other,65+,78,118,196
+CATAWBA,Non-Hispanic White,18-29,24,10941,10965
+CATAWBA,Non-Hispanic White,30-39,152,8986,9138
+CATAWBA,Non-Hispanic White,40-49,4797,8558,13355
+CATAWBA,Non-Hispanic White,50-64,17985,11843,29828
+CATAWBA,Non-Hispanic White,65+,24570,9103,33673
+CATAWBA,Undetermined,18-29,11,4979,4990
+CATAWBA,Undetermined,30-39,7,3596,3603
+CATAWBA,Undetermined,40-49,125,2993,3118
+CATAWBA,Undetermined,50-64,297,4855,5152
+CATAWBA,Undetermined,65+,300,3327,3627
+CHATHAM,Hispanic Any Race,18-29,458,546,1004
+CHATHAM,Hispanic Any Race,30-39,250,95,345
+CHATHAM,Hispanic Any Race,40-49,263,69,332
+CHATHAM,Hispanic Any Race,50-64,371,64,435
+CHATHAM,Hispanic Any Race,65+,197,36,233
+CHATHAM,Non-Hispanic American Indian,18-29,0,10,10
+CHATHAM,Non-Hispanic American Indian,30-39,6,5,11
+CHATHAM,Non-Hispanic American Indian,40-49,10,5,15
+CHATHAM,Non-Hispanic American Indian,50-64,26,5,31
+CHATHAM,Non-Hispanic American Indian,65+,17,6,23
+CHATHAM,Non-Hispanic Asian,18-29,39,51,90
+CHATHAM,Non-Hispanic Asian,30-39,57,24,81
+CHATHAM,Non-Hispanic Asian,40-49,100,24,124
+CHATHAM,Non-Hispanic Asian,50-64,131,24,155
+CHATHAM,Non-Hispanic Asian,65+,145,22,167
+CHATHAM,Non-Hispanic Black,18-29,348,419,767
+CHATHAM,Non-Hispanic Black,30-39,549,209,758
+CHATHAM,Non-Hispanic Black,40-49,772,138,910
+CHATHAM,Non-Hispanic Black,50-64,1952,186,2138
+CHATHAM,Non-Hispanic Black,65+,2571,162,2733
+CHATHAM,Non-Hispanic Mixed,18-29,27,28,55
+CHATHAM,Non-Hispanic Mixed,30-39,36,7,43
+CHATHAM,Non-Hispanic Mixed,40-49,26,5,31
+CHATHAM,Non-Hispanic Mixed,50-64,38,3,41
+CHATHAM,Non-Hispanic Mixed,65+,16,5,21
+CHATHAM,Non-Hispanic Other,18-29,41,69,110
+CHATHAM,Non-Hispanic Other,30-39,49,24,73
+CHATHAM,Non-Hispanic Other,40-49,107,29,136
+CHATHAM,Non-Hispanic Other,50-64,189,32,221
+CHATHAM,Non-Hispanic Other,65+,203,29,232
+CHATHAM,Non-Hispanic White,18-29,2368,2126,4494
+CHATHAM,Non-Hispanic White,30-39,3928,1085,5013
+CHATHAM,Non-Hispanic White,40-49,6279,909,7188
+CHATHAM,Non-Hispanic White,50-64,14496,1436,15932
+CHATHAM,Non-Hispanic White,65+,21277,1708,22985
+CHATHAM,Undetermined,18-29,1722,1394,3116
+CHATHAM,Undetermined,30-39,2836,885,3721
+CHATHAM,Undetermined,40-49,3168,643,3811
+CHATHAM,Undetermined,50-64,5779,918,6697
+CHATHAM,Undetermined,65+,6318,847,7165
+CHEROKEE,Hispanic Any Race,18-29,9,32,41
+CHEROKEE,Hispanic Any Race,30-39,17,28,45
+CHEROKEE,Hispanic Any Race,40-49,33,12,45
+CHEROKEE,Hispanic Any Race,50-64,28,20,48
+CHEROKEE,Hispanic Any Race,65+,44,8,52
+CHEROKEE,Non-Hispanic American Indian,18-29,6,7,13
+CHEROKEE,Non-Hispanic American Indian,30-39,18,9,27
+CHEROKEE,Non-Hispanic American Indian,40-49,23,4,27
+CHEROKEE,Non-Hispanic American Indian,50-64,26,7,33
+CHEROKEE,Non-Hispanic American Indian,65+,36,4,40
+CHEROKEE,Non-Hispanic Asian,18-29,6,11,17
+CHEROKEE,Non-Hispanic Asian,30-39,0,8,8
+CHEROKEE,Non-Hispanic Asian,40-49,9,2,11
+CHEROKEE,Non-Hispanic Asian,50-64,18,6,24
+CHEROKEE,Non-Hispanic Asian,65+,16,2,18
+CHEROKEE,Non-Hispanic Black,18-29,13,44,57
+CHEROKEE,Non-Hispanic Black,30-39,6,20,26
+CHEROKEE,Non-Hispanic Black,40-49,19,13,32
+CHEROKEE,Non-Hispanic Black,50-64,43,17,60
+CHEROKEE,Non-Hispanic Black,65+,61,8,69
+CHEROKEE,Non-Hispanic Mixed,18-29,2,1,3
+CHEROKEE,Non-Hispanic Mixed,30-39,1,1,2
+CHEROKEE,Non-Hispanic Mixed,40-49,5,1,6
+CHEROKEE,Non-Hispanic Mixed,50-64,9,1,10
+CHEROKEE,Non-Hispanic Mixed,65+,2,2,4
+CHEROKEE,Non-Hispanic Other,18-29,5,18,23
+CHEROKEE,Non-Hispanic Other,30-39,11,2,13
+CHEROKEE,Non-Hispanic Other,40-49,8,9,17
+CHEROKEE,Non-Hispanic Other,50-64,22,12,34
+CHEROKEE,Non-Hispanic Other,65+,18,8,26
+CHEROKEE,Non-Hispanic White,18-29,1201,1462,2663
+CHEROKEE,Non-Hispanic White,30-39,1554,797,2351
+CHEROKEE,Non-Hispanic White,40-49,2389,719,3108
+CHEROKEE,Non-Hispanic White,50-64,6035,1510,7545
+CHEROKEE,Non-Hispanic White,65+,9927,1877,11804
+CHEROKEE,Undetermined,18-29,208,297,505
+CHEROKEE,Undetermined,30-39,353,197,550
+CHEROKEE,Undetermined,40-49,392,165,557
+CHEROKEE,Undetermined,50-64,802,350,1152
+CHEROKEE,Undetermined,65+,1269,394,1663
+CHOWAN,Hispanic Any Race,18-29,6,18,24
+CHOWAN,Hispanic Any Race,30-39,5,9,14
+CHOWAN,Hispanic Any Race,40-49,5,10,15
+CHOWAN,Hispanic Any Race,50-64,14,3,17
+CHOWAN,Hispanic Any Race,65+,13,2,15
+CHOWAN,Non-Hispanic American Indian,30-39,3,0,3
+CHOWAN,Non-Hispanic American Indian,40-49,3,0,3
+CHOWAN,Non-Hispanic American Indian,50-64,2,3,5
+CHOWAN,Non-Hispanic American Indian,65+,5,0,5
+CHOWAN,Non-Hispanic Asian,18-29,8,2,10
+CHOWAN,Non-Hispanic Asian,30-39,3,1,4
+CHOWAN,Non-Hispanic Asian,50-64,6,3,9
+CHOWAN,Non-Hispanic Black,18-29,155,285,440
+CHOWAN,Non-Hispanic Black,30-39,300,150,450
+CHOWAN,Non-Hispanic Black,40-49,303,112,415
+CHOWAN,Non-Hispanic Black,50-64,787,148,935
+CHOWAN,Non-Hispanic Black,65+,1106,127,1233
+CHOWAN,Non-Hispanic Mixed,18-29,4,6,10
+CHOWAN,Non-Hispanic Mixed,30-39,0,2,2
+CHOWAN,Non-Hispanic Mixed,40-49,4,0,4
+CHOWAN,Non-Hispanic Mixed,50-64,4,0,4
+CHOWAN,Non-Hispanic Other,18-29,0,5,5
+CHOWAN,Non-Hispanic Other,30-39,7,3,10
+CHOWAN,Non-Hispanic Other,40-49,1,1,2
+CHOWAN,Non-Hispanic Other,50-64,10,4,14
+CHOWAN,Non-Hispanic Other,65+,17,3,20
+CHOWAN,Non-Hispanic White,18-29,407,339,746
+CHOWAN,Non-Hispanic White,30-39,617,202,819
+CHOWAN,Non-Hispanic White,40-49,851,197,1048
+CHOWAN,Non-Hispanic White,50-64,2067,293,2360
+CHOWAN,Non-Hispanic White,65+,3392,350,3742
+CHOWAN,Undetermined,18-29,161,332,493
+CHOWAN,Undetermined,30-39,334,191,525
+CHOWAN,Undetermined,40-49,389,125,514
+CHOWAN,Undetermined,50-64,753,217,970
+CHOWAN,Undetermined,65+,675,157,832
+CLAY,Hispanic Any Race,18-29,5,11,16
+CLAY,Hispanic Any Race,30-39,8,7,15
+CLAY,Hispanic Any Race,40-49,8,9,17
+CLAY,Hispanic Any Race,50-64,5,11,16
+CLAY,Hispanic Any Race,65+,14,1,15
+CLAY,Non-Hispanic American Indian,30-39,2,3,5
+CLAY,Non-Hispanic American Indian,40-49,1,1,2
+CLAY,Non-Hispanic American Indian,50-64,5,1,6
+CLAY,Non-Hispanic American Indian,65+,4,0,4
+CLAY,Non-Hispanic Asian,18-29,1,2,3
+CLAY,Non-Hispanic Asian,30-39,1,1,2
+CLAY,Non-Hispanic Asian,40-49,0,2,2
+CLAY,Non-Hispanic Asian,50-64,3,1,4
+CLAY,Non-Hispanic Black,18-29,3,10,13
+CLAY,Non-Hispanic Black,30-39,2,4,6
+CLAY,Non-Hispanic Black,40-49,2,4,6
+CLAY,Non-Hispanic Black,50-64,7,5,12
+CLAY,Non-Hispanic Black,65+,11,4,15
+CLAY,Non-Hispanic Mixed,30-39,1,2,3
+CLAY,Non-Hispanic Mixed,65+,0,1,1
+CLAY,Non-Hispanic Other,18-29,0,7,7
+CLAY,Non-Hispanic Other,30-39,0,3,3
+CLAY,Non-Hispanic Other,40-49,1,0,1
+CLAY,Non-Hispanic Other,50-64,1,1,2
+CLAY,Non-Hispanic Other,65+,5,0,5
+CLAY,Non-Hispanic White,18-29,399,515,914
+CLAY,Non-Hispanic White,30-39,718,315,1033
+CLAY,Non-Hispanic White,40-49,998,291,1289
+CLAY,Non-Hispanic White,50-64,2469,477,2946
+CLAY,Non-Hispanic White,65+,4618,681,5299
+CLAY,Undetermined,18-29,142,183,325
+CLAY,Undetermined,30-39,184,118,302
+CLAY,Undetermined,40-49,186,94,280
+CLAY,Undetermined,50-64,541,217,758
+CLAY,Undetermined,65+,729,204,933
+CLEVELAND,Hispanic Any Race,18-29,86,199,285
+CLEVELAND,Hispanic Any Race,30-39,100,92,192
+CLEVELAND,Hispanic Any Race,40-49,58,54,112
+CLEVELAND,Hispanic Any Race,50-64,135,43,178
+CLEVELAND,Hispanic Any Race,65+,81,36,117
+CLEVELAND,Non-Hispanic American Indian,18-29,1,6,7
+CLEVELAND,Non-Hispanic American Indian,30-39,7,7,14
+CLEVELAND,Non-Hispanic American Indian,40-49,14,4,18
+CLEVELAND,Non-Hispanic American Indian,50-64,20,8,28
+CLEVELAND,Non-Hispanic American Indian,65+,17,8,25
+CLEVELAND,Non-Hispanic Asian,18-29,12,42,54
+CLEVELAND,Non-Hispanic Asian,30-39,12,16,28
+CLEVELAND,Non-Hispanic Asian,40-49,22,21,43
+CLEVELAND,Non-Hispanic Asian,50-64,47,23,70
+CLEVELAND,Non-Hispanic Asian,65+,32,18,50
+CLEVELAND,Non-Hispanic Black,18-29,1081,1580,2661
+CLEVELAND,Non-Hispanic Black,30-39,1308,779,2087
+CLEVELAND,Non-Hispanic Black,40-49,1913,587,2500
+CLEVELAND,Non-Hispanic Black,50-64,4348,626,4974
+CLEVELAND,Non-Hispanic Black,65+,4132,398,4530
+CLEVELAND,Non-Hispanic Mixed,18-29,26,41,67
+CLEVELAND,Non-Hispanic Mixed,30-39,27,16,43
+CLEVELAND,Non-Hispanic Mixed,40-49,22,11,33
+CLEVELAND,Non-Hispanic Mixed,50-64,14,3,17
+CLEVELAND,Non-Hispanic Mixed,65+,3,3,6
+CLEVELAND,Non-Hispanic Other,18-29,41,150,191
+CLEVELAND,Non-Hispanic Other,30-39,27,28,55
+CLEVELAND,Non-Hispanic Other,40-49,49,17,66
+CLEVELAND,Non-Hispanic Other,50-64,62,41,103
+CLEVELAND,Non-Hispanic Other,65+,69,9,78
+CLEVELAND,Non-Hispanic White,18-29,3640,4095,7735
+CLEVELAND,Non-Hispanic White,30-39,4879,2066,6945
+CLEVELAND,Non-Hispanic White,40-49,7303,1701,9004
+CLEVELAND,Non-Hispanic White,50-64,16555,2380,18935
+CLEVELAND,Non-Hispanic White,65+,19507,1998,21505
+CLEVELAND,Undetermined,18-29,1321,1371,2692
+CLEVELAND,Undetermined,30-39,1878,1048,2926
+CLEVELAND,Undetermined,40-49,1905,663,2568
+CLEVELAND,Undetermined,50-64,3381,903,4284
+CLEVELAND,Undetermined,65+,2491,543,3034
+COLUMBUS,Hispanic Any Race,18-29,41,153,194
+COLUMBUS,Hispanic Any Race,30-39,40,34,74
+COLUMBUS,Hispanic Any Race,40-49,20,15,35
+COLUMBUS,Hispanic Any Race,50-64,28,11,39
+COLUMBUS,Hispanic Any Race,65+,23,9,32
+COLUMBUS,Non-Hispanic American Indian,18-29,45,103,148
+COLUMBUS,Non-Hispanic American Indian,30-39,99,60,159
+COLUMBUS,Non-Hispanic American Indian,40-49,118,48,166
+COLUMBUS,Non-Hispanic American Indian,50-64,291,58,349
+COLUMBUS,Non-Hispanic American Indian,65+,297,50,347
+COLUMBUS,Non-Hispanic Asian,18-29,2,5,7
+COLUMBUS,Non-Hispanic Asian,30-39,5,1,6
+COLUMBUS,Non-Hispanic Asian,40-49,1,4,5
+COLUMBUS,Non-Hispanic Asian,50-64,11,2,13
+COLUMBUS,Non-Hispanic Asian,65+,5,3,8
+COLUMBUS,Non-Hispanic Black,18-29,663,1146,1809
+COLUMBUS,Non-Hispanic Black,30-39,1081,674,1755
+COLUMBUS,Non-Hispanic Black,40-49,1309,488,1797
+COLUMBUS,Non-Hispanic Black,50-64,3256,631,3887
+COLUMBUS,Non-Hispanic Black,65+,3882,497,4379
+COLUMBUS,Non-Hispanic Mixed,18-29,8,25,33
+COLUMBUS,Non-Hispanic Mixed,30-39,7,5,12
+COLUMBUS,Non-Hispanic Mixed,40-49,13,3,16
+COLUMBUS,Non-Hispanic Mixed,50-64,6,1,7
+COLUMBUS,Non-Hispanic Mixed,65+,8,1,9
+COLUMBUS,Non-Hispanic Other,18-29,14,66,80
+COLUMBUS,Non-Hispanic Other,30-39,21,6,27
+COLUMBUS,Non-Hispanic Other,40-49,26,12,38
+COLUMBUS,Non-Hispanic Other,50-64,43,11,54
+COLUMBUS,Non-Hispanic Other,65+,21,8,29
+COLUMBUS,Non-Hispanic White,18-29,1521,1814,3335
+COLUMBUS,Non-Hispanic White,30-39,2334,894,3228
+COLUMBUS,Non-Hispanic White,40-49,3657,773,4430
+COLUMBUS,Non-Hispanic White,50-64,7494,1184,8678
+COLUMBUS,Non-Hispanic White,65+,9576,1123,10699
+COLUMBUS,Undetermined,18-29,838,910,1748
+COLUMBUS,Undetermined,30-39,940,533,1473
+COLUMBUS,Undetermined,40-49,919,400,1319
+COLUMBUS,Undetermined,50-64,1490,499,1989
+COLUMBUS,Undetermined,65+,1390,377,1767
+CRAVEN,Hispanic Any Race,18-29,183,576,759
+CRAVEN,Hispanic Any Race,30-39,215,265,480
+CRAVEN,Hispanic Any Race,40-49,214,133,347
+CRAVEN,Hispanic Any Race,50-64,242,107,349
+CRAVEN,Hispanic Any Race,65+,140,59,199
+CRAVEN,Non-Hispanic American Indian,18-29,7,16,23
+CRAVEN,Non-Hispanic American Indian,30-39,16,11,27
+CRAVEN,Non-Hispanic American Indian,40-49,23,7,30
+CRAVEN,Non-Hispanic American Indian,50-64,36,9,45
+CRAVEN,Non-Hispanic American Indian,65+,39,7,46
+CRAVEN,Non-Hispanic Asian,18-29,50,171,221
+CRAVEN,Non-Hispanic Asian,30-39,99,69,168
+CRAVEN,Non-Hispanic Asian,40-49,112,48,160
+CRAVEN,Non-Hispanic Asian,50-64,113,39,152
+CRAVEN,Non-Hispanic Asian,65+,64,16,80
+CRAVEN,Non-Hispanic Black,18-29,1070,1837,2907
+CRAVEN,Non-Hispanic Black,30-39,1506,975,2481
+CRAVEN,Non-Hispanic Black,40-49,1846,606,2452
+CRAVEN,Non-Hispanic Black,50-64,4336,654,4990
+CRAVEN,Non-Hispanic Black,65+,4512,410,4922
+CRAVEN,Non-Hispanic Mixed,18-29,47,74,121
+CRAVEN,Non-Hispanic Mixed,30-39,34,21,55
+CRAVEN,Non-Hispanic Mixed,40-49,27,10,37
+CRAVEN,Non-Hispanic Mixed,50-64,18,3,21
+CRAVEN,Non-Hispanic Mixed,65+,16,2,18
+CRAVEN,Non-Hispanic Other,18-29,69,251,320
+CRAVEN,Non-Hispanic Other,30-39,86,94,180
+CRAVEN,Non-Hispanic Other,40-49,102,66,168
+CRAVEN,Non-Hispanic Other,50-64,188,58,246
+CRAVEN,Non-Hispanic Other,65+,147,35,182
+CRAVEN,Non-Hispanic White,18-29,3070,4740,7810
+CRAVEN,Non-Hispanic White,30-39,5102,2811,7913
+CRAVEN,Non-Hispanic White,40-49,6278,1886,8164
+CRAVEN,Non-Hispanic White,50-64,15138,2536,17674
+CRAVEN,Non-Hispanic White,65+,23177,2748,25925
+CRAVEN,Undetermined,18-29,1121,2119,3240
+CRAVEN,Undetermined,30-39,1788,1448,3236
+CRAVEN,Undetermined,40-49,1872,953,2825
+CRAVEN,Undetermined,50-64,3742,1237,4979
+CRAVEN,Undetermined,65+,3628,831,4459
+CUMBERLAND,Hispanic Any Race,18-29,0,4542,4542
+CUMBERLAND,Hispanic Any Race,30-39,12,3488,3500
+CUMBERLAND,Hispanic Any Race,40-49,135,2367,2502
+CUMBERLAND,Hispanic Any Race,50-64,281,2231,2512
+CUMBERLAND,Hispanic Any Race,65+,207,888,1095
+CUMBERLAND,Non-Hispanic American Indian,18-29,0,364,364
+CUMBERLAND,Non-Hispanic American Indian,30-39,8,328,336
+CUMBERLAND,Non-Hispanic American Indian,40-49,71,226,297
+CUMBERLAND,Non-Hispanic American Indian,50-64,267,256,523
+CUMBERLAND,Non-Hispanic American Indian,65+,311,135,446
+CUMBERLAND,Non-Hispanic Asian,18-29,0,480,480
+CUMBERLAND,Non-Hispanic Asian,30-39,3,484,487
+CUMBERLAND,Non-Hispanic Asian,40-49,8,337,345
+CUMBERLAND,Non-Hispanic Asian,50-64,70,436,506
+CUMBERLAND,Non-Hispanic Asian,65+,73,205,278
+CUMBERLAND,Non-Hispanic Black,18-29,4,15317,15321
+CUMBERLAND,Non-Hispanic Black,30-39,502,12480,12982
+CUMBERLAND,Non-Hispanic Black,40-49,3368,8677,12045
+CUMBERLAND,Non-Hispanic Black,50-64,11702,9977,21679
+CUMBERLAND,Non-Hispanic Black,65+,14441,4433,18874
+CUMBERLAND,Non-Hispanic Mixed,18-29,0,540,540
+CUMBERLAND,Non-Hispanic Mixed,30-39,7,318,325
+CUMBERLAND,Non-Hispanic Mixed,40-49,29,130,159
+CUMBERLAND,Non-Hispanic Mixed,50-64,54,102,156
+CUMBERLAND,Non-Hispanic Mixed,65+,22,23,45
+CUMBERLAND,Non-Hispanic Other,18-29,0,1206,1206
+CUMBERLAND,Non-Hispanic Other,30-39,33,789,822
+CUMBERLAND,Non-Hispanic Other,40-49,164,553,717
+CUMBERLAND,Non-Hispanic Other,50-64,765,603,1368
+CUMBERLAND,Non-Hispanic Other,65+,978,348,1326
+CUMBERLAND,Non-Hispanic White,18-29,0,12930,12930
+CUMBERLAND,Non-Hispanic White,30-39,348,13369,13717
+CUMBERLAND,Non-Hispanic White,40-49,3631,9209,12840
+CUMBERLAND,Non-Hispanic White,50-64,14777,11498,26275
+CUMBERLAND,Non-Hispanic White,65+,22331,6829,29160
+CUMBERLAND,Undetermined,18-29,0,18652,18652
+CUMBERLAND,Undetermined,30-39,117,15709,15826
+CUMBERLAND,Undetermined,40-49,1071,11468,12539
+CUMBERLAND,Undetermined,50-64,2693,14363,17056
+CUMBERLAND,Undetermined,65+,2304,6806,9110
+CURRITUCK,Hispanic Any Race,18-29,17,34,51
+CURRITUCK,Hispanic Any Race,30-39,30,16,46
+CURRITUCK,Hispanic Any Race,40-49,29,20,49
+CURRITUCK,Hispanic Any Race,50-64,38,14,52
+CURRITUCK,Hispanic Any Race,65+,14,5,19
+CURRITUCK,Non-Hispanic American Indian,30-39,3,2,5
+CURRITUCK,Non-Hispanic American Indian,40-49,3,2,5
+CURRITUCK,Non-Hispanic American Indian,50-64,19,2,21
+CURRITUCK,Non-Hispanic American Indian,65+,14,1,15
+CURRITUCK,Non-Hispanic Asian,18-29,0,2,2
+CURRITUCK,Non-Hispanic Asian,30-39,0,2,2
+CURRITUCK,Non-Hispanic Asian,40-49,5,2,7
+CURRITUCK,Non-Hispanic Asian,50-64,5,2,7
+CURRITUCK,Non-Hispanic Asian,65+,7,1,8
+CURRITUCK,Non-Hispanic Black,18-29,22,45,67
+CURRITUCK,Non-Hispanic Black,30-39,50,27,77
+CURRITUCK,Non-Hispanic Black,40-49,72,25,97
+CURRITUCK,Non-Hispanic Black,50-64,184,28,212
+CURRITUCK,Non-Hispanic Black,65+,227,27,254
+CURRITUCK,Non-Hispanic Mixed,18-29,8,10,18
+CURRITUCK,Non-Hispanic Mixed,30-39,5,4,9
+CURRITUCK,Non-Hispanic Mixed,40-49,5,2,7
+CURRITUCK,Non-Hispanic Mixed,50-64,2,1,3
+CURRITUCK,Non-Hispanic Mixed,65+,8,0,8
+CURRITUCK,Non-Hispanic Other,18-29,3,7,10
+CURRITUCK,Non-Hispanic Other,30-39,4,11,15
+CURRITUCK,Non-Hispanic Other,40-49,6,6,12
+CURRITUCK,Non-Hispanic Other,50-64,28,10,38
+CURRITUCK,Non-Hispanic Other,65+,13,8,21
+CURRITUCK,Non-Hispanic White,18-29,420,615,1035
+CURRITUCK,Non-Hispanic White,30-39,758,494,1252
+CURRITUCK,Non-Hispanic White,40-49,1159,374,1533
+CURRITUCK,Non-Hispanic White,50-64,3659,620,4279
+CURRITUCK,Non-Hispanic White,65+,3601,576,4177
+CURRITUCK,Undetermined,18-29,1002,1769,2771
+CURRITUCK,Undetermined,30-39,1651,1151,2802
+CURRITUCK,Undetermined,40-49,2016,885,2901
+CURRITUCK,Undetermined,50-64,4079,1320,5399
+CURRITUCK,Undetermined,65+,3187,719,3906
+DARE,Hispanic Any Race,18-29,35,61,96
+DARE,Hispanic Any Race,30-39,45,25,70
+DARE,Hispanic Any Race,40-49,33,16,49
+DARE,Hispanic Any Race,50-64,79,15,94
+DARE,Hispanic Any Race,65+,41,3,44
+DARE,Non-Hispanic American Indian,18-29,1,2,3
+DARE,Non-Hispanic American Indian,30-39,2,2,4
+DARE,Non-Hispanic American Indian,40-49,2,0,2
+DARE,Non-Hispanic American Indian,50-64,10,4,14
+DARE,Non-Hispanic American Indian,65+,10,0,10
+DARE,Non-Hispanic Asian,18-29,1,3,4
+DARE,Non-Hispanic Asian,30-39,7,6,13
+DARE,Non-Hispanic Asian,40-49,6,3,9
+DARE,Non-Hispanic Asian,50-64,11,6,17
+DARE,Non-Hispanic Asian,65+,12,3,15
+DARE,Non-Hispanic Black,18-29,22,27,49
+DARE,Non-Hispanic Black,30-39,43,17,60
+DARE,Non-Hispanic Black,40-49,54,14,68
+DARE,Non-Hispanic Black,50-64,133,18,151
+DARE,Non-Hispanic Black,65+,141,10,151
+DARE,Non-Hispanic Mixed,18-29,4,6,10
+DARE,Non-Hispanic Mixed,30-39,3,2,5
+DARE,Non-Hispanic Mixed,40-49,4,1,5
+DARE,Non-Hispanic Mixed,50-64,10,2,12
+DARE,Non-Hispanic Mixed,65+,3,0,3
+DARE,Non-Hispanic Other,18-29,5,21,26
+DARE,Non-Hispanic Other,30-39,8,13,21
+DARE,Non-Hispanic Other,40-49,18,5,23
+DARE,Non-Hispanic Other,50-64,45,12,57
+DARE,Non-Hispanic Other,65+,33,5,38
+DARE,Non-Hispanic White,18-29,683,737,1420
+DARE,Non-Hispanic White,30-39,1477,578,2055
+DARE,Non-Hispanic White,40-49,2453,507,2960
+DARE,Non-Hispanic White,50-64,6758,1047,7805
+DARE,Non-Hispanic White,65+,8501,1200,9701
+DARE,Undetermined,18-29,991,1620,2611
+DARE,Undetermined,30-39,1941,1153,3094
+DARE,Undetermined,40-49,2336,910,3246
+DARE,Undetermined,50-64,4751,1579,6330
+DARE,Undetermined,65+,5074,1154,6228
+DAVIDSON,Hispanic Any Race,18-29,396,758,1154
+DAVIDSON,Hispanic Any Race,30-39,252,196,448
+DAVIDSON,Hispanic Any Race,40-49,281,136,417
+DAVIDSON,Hispanic Any Race,50-64,308,133,441
+DAVIDSON,Hispanic Any Race,65+,135,64,199
+DAVIDSON,Non-Hispanic American Indian,18-29,18,18,36
+DAVIDSON,Non-Hispanic American Indian,30-39,27,17,44
+DAVIDSON,Non-Hispanic American Indian,40-49,42,11,53
+DAVIDSON,Non-Hispanic American Indian,50-64,82,19,101
+DAVIDSON,Non-Hispanic American Indian,65+,39,10,49
+DAVIDSON,Non-Hispanic Asian,18-29,45,98,143
+DAVIDSON,Non-Hispanic Asian,30-39,51,71,122
+DAVIDSON,Non-Hispanic Asian,40-49,68,31,99
+DAVIDSON,Non-Hispanic Asian,50-64,68,37,105
+DAVIDSON,Non-Hispanic Asian,65+,34,16,50
+DAVIDSON,Non-Hispanic Black,18-29,685,1121,1806
+DAVIDSON,Non-Hispanic Black,30-39,1043,648,1691
+DAVIDSON,Non-Hispanic Black,40-49,1310,410,1720
+DAVIDSON,Non-Hispanic Black,50-64,2995,571,3566
+DAVIDSON,Non-Hispanic Black,65+,2544,255,2799
+DAVIDSON,Non-Hispanic Mixed,18-29,19,52,71
+DAVIDSON,Non-Hispanic Mixed,30-39,27,20,47
+DAVIDSON,Non-Hispanic Mixed,40-49,18,8,26
+DAVIDSON,Non-Hispanic Mixed,50-64,19,1,20
+DAVIDSON,Non-Hispanic Mixed,65+,6,2,8
+DAVIDSON,Non-Hispanic Other,18-29,79,196,275
+DAVIDSON,Non-Hispanic Other,30-39,87,79,166
+DAVIDSON,Non-Hispanic Other,40-49,89,51,140
+DAVIDSON,Non-Hispanic Other,50-64,220,80,300
+DAVIDSON,Non-Hispanic Other,65+,119,34,153
+DAVIDSON,Non-Hispanic White,18-29,6435,7311,13746
+DAVIDSON,Non-Hispanic White,30-39,9781,3270,13051
+DAVIDSON,Non-Hispanic White,40-49,14145,2650,16795
+DAVIDSON,Non-Hispanic White,50-64,31321,3960,35281
+DAVIDSON,Non-Hispanic White,65+,33329,3070,36399
+DAVIDSON,Undetermined,18-29,2264,3153,5417
+DAVIDSON,Undetermined,30-39,3322,1674,4996
+DAVIDSON,Undetermined,40-49,4300,1293,5593
+DAVIDSON,Undetermined,50-64,7971,1730,9701
+DAVIDSON,Undetermined,65+,6718,1037,7755
+DAVIE,Hispanic Any Race,18-29,97,183,280
+DAVIE,Hispanic Any Race,30-39,61,43,104
+DAVIE,Hispanic Any Race,40-49,106,19,125
+DAVIE,Hispanic Any Race,50-64,136,33,169
+DAVIE,Hispanic Any Race,65+,33,10,43
+DAVIE,Non-Hispanic American Indian,18-29,2,3,5
+DAVIE,Non-Hispanic American Indian,30-39,2,1,3
+DAVIE,Non-Hispanic American Indian,40-49,9,1,10
+DAVIE,Non-Hispanic American Indian,50-64,7,0,7
+DAVIE,Non-Hispanic American Indian,65+,6,0,6
+DAVIE,Non-Hispanic Asian,18-29,20,11,31
+DAVIE,Non-Hispanic Asian,30-39,6,7,13
+DAVIE,Non-Hispanic Asian,40-49,16,7,23
+DAVIE,Non-Hispanic Asian,50-64,24,5,29
+DAVIE,Non-Hispanic Asian,65+,7,1,8
+DAVIE,Non-Hispanic Black,18-29,130,203,333
+DAVIE,Non-Hispanic Black,30-39,191,98,289
+DAVIE,Non-Hispanic Black,40-49,240,63,303
+DAVIE,Non-Hispanic Black,50-64,710,96,806
+DAVIE,Non-Hispanic Black,65+,643,62,705
+DAVIE,Non-Hispanic Mixed,18-29,9,13,22
+DAVIE,Non-Hispanic Mixed,30-39,11,2,13
+DAVIE,Non-Hispanic Mixed,40-49,8,1,9
+DAVIE,Non-Hispanic Mixed,50-64,6,0,6
+DAVIE,Non-Hispanic Mixed,65+,4,0,4
+DAVIE,Non-Hispanic Other,18-29,26,44,70
+DAVIE,Non-Hispanic Other,30-39,7,12,19
+DAVIE,Non-Hispanic Other,40-49,29,7,36
+DAVIE,Non-Hispanic Other,50-64,40,14,54
+DAVIE,Non-Hispanic Other,65+,21,0,21
+DAVIE,Non-Hispanic White,18-29,1860,2041,3901
+DAVIE,Non-Hispanic White,30-39,2547,912,3459
+DAVIE,Non-Hispanic White,40-49,4310,719,5029
+DAVIE,Non-Hispanic White,50-64,9632,1103,10735
+DAVIE,Non-Hispanic White,65+,11608,1004,12612
+DAVIE,Undetermined,18-29,759,623,1382
+DAVIE,Undetermined,30-39,1018,355,1373
+DAVIE,Undetermined,40-49,1185,264,1449
+DAVIE,Undetermined,50-64,2138,337,2475
+DAVIE,Undetermined,65+,1573,247,1820
+DUPLIN,Hispanic Any Race,18-29,349,793,1142
+DUPLIN,Hispanic Any Race,30-39,105,178,283
+DUPLIN,Hispanic Any Race,40-49,62,137,199
+DUPLIN,Hispanic Any Race,50-64,74,165,239
+DUPLIN,Hispanic Any Race,65+,36,69,105
+DUPLIN,Non-Hispanic American Indian,18-29,2,3,5
+DUPLIN,Non-Hispanic American Indian,30-39,3,9,12
+DUPLIN,Non-Hispanic American Indian,40-49,1,3,4
+DUPLIN,Non-Hispanic American Indian,50-64,10,5,15
+DUPLIN,Non-Hispanic American Indian,65+,6,3,9
+DUPLIN,Non-Hispanic Asian,18-29,2,6,8
+DUPLIN,Non-Hispanic Asian,30-39,0,4,4
+DUPLIN,Non-Hispanic Asian,40-49,2,3,5
+DUPLIN,Non-Hispanic Asian,50-64,2,6,8
+DUPLIN,Non-Hispanic Asian,65+,1,4,5
+DUPLIN,Non-Hispanic Black,18-29,288,855,1143
+DUPLIN,Non-Hispanic Black,30-39,301,706,1007
+DUPLIN,Non-Hispanic Black,40-49,691,505,1196
+DUPLIN,Non-Hispanic Black,50-64,1778,770,2548
+DUPLIN,Non-Hispanic Black,65+,2649,600,3249
+DUPLIN,Non-Hispanic Mixed,18-29,9,14,23
+DUPLIN,Non-Hispanic Mixed,30-39,7,6,13
+DUPLIN,Non-Hispanic Mixed,40-49,5,4,9
+DUPLIN,Non-Hispanic Mixed,50-64,4,2,6
+DUPLIN,Non-Hispanic Mixed,65+,10,2,12
+DUPLIN,Non-Hispanic Other,18-29,22,53,75
+DUPLIN,Non-Hispanic Other,30-39,4,24,28
+DUPLIN,Non-Hispanic Other,40-49,16,25,41
+DUPLIN,Non-Hispanic Other,50-64,29,29,58
+DUPLIN,Non-Hispanic Other,65+,9,16,25
+DUPLIN,Non-Hispanic White,18-29,646,1512,2158
+DUPLIN,Non-Hispanic White,30-39,725,1446,2171
+DUPLIN,Non-Hispanic White,40-49,1593,1153,2746
+DUPLIN,Non-Hispanic White,50-64,4670,1650,6320
+DUPLIN,Non-Hispanic White,65+,6414,1553,7967
+DUPLIN,Undetermined,18-29,534,1590,2124
+DUPLIN,Undetermined,30-39,411,1046,1457
+DUPLIN,Undetermined,40-49,454,870,1324
+DUPLIN,Undetermined,50-64,795,1290,2085
+DUPLIN,Undetermined,65+,742,956,1698
+DURHAM,Hispanic Any Race,18-29,172,4585,4757
+DURHAM,Hispanic Any Race,30-39,84,2433,2517
+DURHAM,Hispanic Any Race,40-49,88,1376,1464
+DURHAM,Hispanic Any Race,50-64,145,1246,1391
+DURHAM,Hispanic Any Race,65+,61,499,560
+DURHAM,Non-Hispanic American Indian,18-29,4,97,101
+DURHAM,Non-Hispanic American Indian,30-39,2,103,105
+DURHAM,Non-Hispanic American Indian,40-49,9,71,80
+DURHAM,Non-Hispanic American Indian,50-64,38,63,101
+DURHAM,Non-Hispanic American Indian,65+,40,30,70
+DURHAM,Non-Hispanic Asian,18-29,104,2487,2591
+DURHAM,Non-Hispanic Asian,30-39,48,1330,1378
+DURHAM,Non-Hispanic Asian,40-49,46,693,739
+DURHAM,Non-Hispanic Asian,50-64,70,596,666
+DURHAM,Non-Hispanic Asian,65+,86,391,477
+DURHAM,Non-Hispanic Black,18-29,487,13291,13778
+DURHAM,Non-Hispanic Black,30-39,466,11092,11558
+DURHAM,Non-Hispanic Black,40-49,3686,7635,11321
+DURHAM,Non-Hispanic Black,50-64,11183,7861,19044
+DURHAM,Non-Hispanic Black,65+,11874,3748,15622
+DURHAM,Non-Hispanic Mixed,18-29,43,880,923
+DURHAM,Non-Hispanic Mixed,30-39,14,434,448
+DURHAM,Non-Hispanic Mixed,40-49,27,199,226
+DURHAM,Non-Hispanic Mixed,50-64,43,131,174
+DURHAM,Non-Hispanic Mixed,65+,23,52,75
+DURHAM,Non-Hispanic Other,18-29,29,811,840
+DURHAM,Non-Hispanic Other,30-39,28,881,909
+DURHAM,Non-Hispanic Other,40-49,69,570,639
+DURHAM,Non-Hispanic Other,50-64,237,490,727
+DURHAM,Non-Hispanic Other,65+,277,356,633
+DURHAM,Non-Hispanic White,18-29,707,17070,17777
+DURHAM,Non-Hispanic White,30-39,946,23787,24733
+DURHAM,Non-Hispanic White,40-49,2634,12045,14679
+DURHAM,Non-Hispanic White,50-64,14187,11681,25868
+DURHAM,Non-Hispanic White,65+,20977,11262,32239
+DURHAM,Undetermined,18-29,913,24055,24968
+DURHAM,Undetermined,30-39,765,20294,21059
+DURHAM,Undetermined,40-49,1534,11285,12819
+DURHAM,Undetermined,50-64,4100,13278,17378
+DURHAM,Undetermined,65+,3511,8621,12132
+EDGECOMBE,Hispanic Any Race,18-29,74,183,257
+EDGECOMBE,Hispanic Any Race,30-39,30,39,69
+EDGECOMBE,Hispanic Any Race,40-49,34,32,66
+EDGECOMBE,Hispanic Any Race,50-64,75,28,103
+EDGECOMBE,Hispanic Any Race,65+,20,12,32
+EDGECOMBE,Non-Hispanic American Indian,18-29,3,7,10
+EDGECOMBE,Non-Hispanic American Indian,30-39,8,3,11
+EDGECOMBE,Non-Hispanic American Indian,40-49,1,6,7
+EDGECOMBE,Non-Hispanic American Indian,50-64,8,5,13
+EDGECOMBE,Non-Hispanic American Indian,65+,6,0,6
+EDGECOMBE,Non-Hispanic Asian,18-29,2,7,9
+EDGECOMBE,Non-Hispanic Asian,30-39,1,2,3
+EDGECOMBE,Non-Hispanic Asian,40-49,6,1,7
+EDGECOMBE,Non-Hispanic Asian,50-64,1,3,4
+EDGECOMBE,Non-Hispanic Asian,65+,1,3,4
+EDGECOMBE,Non-Hispanic Black,18-29,1653,2070,3723
+EDGECOMBE,Non-Hispanic Black,30-39,2219,1165,3384
+EDGECOMBE,Non-Hispanic Black,40-49,2612,787,3399
+EDGECOMBE,Non-Hispanic Black,50-64,6154,983,7137
+EDGECOMBE,Non-Hispanic Black,65+,6577,630,7207
+EDGECOMBE,Non-Hispanic Mixed,18-29,15,18,33
+EDGECOMBE,Non-Hispanic Mixed,30-39,8,5,13
+EDGECOMBE,Non-Hispanic Mixed,40-49,9,6,15
+EDGECOMBE,Non-Hispanic Mixed,50-64,12,1,13
+EDGECOMBE,Non-Hispanic Mixed,65+,13,1,14
+EDGECOMBE,Non-Hispanic Other,18-29,6,38,44
+EDGECOMBE,Non-Hispanic Other,30-39,9,18,27
+EDGECOMBE,Non-Hispanic Other,40-49,13,9,22
+EDGECOMBE,Non-Hispanic Other,50-64,29,17,46
+EDGECOMBE,Non-Hispanic Other,65+,25,3,28
+EDGECOMBE,Non-Hispanic White,18-29,847,811,1658
+EDGECOMBE,Non-Hispanic White,30-39,1103,459,1562
+EDGECOMBE,Non-Hispanic White,40-49,1816,431,2247
+EDGECOMBE,Non-Hispanic White,50-64,4280,570,4850
+EDGECOMBE,Non-Hispanic White,65+,5956,524,6480
+EDGECOMBE,Undetermined,18-29,746,1122,1868
+EDGECOMBE,Undetermined,30-39,1119,738,1857
+EDGECOMBE,Undetermined,40-49,1074,466,1540
+EDGECOMBE,Undetermined,50-64,2108,651,2759
+EDGECOMBE,Undetermined,65+,1566,401,1967
+FORSYTH,Hispanic Any Race,18-29,13,5451,5464
+FORSYTH,Hispanic Any Race,30-39,6,1953,1959
+FORSYTH,Hispanic Any Race,40-49,1,1472,1473
+FORSYTH,Hispanic Any Race,50-64,12,1593,1605
+FORSYTH,Hispanic Any Race,65+,18,721,739
+FORSYTH,Non-Hispanic American Indian,18-29,0,65,65
+FORSYTH,Non-Hispanic American Indian,30-39,0,63,63
+FORSYTH,Non-Hispanic American Indian,40-49,2,63,65
+FORSYTH,Non-Hispanic American Indian,50-64,4,95,99
+FORSYTH,Non-Hispanic American Indian,65+,14,48,62
+FORSYTH,Non-Hispanic Asian,18-29,0,636,636
+FORSYTH,Non-Hispanic Asian,30-39,2,451,453
+FORSYTH,Non-Hispanic Asian,40-49,0,386,386
+FORSYTH,Non-Hispanic Asian,50-64,0,375,375
+FORSYTH,Non-Hispanic Asian,65+,2,183,185
+FORSYTH,Non-Hispanic Black,18-29,42,11832,11874
+FORSYTH,Non-Hispanic Black,30-39,40,9279,9319
+FORSYTH,Non-Hispanic Black,40-49,31,8978,9009
+FORSYTH,Non-Hispanic Black,50-64,1025,13616,14641
+FORSYTH,Non-Hispanic Black,65+,5708,7323,13031
+FORSYTH,Non-Hispanic Mixed,18-29,2,471,473
+FORSYTH,Non-Hispanic Mixed,30-39,0,223,223
+FORSYTH,Non-Hispanic Mixed,40-49,0,105,105
+FORSYTH,Non-Hispanic Mixed,50-64,2,79,81
+FORSYTH,Non-Hispanic Mixed,65+,2,31,33
+FORSYTH,Non-Hispanic Other,18-29,4,821,825
+FORSYTH,Non-Hispanic Other,30-39,2,537,539
+FORSYTH,Non-Hispanic Other,40-49,4,581,585
+FORSYTH,Non-Hispanic Other,50-64,8,708,716
+FORSYTH,Non-Hispanic Other,65+,39,347,386
+FORSYTH,Non-Hispanic White,18-29,81,22239,22320
+FORSYTH,Non-Hispanic White,30-39,60,22030,22090
+FORSYTH,Non-Hispanic White,40-49,57,20609,20666
+FORSYTH,Non-Hispanic White,50-64,2873,36805,39678
+FORSYTH,Non-Hispanic White,65+,21312,29205,50517
+FORSYTH,Undetermined,18-29,67,19054,19121
+FORSYTH,Undetermined,30-39,30,12411,12441
+FORSYTH,Undetermined,40-49,43,10238,10281
+FORSYTH,Undetermined,50-64,490,15317,15807
+FORSYTH,Undetermined,65+,3517,10189,13706
+FRANKLIN,Hispanic Any Race,18-29,198,389,587
+FRANKLIN,Hispanic Any Race,30-39,177,76,253
+FRANKLIN,Hispanic Any Race,40-49,144,58,202
+FRANKLIN,Hispanic Any Race,50-64,194,70,264
+FRANKLIN,Hispanic Any Race,65+,85,34,119
+FRANKLIN,Non-Hispanic American Indian,18-29,6,10,16
+FRANKLIN,Non-Hispanic American Indian,30-39,13,4,17
+FRANKLIN,Non-Hispanic American Indian,40-49,17,3,20
+FRANKLIN,Non-Hispanic American Indian,50-64,45,6,51
+FRANKLIN,Non-Hispanic American Indian,65+,24,3,27
+FRANKLIN,Non-Hispanic Asian,18-29,13,18,31
+FRANKLIN,Non-Hispanic Asian,30-39,16,10,26
+FRANKLIN,Non-Hispanic Asian,40-49,34,10,44
+FRANKLIN,Non-Hispanic Asian,50-64,26,6,32
+FRANKLIN,Non-Hispanic Asian,65+,10,4,14
+FRANKLIN,Non-Hispanic Black,18-29,990,877,1867
+FRANKLIN,Non-Hispanic Black,30-39,1282,412,1694
+FRANKLIN,Non-Hispanic Black,40-49,1576,327,1903
+FRANKLIN,Non-Hispanic Black,50-64,3418,413,3831
+FRANKLIN,Non-Hispanic Black,65+,3329,284,3613
+FRANKLIN,Non-Hispanic Mixed,18-29,17,19,36
+FRANKLIN,Non-Hispanic Mixed,30-39,16,8,24
+FRANKLIN,Non-Hispanic Mixed,40-49,19,1,20
+FRANKLIN,Non-Hispanic Mixed,50-64,12,4,16
+FRANKLIN,Non-Hispanic Mixed,65+,9,0,9
+FRANKLIN,Non-Hispanic Other,18-29,28,57,85
+FRANKLIN,Non-Hispanic Other,30-39,46,28,74
+FRANKLIN,Non-Hispanic Other,40-49,59,24,83
+FRANKLIN,Non-Hispanic Other,50-64,121,23,144
+FRANKLIN,Non-Hispanic Other,65+,61,11,72
+FRANKLIN,Non-Hispanic White,18-29,2305,2219,4524
+FRANKLIN,Non-Hispanic White,30-39,3467,1105,4572
+FRANKLIN,Non-Hispanic White,40-49,4898,927,5825
+FRANKLIN,Non-Hispanic White,50-64,10951,1361,12312
+FRANKLIN,Non-Hispanic White,65+,10447,1057,11504
+FRANKLIN,Undetermined,18-29,1215,1530,2745
+FRANKLIN,Undetermined,30-39,2080,795,2875
+FRANKLIN,Undetermined,40-49,2347,573,2920
+FRANKLIN,Undetermined,50-64,3980,794,4774
+FRANKLIN,Undetermined,65+,2883,478,3361
+GASTON,Hispanic Any Race,18-29,591,958,1549
+GASTON,Hispanic Any Race,30-39,610,394,1004
+GASTON,Hispanic Any Race,40-49,628,254,882
+GASTON,Hispanic Any Race,50-64,843,292,1135
+GASTON,Hispanic Any Race,65+,357,114,471
+GASTON,Non-Hispanic American Indian,18-29,7,26,33
+GASTON,Non-Hispanic American Indian,30-39,38,17,55
+GASTON,Non-Hispanic American Indian,40-49,55,15,70
+GASTON,Non-Hispanic American Indian,50-64,88,20,108
+GASTON,Non-Hispanic American Indian,65+,72,8,80
+GASTON,Non-Hispanic Asian,18-29,85,110,195
+GASTON,Non-Hispanic Asian,30-39,110,80,190
+GASTON,Non-Hispanic Asian,40-49,134,65,199
+GASTON,Non-Hispanic Asian,50-64,146,62,208
+GASTON,Non-Hispanic Asian,65+,116,38,154
+GASTON,Non-Hispanic Black,18-29,1722,2779,4501
+GASTON,Non-Hispanic Black,30-39,2935,1600,4535
+GASTON,Non-Hispanic Black,40-49,4009,1036,5045
+GASTON,Non-Hispanic Black,50-64,6380,1116,7496
+GASTON,Non-Hispanic Black,65+,4870,462,5332
+GASTON,Non-Hispanic Mixed,18-29,89,76,165
+GASTON,Non-Hispanic Mixed,30-39,70,39,109
+GASTON,Non-Hispanic Mixed,40-49,64,18,82
+GASTON,Non-Hispanic Mixed,50-64,70,13,83
+GASTON,Non-Hispanic Mixed,65+,25,4,29
+GASTON,Non-Hispanic Other,18-29,129,366,495
+GASTON,Non-Hispanic Other,30-39,143,105,248
+GASTON,Non-Hispanic Other,40-49,178,71,249
+GASTON,Non-Hispanic Other,50-64,288,96,384
+GASTON,Non-Hispanic Other,65+,205,45,250
+GASTON,Non-Hispanic White,18-29,7871,8923,16794
+GASTON,Non-Hispanic White,30-39,12604,4780,17384
+GASTON,Non-Hispanic White,40-49,17517,3876,21393
+GASTON,Non-Hispanic White,50-64,36340,5111,41451
+GASTON,Non-Hispanic White,65+,37341,3737,41078
+GASTON,Undetermined,18-29,3224,3750,6974
+GASTON,Undetermined,30-39,5016,2559,7575
+GASTON,Undetermined,40-49,5489,1689,7178
+GASTON,Undetermined,50-64,8909,2076,10985
+GASTON,Undetermined,65+,6697,1193,7890
+GATES,Hispanic Any Race,18-29,7,7,14
+GATES,Hispanic Any Race,30-39,6,4,10
+GATES,Hispanic Any Race,40-49,7,4,11
+GATES,Hispanic Any Race,50-64,3,5,8
+GATES,Hispanic Any Race,65+,4,3,7
+GATES,Non-Hispanic American Indian,18-29,2,2,4
+GATES,Non-Hispanic American Indian,30-39,3,2,5
+GATES,Non-Hispanic American Indian,40-49,0,1,1
+GATES,Non-Hispanic American Indian,50-64,6,1,7
+GATES,Non-Hispanic Asian,30-39,0,1,1
+GATES,Non-Hispanic Asian,40-49,2,0,2
+GATES,Non-Hispanic Asian,65+,3,0,3
+GATES,Non-Hispanic Black,18-29,126,170,296
+GATES,Non-Hispanic Black,30-39,217,103,320
+GATES,Non-Hispanic Black,40-49,274,54,328
+GATES,Non-Hispanic Black,50-64,867,106,973
+GATES,Non-Hispanic Black,65+,1036,119,1155
+GATES,Non-Hispanic Mixed,18-29,6,6,12
+GATES,Non-Hispanic Mixed,30-39,4,1,5
+GATES,Non-Hispanic Mixed,40-49,3,1,4
+GATES,Non-Hispanic Mixed,50-64,3,1,4
+GATES,Non-Hispanic Mixed,65+,6,1,7
+GATES,Non-Hispanic Other,18-29,2,12,14
+GATES,Non-Hispanic Other,30-39,3,4,7
+GATES,Non-Hispanic Other,40-49,4,5,9
+GATES,Non-Hispanic Other,50-64,13,3,16
+GATES,Non-Hispanic Other,65+,4,2,6
+GATES,Non-Hispanic White,18-29,253,370,623
+GATES,Non-Hispanic White,30-39,442,218,660
+GATES,Non-Hispanic White,40-49,570,185,755
+GATES,Non-Hispanic White,50-64,1639,224,1863
+GATES,Non-Hispanic White,65+,1695,227,1922
+GATES,Undetermined,18-29,272,323,595
+GATES,Undetermined,30-39,366,222,588
+GATES,Undetermined,40-49,373,116,489
+GATES,Undetermined,50-64,828,209,1037
+GATES,Undetermined,65+,452,117,569
+GRAHAM,Hispanic Any Race,18-29,6,7,13
+GRAHAM,Hispanic Any Race,30-39,3,1,4
+GRAHAM,Hispanic Any Race,40-49,4,2,6
+GRAHAM,Hispanic Any Race,50-64,3,1,4
+GRAHAM,Hispanic Any Race,65+,0,3,3
+GRAHAM,Non-Hispanic American Indian,18-29,40,31,71
+GRAHAM,Non-Hispanic American Indian,30-39,29,21,50
+GRAHAM,Non-Hispanic American Indian,40-49,52,19,71
+GRAHAM,Non-Hispanic American Indian,50-64,83,29,112
+GRAHAM,Non-Hispanic American Indian,65+,54,13,67
+GRAHAM,Non-Hispanic Asian,18-29,1,1,2
+GRAHAM,Non-Hispanic Asian,30-39,0,1,1
+GRAHAM,Non-Hispanic Asian,65+,0,2,2
+GRAHAM,Non-Hispanic Black,18-29,4,0,4
+GRAHAM,Non-Hispanic Black,40-49,0,1,1
+GRAHAM,Non-Hispanic Black,50-64,0,1,1
+GRAHAM,Non-Hispanic Mixed,30-39,3,3,6
+GRAHAM,Non-Hispanic Mixed,65+,2,0,2
+GRAHAM,Non-Hispanic Other,18-29,1,4,5
+GRAHAM,Non-Hispanic Other,30-39,2,2,4
+GRAHAM,Non-Hispanic Other,40-49,1,2,3
+GRAHAM,Non-Hispanic Other,50-64,1,6,7
+GRAHAM,Non-Hispanic Other,65+,6,3,9
+GRAHAM,Non-Hispanic White,18-29,416,506,922
+GRAHAM,Non-Hispanic White,30-39,375,451,826
+GRAHAM,Non-Hispanic White,40-49,732,281,1013
+GRAHAM,Non-Hispanic White,50-64,1652,515,2167
+GRAHAM,Non-Hispanic White,65+,2301,558,2859
+GRAHAM,Undetermined,18-29,67,126,193
+GRAHAM,Undetermined,30-39,58,77,135
+GRAHAM,Undetermined,40-49,48,47,95
+GRAHAM,Undetermined,50-64,79,93,172
+GRAHAM,Undetermined,65+,63,82,145
+GRANVILLE,Hispanic Any Race,18-29,164,209,373
+GRANVILLE,Hispanic Any Race,30-39,126,65,191
+GRANVILLE,Hispanic Any Race,40-49,132,53,185
+GRANVILLE,Hispanic Any Race,50-64,199,38,237
+GRANVILLE,Hispanic Any Race,65+,83,26,109
+GRANVILLE,Non-Hispanic American Indian,18-29,8,1,9
+GRANVILLE,Non-Hispanic American Indian,30-39,8,5,13
+GRANVILLE,Non-Hispanic American Indian,40-49,15,4,19
+GRANVILLE,Non-Hispanic American Indian,50-64,18,4,22
+GRANVILLE,Non-Hispanic American Indian,65+,7,1,8
+GRANVILLE,Non-Hispanic Asian,18-29,16,11,27
+GRANVILLE,Non-Hispanic Asian,30-39,11,14,25
+GRANVILLE,Non-Hispanic Asian,40-49,21,10,31
+GRANVILLE,Non-Hispanic Asian,50-64,31,3,34
+GRANVILLE,Non-Hispanic Asian,65+,14,1,15
+GRANVILLE,Non-Hispanic Black,18-29,1047,989,2036
+GRANVILLE,Non-Hispanic Black,30-39,1408,467,1875
+GRANVILLE,Non-Hispanic Black,40-49,1852,370,2222
+GRANVILLE,Non-Hispanic Black,50-64,3921,477,4398
+GRANVILLE,Non-Hispanic Black,65+,3814,275,4089
+GRANVILLE,Non-Hispanic Mixed,18-29,25,20,45
+GRANVILLE,Non-Hispanic Mixed,30-39,18,6,24
+GRANVILLE,Non-Hispanic Mixed,40-49,15,5,20
+GRANVILLE,Non-Hispanic Mixed,50-64,26,6,32
+GRANVILLE,Non-Hispanic Mixed,65+,7,1,8
+GRANVILLE,Non-Hispanic Other,18-29,33,81,114
+GRANVILLE,Non-Hispanic Other,30-39,44,32,76
+GRANVILLE,Non-Hispanic Other,40-49,44,16,60
+GRANVILLE,Non-Hispanic Other,50-64,97,19,116
+GRANVILLE,Non-Hispanic Other,65+,51,7,58
+GRANVILLE,Non-Hispanic White,18-29,1657,1637,3294
+GRANVILLE,Non-Hispanic White,30-39,2479,913,3392
+GRANVILLE,Non-Hispanic White,40-49,3796,740,4536
+GRANVILLE,Non-Hispanic White,50-64,8782,1072,9854
+GRANVILLE,Non-Hispanic White,65+,8204,746,8950
+GRANVILLE,Undetermined,18-29,825,1105,1930
+GRANVILLE,Undetermined,30-39,1503,642,2145
+GRANVILLE,Undetermined,40-49,1904,480,2384
+GRANVILLE,Undetermined,50-64,3347,693,4040
+GRANVILLE,Undetermined,65+,2224,350,2574
+GREENE,Hispanic Any Race,18-29,120,181,301
+GREENE,Hispanic Any Race,30-39,47,31,78
+GREENE,Hispanic Any Race,40-49,36,17,53
+GREENE,Hispanic Any Race,50-64,39,17,56
+GREENE,Hispanic Any Race,65+,12,7,19
+GREENE,Non-Hispanic American Indian,18-29,1,2,3
+GREENE,Non-Hispanic American Indian,30-39,2,0,2
+GREENE,Non-Hispanic American Indian,40-49,1,0,1
+GREENE,Non-Hispanic American Indian,50-64,6,0,6
+GREENE,Non-Hispanic Asian,18-29,1,3,4
+GREENE,Non-Hispanic Asian,30-39,1,0,1
+GREENE,Non-Hispanic Asian,40-49,2,2,4
+GREENE,Non-Hispanic Asian,50-64,1,0,1
+GREENE,Non-Hispanic Asian,65+,2,1,3
+GREENE,Non-Hispanic Black,18-29,278,359,637
+GREENE,Non-Hispanic Black,30-39,366,169,535
+GREENE,Non-Hispanic Black,40-49,553,142,695
+GREENE,Non-Hispanic Black,50-64,1291,174,1465
+GREENE,Non-Hispanic Black,65+,1411,119,1530
+GREENE,Non-Hispanic Mixed,18-29,7,7,14
+GREENE,Non-Hispanic Mixed,30-39,0,2,2
+GREENE,Non-Hispanic Mixed,40-49,3,0,3
+GREENE,Non-Hispanic Mixed,50-64,6,2,8
+GREENE,Non-Hispanic Mixed,65+,2,0,2
+GREENE,Non-Hispanic Other,18-29,14,24,38
+GREENE,Non-Hispanic Other,30-39,2,8,10
+GREENE,Non-Hispanic Other,40-49,2,8,10
+GREENE,Non-Hispanic Other,50-64,5,3,8
+GREENE,Non-Hispanic Other,65+,0,5,5
+GREENE,Non-Hispanic White,18-29,584,356,940
+GREENE,Non-Hispanic White,30-39,831,191,1022
+GREENE,Non-Hispanic White,40-49,1015,152,1167
+GREENE,Non-Hispanic White,50-64,2462,210,2672
+GREENE,Non-Hispanic White,65+,2821,209,3030
+GREENE,Undetermined,18-29,298,347,645
+GREENE,Undetermined,30-39,345,174,519
+GREENE,Undetermined,40-49,334,163,497
+GREENE,Undetermined,50-64,631,168,799
+GREENE,Undetermined,65+,485,93,578
+GUILFORD,Hispanic Any Race,18-29,2564,3858,6422
+GUILFORD,Hispanic Any Race,30-39,1251,1509,2760
+GUILFORD,Hispanic Any Race,40-49,1130,1043,2173
+GUILFORD,Hispanic Any Race,50-64,1291,1038,2329
+GUILFORD,Hispanic Any Race,65+,543,435,978
+GUILFORD,Non-Hispanic American Indian,18-29,66,111,177
+GUILFORD,Non-Hispanic American Indian,30-39,68,92,160
+GUILFORD,Non-Hispanic American Indian,40-49,127,70,197
+GUILFORD,Non-Hispanic American Indian,50-64,217,102,319
+GUILFORD,Non-Hispanic American Indian,65+,158,38,196
+GUILFORD,Non-Hispanic Asian,18-29,863,1288,2151
+GUILFORD,Non-Hispanic Asian,30-39,574,745,1319
+GUILFORD,Non-Hispanic Asian,40-49,717,663,1380
+GUILFORD,Non-Hispanic Asian,50-64,1021,639,1660
+GUILFORD,Non-Hispanic Asian,65+,648,344,992
+GUILFORD,Non-Hispanic Black,18-29,13994,21441,35435
+GUILFORD,Non-Hispanic Black,30-39,15583,11223,26806
+GUILFORD,Non-Hispanic Black,40-49,19436,7583,27019
+GUILFORD,Non-Hispanic Black,50-64,32008,7852,39860
+GUILFORD,Non-Hispanic Black,65+,24505,3712,28217
+GUILFORD,Non-Hispanic Mixed,18-29,479,742,1221
+GUILFORD,Non-Hispanic Mixed,30-39,310,278,588
+GUILFORD,Non-Hispanic Mixed,40-49,216,110,326
+GUILFORD,Non-Hispanic Mixed,50-64,186,67,253
+GUILFORD,Non-Hispanic Mixed,65+,82,31,113
+GUILFORD,Non-Hispanic Other,18-29,969,1364,2333
+GUILFORD,Non-Hispanic Other,30-39,655,724,1379
+GUILFORD,Non-Hispanic Other,40-49,811,607,1418
+GUILFORD,Non-Hispanic Other,50-64,1186,626,1812
+GUILFORD,Non-Hispanic Other,65+,616,284,900
+GUILFORD,Non-Hispanic White,18-29,13527,20715,34242
+GUILFORD,Non-Hispanic White,30-39,18893,15025,33918
+GUILFORD,Non-Hispanic White,40-49,27897,11163,39060
+GUILFORD,Non-Hispanic White,50-64,68771,14277,83048
+GUILFORD,Non-Hispanic White,65+,80219,12073,92292
+GUILFORD,Undetermined,18-29,12860,19966,32826
+GUILFORD,Undetermined,30-39,8998,10494,19492
+GUILFORD,Undetermined,40-49,7397,6864,14261
+GUILFORD,Undetermined,50-64,10221,8541,18762
+GUILFORD,Undetermined,65+,6609,5035,11644
+HALIFAX,Hispanic Any Race,18-29,35,70,105
+HALIFAX,Hispanic Any Race,30-39,22,33,55
+HALIFAX,Hispanic Any Race,40-49,28,21,49
+HALIFAX,Hispanic Any Race,50-64,44,21,65
+HALIFAX,Hispanic Any Race,65+,33,10,43
+HALIFAX,Non-Hispanic American Indian,18-29,60,95,155
+HALIFAX,Non-Hispanic American Indian,30-39,134,45,179
+HALIFAX,Non-Hispanic American Indian,40-49,159,30,189
+HALIFAX,Non-Hispanic American Indian,50-64,326,52,378
+HALIFAX,Non-Hispanic American Indian,65+,363,57,420
+HALIFAX,Non-Hispanic Asian,18-29,6,6,12
+HALIFAX,Non-Hispanic Asian,30-39,22,10,32
+HALIFAX,Non-Hispanic Asian,40-49,25,10,35
+HALIFAX,Non-Hispanic Asian,50-64,44,14,58
+HALIFAX,Non-Hispanic Asian,65+,30,3,33
+HALIFAX,Non-Hispanic Black,18-29,1287,1704,2991
+HALIFAX,Non-Hispanic Black,30-39,2174,1163,3337
+HALIFAX,Non-Hispanic Black,40-49,2519,774,3293
+HALIFAX,Non-Hispanic Black,50-64,5973,968,6941
+HALIFAX,Non-Hispanic Black,65+,6256,858,7114
+HALIFAX,Non-Hispanic Mixed,18-29,23,29,52
+HALIFAX,Non-Hispanic Mixed,30-39,12,13,25
+HALIFAX,Non-Hispanic Mixed,40-49,5,1,6
+HALIFAX,Non-Hispanic Mixed,50-64,18,8,26
+HALIFAX,Non-Hispanic Mixed,65+,16,6,22
+HALIFAX,Non-Hispanic Other,18-29,20,31,51
+HALIFAX,Non-Hispanic Other,30-39,25,21,46
+HALIFAX,Non-Hispanic Other,40-49,29,24,53
+HALIFAX,Non-Hispanic Other,50-64,51,11,62
+HALIFAX,Non-Hispanic Other,65+,52,7,59
+HALIFAX,Non-Hispanic White,18-29,863,1116,1979
+HALIFAX,Non-Hispanic White,30-39,1375,610,1985
+HALIFAX,Non-Hispanic White,40-49,1873,469,2342
+HALIFAX,Non-Hispanic White,50-64,4964,699,5663
+HALIFAX,Non-Hispanic White,65+,6871,945,7816
+HALIFAX,Undetermined,18-29,791,1171,1962
+HALIFAX,Undetermined,30-39,869,666,1535
+HALIFAX,Undetermined,40-49,918,460,1378
+HALIFAX,Undetermined,50-64,1728,670,2398
+HALIFAX,Undetermined,65+,1402,482,1884
+HARNETT,Hispanic Any Race,18-29,487,1135,1622
+HARNETT,Hispanic Any Race,30-39,569,558,1127
+HARNETT,Hispanic Any Race,40-49,504,340,844
+HARNETT,Hispanic Any Race,50-64,561,269,830
+HARNETT,Hispanic Any Race,65+,210,81,291
+HARNETT,Non-Hispanic American Indian,18-29,31,49,80
+HARNETT,Non-Hispanic American Indian,30-39,40,36,76
+HARNETT,Non-Hispanic American Indian,40-49,71,28,99
+HARNETT,Non-Hispanic American Indian,50-64,113,25,138
+HARNETT,Non-Hispanic American Indian,65+,65,13,78
+HARNETT,Non-Hispanic Asian,18-29,14,60,74
+HARNETT,Non-Hispanic Asian,30-39,52,50,102
+HARNETT,Non-Hispanic Asian,40-49,60,45,105
+HARNETT,Non-Hispanic Asian,50-64,59,21,80
+HARNETT,Non-Hispanic Asian,65+,34,15,49
+HARNETT,Non-Hispanic Black,18-29,1087,1977,3064
+HARNETT,Non-Hispanic Black,30-39,1507,1161,2668
+HARNETT,Non-Hispanic Black,40-49,2307,826,3133
+HARNETT,Non-Hispanic Black,50-64,4191,757,4948
+HARNETT,Non-Hispanic Black,65+,3243,435,3678
+HARNETT,Non-Hispanic Mixed,18-29,47,83,130
+HARNETT,Non-Hispanic Mixed,30-39,56,29,85
+HARNETT,Non-Hispanic Mixed,40-49,45,5,50
+HARNETT,Non-Hispanic Mixed,50-64,44,4,48
+HARNETT,Non-Hispanic Mixed,65+,15,1,16
+HARNETT,Non-Hispanic Other,18-29,93,270,363
+HARNETT,Non-Hispanic Other,30-39,77,120,197
+HARNETT,Non-Hispanic Other,40-49,114,82,196
+HARNETT,Non-Hispanic Other,50-64,194,74,268
+HARNETT,Non-Hispanic Other,65+,134,23,157
+HARNETT,Non-Hispanic White,18-29,3293,4720,8013
+HARNETT,Non-Hispanic White,30-39,5599,3270,8869
+HARNETT,Non-Hispanic White,40-49,7282,2427,9709
+HARNETT,Non-Hispanic White,50-64,14586,2560,17146
+HARNETT,Non-Hispanic White,65+,14935,1779,16714
+HARNETT,Undetermined,18-29,2196,3220,5416
+HARNETT,Undetermined,30-39,3389,2475,5864
+HARNETT,Undetermined,40-49,3499,1664,5163
+HARNETT,Undetermined,50-64,6052,1644,7696
+HARNETT,Undetermined,65+,3945,843,4788
+HAYWOOD,Hispanic Any Race,18-29,87,88,175
+HAYWOOD,Hispanic Any Race,30-39,64,30,94
+HAYWOOD,Hispanic Any Race,40-49,64,22,86
+HAYWOOD,Hispanic Any Race,50-64,92,28,120
+HAYWOOD,Hispanic Any Race,65+,57,20,77
+HAYWOOD,Non-Hispanic American Indian,18-29,6,8,14
+HAYWOOD,Non-Hispanic American Indian,30-39,6,7,13
+HAYWOOD,Non-Hispanic American Indian,40-49,16,5,21
+HAYWOOD,Non-Hispanic American Indian,50-64,27,13,40
+HAYWOOD,Non-Hispanic American Indian,65+,22,4,26
+HAYWOOD,Non-Hispanic Asian,18-29,6,11,17
+HAYWOOD,Non-Hispanic Asian,30-39,14,5,19
+HAYWOOD,Non-Hispanic Asian,40-49,17,5,22
+HAYWOOD,Non-Hispanic Asian,50-64,21,7,28
+HAYWOOD,Non-Hispanic Asian,65+,13,2,15
+HAYWOOD,Non-Hispanic Black,18-29,11,48,59
+HAYWOOD,Non-Hispanic Black,30-39,55,21,76
+HAYWOOD,Non-Hispanic Black,40-49,48,22,70
+HAYWOOD,Non-Hispanic Black,50-64,106,19,125
+HAYWOOD,Non-Hispanic Black,65+,190,18,208
+HAYWOOD,Non-Hispanic Mixed,18-29,24,13,37
+HAYWOOD,Non-Hispanic Mixed,30-39,16,4,20
+HAYWOOD,Non-Hispanic Mixed,40-49,9,3,12
+HAYWOOD,Non-Hispanic Mixed,50-64,5,2,7
+HAYWOOD,Non-Hispanic Mixed,65+,1,2,3
+HAYWOOD,Non-Hispanic Other,18-29,18,18,36
+HAYWOOD,Non-Hispanic Other,30-39,26,11,37
+HAYWOOD,Non-Hispanic Other,40-49,23,8,31
+HAYWOOD,Non-Hispanic Other,50-64,35,10,45
+HAYWOOD,Non-Hispanic Other,65+,56,5,61
+HAYWOOD,Non-Hispanic White,18-29,2694,2486,5180
+HAYWOOD,Non-Hispanic White,30-39,4616,1543,6159
+HAYWOOD,Non-Hispanic White,40-49,5837,1258,7095
+HAYWOOD,Non-Hispanic White,50-64,13799,2025,15824
+HAYWOOD,Non-Hispanic White,65+,19695,2387,22082
+HAYWOOD,Undetermined,18-29,973,1220,2193
+HAYWOOD,Undetermined,30-39,1192,687,1879
+HAYWOOD,Undetermined,40-49,1068,511,1579
+HAYWOOD,Undetermined,50-64,2221,858,3079
+HAYWOOD,Undetermined,65+,2258,717,2975
+HENDERSON,Hispanic Any Race,18-29,412,565,977
+HENDERSON,Hispanic Any Race,30-39,343,164,507
+HENDERSON,Hispanic Any Race,40-49,295,105,400
+HENDERSON,Hispanic Any Race,50-64,367,119,486
+HENDERSON,Hispanic Any Race,65+,234,67,301
+HENDERSON,Non-Hispanic American Indian,18-29,14,10,24
+HENDERSON,Non-Hispanic American Indian,30-39,11,5,16
+HENDERSON,Non-Hispanic American Indian,40-49,14,10,24
+HENDERSON,Non-Hispanic American Indian,50-64,27,6,33
+HENDERSON,Non-Hispanic American Indian,65+,24,3,27
+HENDERSON,Non-Hispanic Asian,18-29,27,45,72
+HENDERSON,Non-Hispanic Asian,30-39,38,21,59
+HENDERSON,Non-Hispanic Asian,40-49,53,16,69
+HENDERSON,Non-Hispanic Asian,50-64,58,18,76
+HENDERSON,Non-Hispanic Asian,65+,60,11,71
+HENDERSON,Non-Hispanic Black,18-29,147,233,380
+HENDERSON,Non-Hispanic Black,30-39,256,144,400
+HENDERSON,Non-Hispanic Black,40-49,272,87,359
+HENDERSON,Non-Hispanic Black,50-64,551,103,654
+HENDERSON,Non-Hispanic Black,65+,462,67,529
+HENDERSON,Non-Hispanic Mixed,18-29,40,28,68
+HENDERSON,Non-Hispanic Mixed,30-39,32,10,42
+HENDERSON,Non-Hispanic Mixed,40-49,29,4,33
+HENDERSON,Non-Hispanic Mixed,50-64,23,3,26
+HENDERSON,Non-Hispanic Mixed,65+,19,1,20
+HENDERSON,Non-Hispanic Other,18-29,42,85,127
+HENDERSON,Non-Hispanic Other,30-39,58,36,94
+HENDERSON,Non-Hispanic Other,40-49,82,28,110
+HENDERSON,Non-Hispanic Other,50-64,160,39,199
+HENDERSON,Non-Hispanic Other,65+,128,38,166
+HENDERSON,Non-Hispanic White,18-29,4244,3902,8146
+HENDERSON,Non-Hispanic White,30-39,6892,2458,9350
+HENDERSON,Non-Hispanic White,40-49,8884,1971,10855
+HENDERSON,Non-Hispanic White,50-64,19816,2931,22747
+HENDERSON,Non-Hispanic White,65+,33429,4232,37661
+HENDERSON,Undetermined,18-29,1786,2534,4320
+HENDERSON,Undetermined,30-39,3247,1622,4869
+HENDERSON,Undetermined,40-49,3813,1195,5008
+HENDERSON,Undetermined,50-64,8149,1985,10134
+HENDERSON,Undetermined,65+,11976,2206,14182
+HERTFORD,Hispanic Any Race,18-29,22,33,55
+HERTFORD,Hispanic Any Race,30-39,11,11,22
+HERTFORD,Hispanic Any Race,40-49,15,7,22
+HERTFORD,Hispanic Any Race,50-64,17,7,24
+HERTFORD,Hispanic Any Race,65+,4,2,6
+HERTFORD,Non-Hispanic American Indian,18-29,4,4,8
+HERTFORD,Non-Hispanic American Indian,30-39,3,0,3
+HERTFORD,Non-Hispanic American Indian,40-49,9,1,10
+HERTFORD,Non-Hispanic American Indian,50-64,32,2,34
+HERTFORD,Non-Hispanic American Indian,65+,39,6,45
+HERTFORD,Non-Hispanic Asian,18-29,0,2,2
+HERTFORD,Non-Hispanic Asian,30-39,0,1,1
+HERTFORD,Non-Hispanic Asian,40-49,3,4,7
+HERTFORD,Non-Hispanic Asian,50-64,5,1,6
+HERTFORD,Non-Hispanic Asian,65+,9,0,9
+HERTFORD,Non-Hispanic Black,18-29,607,943,1550
+HERTFORD,Non-Hispanic Black,30-39,864,362,1226
+HERTFORD,Non-Hispanic Black,40-49,1097,302,1399
+HERTFORD,Non-Hispanic Black,50-64,2725,352,3077
+HERTFORD,Non-Hispanic Black,65+,2943,263,3206
+HERTFORD,Non-Hispanic Mixed,18-29,10,14,24
+HERTFORD,Non-Hispanic Mixed,30-39,11,0,11
+HERTFORD,Non-Hispanic Mixed,40-49,7,2,9
+HERTFORD,Non-Hispanic Mixed,50-64,2,1,3
+HERTFORD,Non-Hispanic Mixed,65+,4,2,6
+HERTFORD,Non-Hispanic Other,18-29,8,25,33
+HERTFORD,Non-Hispanic Other,30-39,0,8,8
+HERTFORD,Non-Hispanic Other,40-49,5,8,13
+HERTFORD,Non-Hispanic Other,50-64,11,3,14
+HERTFORD,Non-Hispanic Other,65+,14,9,23
+HERTFORD,Non-Hispanic White,18-29,220,298,518
+HERTFORD,Non-Hispanic White,30-39,502,173,675
+HERTFORD,Non-Hispanic White,40-49,598,165,763
+HERTFORD,Non-Hispanic White,50-64,1531,240,1771
+HERTFORD,Non-Hispanic White,65+,2421,276,2697
+HERTFORD,Undetermined,18-29,472,679,1151
+HERTFORD,Undetermined,30-39,690,292,982
+HERTFORD,Undetermined,40-49,560,167,727
+HERTFORD,Undetermined,50-64,1160,265,1425
+HERTFORD,Undetermined,65+,824,191,1015
+HOKE,Hispanic Any Race,18-29,190,519,709
+HOKE,Hispanic Any Race,30-39,304,346,650
+HOKE,Hispanic Any Race,40-49,298,211,509
+HOKE,Hispanic Any Race,50-64,390,158,548
+HOKE,Hispanic Any Race,65+,148,70,218
+HOKE,Non-Hispanic American Indian,18-29,146,346,492
+HOKE,Non-Hispanic American Indian,30-39,193,157,350
+HOKE,Non-Hispanic American Indian,40-49,301,144,445
+HOKE,Non-Hispanic American Indian,50-64,534,137,671
+HOKE,Non-Hispanic American Indian,65+,400,98,498
+HOKE,Non-Hispanic Asian,18-29,14,24,38
+HOKE,Non-Hispanic Asian,30-39,56,39,95
+HOKE,Non-Hispanic Asian,40-49,50,28,78
+HOKE,Non-Hispanic Asian,50-64,57,14,71
+HOKE,Non-Hispanic Asian,65+,29,16,45
+HOKE,Non-Hispanic Black,18-29,1145,1604,2749
+HOKE,Non-Hispanic Black,30-39,1670,950,2620
+HOKE,Non-Hispanic Black,40-49,2384,706,3090
+HOKE,Non-Hispanic Black,50-64,4316,687,5003
+HOKE,Non-Hispanic Black,65+,2800,326,3126
+HOKE,Non-Hispanic Mixed,18-29,35,50,85
+HOKE,Non-Hispanic Mixed,30-39,37,28,65
+HOKE,Non-Hispanic Mixed,40-49,37,16,53
+HOKE,Non-Hispanic Mixed,50-64,34,6,40
+HOKE,Non-Hispanic Mixed,65+,8,3,11
+HOKE,Non-Hispanic Other,18-29,48,158,206
+HOKE,Non-Hispanic Other,30-39,92,95,187
+HOKE,Non-Hispanic Other,40-49,85,53,138
+HOKE,Non-Hispanic Other,50-64,116,39,155
+HOKE,Non-Hispanic Other,65+,85,13,98
+HOKE,Non-Hispanic White,18-29,897,1519,2416
+HOKE,Non-Hispanic White,30-39,1899,1578,3477
+HOKE,Non-Hispanic White,40-49,2011,985,2996
+HOKE,Non-Hispanic White,50-64,3821,830,4651
+HOKE,Non-Hispanic White,65+,3318,496,3814
+HOKE,Undetermined,18-29,193,488,681
+HOKE,Undetermined,30-39,488,464,952
+HOKE,Undetermined,40-49,680,317,997
+HOKE,Undetermined,50-64,1115,280,1395
+HOKE,Undetermined,65+,601,114,715
+HYDE,Hispanic Any Race,18-29,3,13,16
+HYDE,Hispanic Any Race,30-39,4,3,7
+HYDE,Hispanic Any Race,40-49,9,1,10
+HYDE,Hispanic Any Race,50-64,8,1,9
+HYDE,Non-Hispanic American Indian,65+,2,0,2
+HYDE,Non-Hispanic Asian,40-49,0,1,1
+HYDE,Non-Hispanic Black,18-29,22,42,64
+HYDE,Non-Hispanic Black,30-39,30,22,52
+HYDE,Non-Hispanic Black,40-49,63,18,81
+HYDE,Non-Hispanic Black,50-64,222,32,254
+HYDE,Non-Hispanic Black,65+,351,45,396
+HYDE,Non-Hispanic Mixed,18-29,1,0,1
+HYDE,Non-Hispanic Mixed,50-64,4,0,4
+HYDE,Non-Hispanic Mixed,65+,0,1,1
+HYDE,Non-Hispanic Other,18-29,3,2,5
+HYDE,Non-Hispanic Other,30-39,1,0,1
+HYDE,Non-Hispanic Other,40-49,0,3,3
+HYDE,Non-Hispanic Other,50-64,1,1,2
+HYDE,Non-Hispanic Other,65+,2,0,2
+HYDE,Non-Hispanic White,18-29,125,119,244
+HYDE,Non-Hispanic White,30-39,254,53,307
+HYDE,Non-Hispanic White,40-49,351,45,396
+HYDE,Non-Hispanic White,50-64,861,98,959
+HYDE,Non-Hispanic White,65+,1081,90,1171
+HYDE,Undetermined,18-29,77,100,177
+HYDE,Undetermined,30-39,115,57,172
+HYDE,Undetermined,40-49,122,43,165
+HYDE,Undetermined,50-64,240,64,304
+HYDE,Undetermined,65+,212,41,253
+IREDELL,Hispanic Any Race,18-29,502,873,1375
+IREDELL,Hispanic Any Race,30-39,399,295,694
+IREDELL,Hispanic Any Race,40-49,556,218,774
+IREDELL,Hispanic Any Race,50-64,767,232,999
+IREDELL,Hispanic Any Race,65+,311,92,403
+IREDELL,Non-Hispanic American Indian,18-29,13,13,26
+IREDELL,Non-Hispanic American Indian,30-39,33,15,48
+IREDELL,Non-Hispanic American Indian,40-49,48,8,56
+IREDELL,Non-Hispanic American Indian,50-64,61,10,71
+IREDELL,Non-Hispanic American Indian,65+,37,5,42
+IREDELL,Non-Hispanic Asian,18-29,64,151,215
+IREDELL,Non-Hispanic Asian,30-39,111,100,211
+IREDELL,Non-Hispanic Asian,40-49,185,80,265
+IREDELL,Non-Hispanic Asian,50-64,229,67,296
+IREDELL,Non-Hispanic Asian,65+,71,28,99
+IREDELL,Non-Hispanic Black,18-29,1091,1583,2674
+IREDELL,Non-Hispanic Black,30-39,1599,952,2551
+IREDELL,Non-Hispanic Black,40-49,2338,677,3015
+IREDELL,Non-Hispanic Black,50-64,4266,664,4930
+IREDELL,Non-Hispanic Black,65+,3460,260,3720
+IREDELL,Non-Hispanic Mixed,18-29,68,56,124
+IREDELL,Non-Hispanic Mixed,30-39,63,19,82
+IREDELL,Non-Hispanic Mixed,40-49,45,9,54
+IREDELL,Non-Hispanic Mixed,50-64,37,17,54
+IREDELL,Non-Hispanic Mixed,65+,18,4,22
+IREDELL,Non-Hispanic Other,18-29,105,301,406
+IREDELL,Non-Hispanic Other,30-39,120,92,212
+IREDELL,Non-Hispanic Other,40-49,198,77,275
+IREDELL,Non-Hispanic Other,50-64,309,77,386
+IREDELL,Non-Hispanic Other,65+,156,45,201
+IREDELL,Non-Hispanic White,18-29,7380,8963,16343
+IREDELL,Non-Hispanic White,30-39,11226,4400,15626
+IREDELL,Non-Hispanic White,40-49,17827,3901,21728
+IREDELL,Non-Hispanic White,50-64,36962,5231,42193
+IREDELL,Non-Hispanic White,65+,34718,3503,38221
+IREDELL,Undetermined,18-29,2153,3490,5643
+IREDELL,Undetermined,30-39,3415,1971,5386
+IREDELL,Undetermined,40-49,4049,1488,5537
+IREDELL,Undetermined,50-64,6513,1858,8371
+IREDELL,Undetermined,65+,4268,1016,5284
+JACKSON,Hispanic Any Race,18-29,0,388,388
+JACKSON,Hispanic Any Race,30-39,0,91,91
+JACKSON,Hispanic Any Race,40-49,0,56,56
+JACKSON,Hispanic Any Race,50-64,2,64,66
+JACKSON,Hispanic Any Race,65+,0,33,33
+JACKSON,Non-Hispanic American Indian,18-29,0,232,232
+JACKSON,Non-Hispanic American Indian,30-39,21,192,213
+JACKSON,Non-Hispanic American Indian,40-49,71,141,212
+JACKSON,Non-Hispanic American Indian,50-64,221,192,413
+JACKSON,Non-Hispanic American Indian,65+,231,100,331
+JACKSON,Non-Hispanic Asian,18-29,0,41,41
+JACKSON,Non-Hispanic Asian,30-39,0,24,24
+JACKSON,Non-Hispanic Asian,40-49,0,34,34
+JACKSON,Non-Hispanic Asian,50-64,0,25,25
+JACKSON,Non-Hispanic Asian,65+,10,15,25
+JACKSON,Non-Hispanic Black,18-29,0,313,313
+JACKSON,Non-Hispanic Black,30-39,2,64,66
+JACKSON,Non-Hispanic Black,40-49,2,34,36
+JACKSON,Non-Hispanic Black,50-64,29,36,65
+JACKSON,Non-Hispanic Black,65+,29,23,52
+JACKSON,Non-Hispanic Mixed,18-29,0,103,103
+JACKSON,Non-Hispanic Mixed,30-39,0,8,8
+JACKSON,Non-Hispanic Mixed,40-49,2,9,11
+JACKSON,Non-Hispanic Mixed,50-64,5,3,8
+JACKSON,Non-Hispanic Mixed,65+,0,5,5
+JACKSON,Non-Hispanic Other,18-29,0,68,68
+JACKSON,Non-Hispanic Other,30-39,0,24,24
+JACKSON,Non-Hispanic Other,40-49,6,22,28
+JACKSON,Non-Hispanic Other,50-64,20,23,43
+JACKSON,Non-Hispanic Other,65+,9,14,23
+JACKSON,Non-Hispanic White,18-29,2,4436,4438
+JACKSON,Non-Hispanic White,30-39,216,2466,2682
+JACKSON,Non-Hispanic White,40-49,1395,1739,3134
+JACKSON,Non-Hispanic White,50-64,3740,2988,6728
+JACKSON,Non-Hispanic White,65+,6119,3292,9411
+JACKSON,Undetermined,18-29,0,2867,2867
+JACKSON,Undetermined,30-39,6,1139,1145
+JACKSON,Undetermined,40-49,48,737,785
+JACKSON,Undetermined,50-64,95,1138,1233
+JACKSON,Undetermined,65+,96,1123,1219
+JOHNSTON,Hispanic Any Race,18-29,0,2604,2604
+JOHNSTON,Hispanic Any Race,30-39,21,1166,1187
+JOHNSTON,Hispanic Any Race,40-49,19,915,934
+JOHNSTON,Hispanic Any Race,50-64,58,945,1003
+JOHNSTON,Hispanic Any Race,65+,28,417,445
+JOHNSTON,Non-Hispanic American Indian,18-29,0,44,44
+JOHNSTON,Non-Hispanic American Indian,30-39,2,36,38
+JOHNSTON,Non-Hispanic American Indian,40-49,20,57,77
+JOHNSTON,Non-Hispanic American Indian,50-64,54,53,107
+JOHNSTON,Non-Hispanic American Indian,65+,17,25,42
+JOHNSTON,Non-Hispanic Asian,18-29,0,109,109
+JOHNSTON,Non-Hispanic Asian,30-39,1,71,72
+JOHNSTON,Non-Hispanic Asian,40-49,2,88,90
+JOHNSTON,Non-Hispanic Asian,50-64,8,76,84
+JOHNSTON,Non-Hispanic Asian,65+,4,39,43
+JOHNSTON,Non-Hispanic Black,18-29,0,3526,3526
+JOHNSTON,Non-Hispanic Black,30-39,171,2659,2830
+JOHNSTON,Non-Hispanic Black,40-49,997,2587,3584
+JOHNSTON,Non-Hispanic Black,50-64,2690,3095,5785
+JOHNSTON,Non-Hispanic Black,65+,2790,1590,4380
+JOHNSTON,Non-Hispanic Mixed,18-29,0,103,103
+JOHNSTON,Non-Hispanic Mixed,30-39,2,70,72
+JOHNSTON,Non-Hispanic Mixed,40-49,8,32,40
+JOHNSTON,Non-Hispanic Mixed,50-64,22,24,46
+JOHNSTON,Non-Hispanic Mixed,65+,5,11,16
+JOHNSTON,Non-Hispanic Other,18-29,0,366,366
+JOHNSTON,Non-Hispanic Other,30-39,6,186,192
+JOHNSTON,Non-Hispanic Other,40-49,56,209,265
+JOHNSTON,Non-Hispanic Other,50-64,135,236,371
+JOHNSTON,Non-Hispanic Other,65+,79,106,185
+JOHNSTON,Non-Hispanic White,18-29,2,13325,13327
+JOHNSTON,Non-Hispanic White,30-39,1084,11071,12155
+JOHNSTON,Non-Hispanic White,40-49,6624,10898,17522
+JOHNSTON,Non-Hispanic White,50-64,18394,13472,31866
+JOHNSTON,Non-Hispanic White,65+,18052,9560,27612
+JOHNSTON,Undetermined,18-29,0,7547,7547
+JOHNSTON,Undetermined,30-39,266,7158,7424
+JOHNSTON,Undetermined,40-49,622,6353,6975
+JOHNSTON,Undetermined,50-64,934,7583,8517
+JOHNSTON,Undetermined,65+,671,4627,5298
+JONES,Hispanic Any Race,18-29,10,21,31
+JONES,Hispanic Any Race,30-39,11,11,22
+JONES,Hispanic Any Race,40-49,8,2,10
+JONES,Hispanic Any Race,50-64,23,3,26
+JONES,Hispanic Any Race,65+,2,1,3
+JONES,Non-Hispanic American Indian,18-29,0,3,3
+JONES,Non-Hispanic American Indian,30-39,0,1,1
+JONES,Non-Hispanic American Indian,40-49,1,0,1
+JONES,Non-Hispanic American Indian,50-64,7,1,8
+JONES,Non-Hispanic American Indian,65+,0,2,2
+JONES,Non-Hispanic Asian,18-29,2,1,3
+JONES,Non-Hispanic Asian,30-39,1,1,2
+JONES,Non-Hispanic Asian,40-49,2,1,3
+JONES,Non-Hispanic Asian,50-64,6,0,6
+JONES,Non-Hispanic Asian,65+,1,2,3
+JONES,Non-Hispanic Black,18-29,106,185,291
+JONES,Non-Hispanic Black,30-39,169,88,257
+JONES,Non-Hispanic Black,40-49,212,110,322
+JONES,Non-Hispanic Black,50-64,705,111,816
+JONES,Non-Hispanic Black,65+,1018,84,1102
+JONES,Non-Hispanic Mixed,18-29,1,1,2
+JONES,Non-Hispanic Mixed,30-39,2,1,3
+JONES,Non-Hispanic Mixed,40-49,3,1,4
+JONES,Non-Hispanic Mixed,50-64,1,0,1
+JONES,Non-Hispanic Mixed,65+,3,0,3
+JONES,Non-Hispanic Other,18-29,2,13,15
+JONES,Non-Hispanic Other,30-39,2,1,3
+JONES,Non-Hispanic Other,40-49,2,2,4
+JONES,Non-Hispanic Other,50-64,8,1,9
+JONES,Non-Hispanic Other,65+,12,2,14
+JONES,Non-Hispanic White,18-29,248,357,605
+JONES,Non-Hispanic White,30-39,442,203,645
+JONES,Non-Hispanic White,40-49,590,141,731
+JONES,Non-Hispanic White,50-64,1567,223,1790
+JONES,Non-Hispanic White,65+,1848,198,2046
+JONES,Undetermined,18-29,158,212,370
+JONES,Undetermined,30-39,323,151,474
+JONES,Undetermined,40-49,250,103,353
+JONES,Undetermined,50-64,624,160,784
+JONES,Undetermined,65+,443,104,547
+LEE,Hispanic Any Race,18-29,522,917,1439
+LEE,Hispanic Any Race,30-39,191,390,581
+LEE,Hispanic Any Race,40-49,120,269,389
+LEE,Hispanic Any Race,50-64,185,416,601
+LEE,Hispanic Any Race,65+,66,158,224
+LEE,Non-Hispanic American Indian,18-29,8,17,25
+LEE,Non-Hispanic American Indian,30-39,8,10,18
+LEE,Non-Hispanic American Indian,40-49,6,15,21
+LEE,Non-Hispanic American Indian,50-64,11,17,28
+LEE,Non-Hispanic American Indian,65+,9,14,23
+LEE,Non-Hispanic Asian,18-29,14,18,32
+LEE,Non-Hispanic Asian,30-39,9,18,27
+LEE,Non-Hispanic Asian,40-49,4,19,23
+LEE,Non-Hispanic Asian,50-64,4,28,32
+LEE,Non-Hispanic Asian,65+,9,18,27
+LEE,Non-Hispanic Black,18-29,470,923,1393
+LEE,Non-Hispanic Black,30-39,310,782,1092
+LEE,Non-Hispanic Black,40-49,506,644,1150
+LEE,Non-Hispanic Black,50-64,1275,763,2038
+LEE,Non-Hispanic Black,65+,1576,468,2044
+LEE,Non-Hispanic Mixed,18-29,24,33,57
+LEE,Non-Hispanic Mixed,30-39,9,26,35
+LEE,Non-Hispanic Mixed,40-49,7,11,18
+LEE,Non-Hispanic Mixed,50-64,9,6,15
+LEE,Non-Hispanic Mixed,65+,4,6,10
+LEE,Non-Hispanic Other,18-29,105,119,224
+LEE,Non-Hispanic Other,30-39,26,49,75
+LEE,Non-Hispanic Other,40-49,31,49,80
+LEE,Non-Hispanic Other,50-64,50,87,137
+LEE,Non-Hispanic Other,65+,52,34,86
+LEE,Non-Hispanic White,18-29,1271,2326,3597
+LEE,Non-Hispanic White,30-39,986,2375,3361
+LEE,Non-Hispanic White,40-49,1607,2023,3630
+LEE,Non-Hispanic White,50-64,5563,2797,8360
+LEE,Non-Hispanic White,65+,7520,2652,10172
+LEE,Undetermined,18-29,888,1453,2341
+LEE,Undetermined,30-39,645,1294,1939
+LEE,Undetermined,40-49,685,1006,1691
+LEE,Undetermined,50-64,920,1542,2462
+LEE,Undetermined,65+,592,1070,1662
+LENOIR,Hispanic Any Race,18-29,112,246,358
+LENOIR,Hispanic Any Race,30-39,79,58,137
+LENOIR,Hispanic Any Race,40-49,62,27,89
+LENOIR,Hispanic Any Race,50-64,77,38,115
+LENOIR,Hispanic Any Race,65+,47,9,56
+LENOIR,Non-Hispanic American Indian,18-29,5,6,11
+LENOIR,Non-Hispanic American Indian,30-39,5,4,9
+LENOIR,Non-Hispanic American Indian,40-49,6,0,6
+LENOIR,Non-Hispanic American Indian,50-64,20,6,26
+LENOIR,Non-Hispanic American Indian,65+,9,0,9
+LENOIR,Non-Hispanic Asian,18-29,6,12,18
+LENOIR,Non-Hispanic Asian,30-39,3,10,13
+LENOIR,Non-Hispanic Asian,40-49,6,4,10
+LENOIR,Non-Hispanic Asian,50-64,15,7,22
+LENOIR,Non-Hispanic Asian,65+,12,4,16
+LENOIR,Non-Hispanic Black,18-29,982,1425,2407
+LENOIR,Non-Hispanic Black,30-39,1374,735,2109
+LENOIR,Non-Hispanic Black,40-49,1834,544,2378
+LENOIR,Non-Hispanic Black,50-64,4504,671,5175
+LENOIR,Non-Hispanic Black,65+,5154,436,5590
+LENOIR,Non-Hispanic Mixed,18-29,18,30,48
+LENOIR,Non-Hispanic Mixed,30-39,11,10,21
+LENOIR,Non-Hispanic Mixed,40-49,12,1,13
+LENOIR,Non-Hispanic Mixed,50-64,7,1,8
+LENOIR,Non-Hispanic Mixed,65+,12,1,13
+LENOIR,Non-Hispanic Other,18-29,16,55,71
+LENOIR,Non-Hispanic Other,30-39,14,13,27
+LENOIR,Non-Hispanic Other,40-49,24,12,36
+LENOIR,Non-Hispanic Other,50-64,57,14,71
+LENOIR,Non-Hispanic Other,65+,36,6,42
+LENOIR,Non-Hispanic White,18-29,1617,1382,2999
+LENOIR,Non-Hispanic White,30-39,2064,701,2765
+LENOIR,Non-Hispanic White,40-49,2757,523,3280
+LENOIR,Non-Hispanic White,50-64,6988,745,7733
+LENOIR,Non-Hispanic White,65+,9085,741,9826
+LENOIR,Undetermined,18-29,804,1446,2250
+LENOIR,Undetermined,30-39,1280,863,2143
+LENOIR,Undetermined,40-49,1276,608,1884
+LENOIR,Undetermined,50-64,2370,780,3150
+LENOIR,Undetermined,65+,1922,458,2380
+LINCOLN,Hispanic Any Race,18-29,71,503,574
+LINCOLN,Hispanic Any Race,30-39,67,230,297
+LINCOLN,Hispanic Any Race,40-49,85,221,306
+LINCOLN,Hispanic Any Race,50-64,87,263,350
+LINCOLN,Hispanic Any Race,65+,67,136,203
+LINCOLN,Non-Hispanic American Indian,18-29,1,6,7
+LINCOLN,Non-Hispanic American Indian,30-39,2,7,9
+LINCOLN,Non-Hispanic American Indian,40-49,1,12,13
+LINCOLN,Non-Hispanic American Indian,50-64,7,10,17
+LINCOLN,Non-Hispanic American Indian,65+,12,8,20
+LINCOLN,Non-Hispanic Asian,18-29,7,39,46
+LINCOLN,Non-Hispanic Asian,30-39,4,26,30
+LINCOLN,Non-Hispanic Asian,40-49,4,16,20
+LINCOLN,Non-Hispanic Asian,50-64,10,32,42
+LINCOLN,Non-Hispanic Asian,65+,4,13,17
+LINCOLN,Non-Hispanic Black,18-29,73,399,472
+LINCOLN,Non-Hispanic Black,30-39,114,289,403
+LINCOLN,Non-Hispanic Black,40-49,245,270,515
+LINCOLN,Non-Hispanic Black,50-64,721,369,1090
+LINCOLN,Non-Hispanic Black,65+,791,190,981
+LINCOLN,Non-Hispanic Mixed,18-29,14,26,40
+LINCOLN,Non-Hispanic Mixed,30-39,4,15,19
+LINCOLN,Non-Hispanic Mixed,40-49,4,10,14
+LINCOLN,Non-Hispanic Mixed,50-64,2,3,5
+LINCOLN,Non-Hispanic Mixed,65+,2,4,6
+LINCOLN,Non-Hispanic Other,18-29,15,148,163
+LINCOLN,Non-Hispanic Other,30-39,13,43,56
+LINCOLN,Non-Hispanic Other,40-49,29,48,77
+LINCOLN,Non-Hispanic Other,50-64,36,77,113
+LINCOLN,Non-Hispanic Other,65+,40,36,76
+LINCOLN,Non-Hispanic White,18-29,1229,5829,7058
+LINCOLN,Non-Hispanic White,30-39,1823,4462,6285
+LINCOLN,Non-Hispanic White,40-49,4068,4534,8602
+LINCOLN,Non-Hispanic White,50-64,11034,6943,17977
+LINCOLN,Non-Hispanic White,65+,13148,5245,18393
+LINCOLN,Undetermined,18-29,283,1989,2272
+LINCOLN,Undetermined,30-39,435,1930,2365
+LINCOLN,Undetermined,40-49,718,1854,2572
+LINCOLN,Undetermined,50-64,1185,2704,3889
+LINCOLN,Undetermined,65+,1216,1884,3100
+MACON,Hispanic Any Race,18-29,63,105,168
+MACON,Hispanic Any Race,30-39,42,24,66
+MACON,Hispanic Any Race,40-49,46,26,72
+MACON,Hispanic Any Race,50-64,58,21,79
+MACON,Hispanic Any Race,65+,48,15,63
+MACON,Non-Hispanic American Indian,18-29,2,3,5
+MACON,Non-Hispanic American Indian,30-39,14,1,15
+MACON,Non-Hispanic American Indian,40-49,0,1,1
+MACON,Non-Hispanic American Indian,50-64,13,2,15
+MACON,Non-Hispanic American Indian,65+,12,1,13
+MACON,Non-Hispanic Asian,18-29,8,8,16
+MACON,Non-Hispanic Asian,30-39,9,6,15
+MACON,Non-Hispanic Asian,40-49,6,1,7
+MACON,Non-Hispanic Asian,50-64,12,2,14
+MACON,Non-Hispanic Asian,65+,11,4,15
+MACON,Non-Hispanic Black,18-29,11,30,41
+MACON,Non-Hispanic Black,30-39,19,15,34
+MACON,Non-Hispanic Black,40-49,20,10,30
+MACON,Non-Hispanic Black,50-64,18,8,26
+MACON,Non-Hispanic Black,65+,37,3,40
+MACON,Non-Hispanic Mixed,18-29,4,2,6
+MACON,Non-Hispanic Mixed,30-39,10,2,12
+MACON,Non-Hispanic Mixed,40-49,1,0,1
+MACON,Non-Hispanic Mixed,50-64,4,1,5
+MACON,Non-Hispanic Mixed,65+,8,1,9
+MACON,Non-Hispanic Other,18-29,11,21,32
+MACON,Non-Hispanic Other,30-39,10,5,15
+MACON,Non-Hispanic Other,40-49,23,11,34
+MACON,Non-Hispanic Other,50-64,31,14,45
+MACON,Non-Hispanic Other,65+,14,6,20
+MACON,Non-Hispanic White,18-29,1383,1217,2600
+MACON,Non-Hispanic White,30-39,2196,820,3016
+MACON,Non-Hispanic White,40-49,2851,653,3504
+MACON,Non-Hispanic White,50-64,7073,1175,8248
+MACON,Non-Hispanic White,65+,13054,1874,14928
+MACON,Undetermined,18-29,531,815,1346
+MACON,Undetermined,30-39,716,390,1106
+MACON,Undetermined,40-49,645,277,922
+MACON,Undetermined,50-64,1448,581,2029
+MACON,Undetermined,65+,1987,521,2508
+MADISON,Hispanic Any Race,18-29,2,92,94
+MADISON,Hispanic Any Race,30-39,2,24,26
+MADISON,Hispanic Any Race,40-49,10,15,25
+MADISON,Hispanic Any Race,50-64,4,25,29
+MADISON,Hispanic Any Race,65+,1,8,9
+MADISON,Non-Hispanic American Indian,18-29,0,4,4
+MADISON,Non-Hispanic American Indian,30-39,2,0,2
+MADISON,Non-Hispanic American Indian,40-49,4,1,5
+MADISON,Non-Hispanic American Indian,50-64,0,3,3
+MADISON,Non-Hispanic American Indian,65+,0,4,4
+MADISON,Non-Hispanic Asian,18-29,0,2,2
+MADISON,Non-Hispanic Asian,30-39,2,3,5
+MADISON,Non-Hispanic Asian,40-49,0,1,1
+MADISON,Non-Hispanic Asian,50-64,7,1,8
+MADISON,Non-Hispanic Asian,65+,3,1,4
+MADISON,Non-Hispanic Black,18-29,4,84,88
+MADISON,Non-Hispanic Black,30-39,0,6,6
+MADISON,Non-Hispanic Black,40-49,3,3,6
+MADISON,Non-Hispanic Black,50-64,8,5,13
+MADISON,Non-Hispanic Black,65+,8,1,9
+MADISON,Non-Hispanic Mixed,18-29,0,14,14
+MADISON,Non-Hispanic Mixed,30-39,0,3,3
+MADISON,Non-Hispanic Mixed,40-49,0,1,1
+MADISON,Non-Hispanic Mixed,50-64,2,2,4
+MADISON,Non-Hispanic Mixed,65+,1,1,2
+MADISON,Non-Hispanic Other,18-29,2,8,10
+MADISON,Non-Hispanic Other,30-39,4,5,9
+MADISON,Non-Hispanic Other,40-49,4,10,14
+MADISON,Non-Hispanic Other,50-64,3,6,9
+MADISON,Non-Hispanic Other,65+,1,10,11
+MADISON,Non-Hispanic White,18-29,158,1015,1173
+MADISON,Non-Hispanic White,30-39,442,1018,1460
+MADISON,Non-Hispanic White,40-49,1132,750,1882
+MADISON,Non-Hispanic White,50-64,2842,1214,4056
+MADISON,Non-Hispanic White,65+,4005,1218,5223
+MADISON,Undetermined,18-29,284,1660,1944
+MADISON,Undetermined,30-39,300,993,1293
+MADISON,Undetermined,40-49,405,879,1284
+MADISON,Undetermined,50-64,703,1208,1911
+MADISON,Undetermined,65+,736,991,1727
+MARTIN,Hispanic Any Race,18-29,17,48,65
+MARTIN,Hispanic Any Race,30-39,18,9,27
+MARTIN,Hispanic Any Race,40-49,8,10,18
+MARTIN,Hispanic Any Race,50-64,32,7,39
+MARTIN,Hispanic Any Race,65+,19,4,23
+MARTIN,Non-Hispanic American Indian,18-29,2,2,4
+MARTIN,Non-Hispanic American Indian,30-39,1,1,2
+MARTIN,Non-Hispanic American Indian,40-49,2,0,2
+MARTIN,Non-Hispanic American Indian,50-64,5,3,8
+MARTIN,Non-Hispanic American Indian,65+,12,2,14
+MARTIN,Non-Hispanic Asian,18-29,0,1,1
+MARTIN,Non-Hispanic Asian,40-49,2,0,2
+MARTIN,Non-Hispanic Asian,50-64,7,0,7
+MARTIN,Non-Hispanic Black,18-29,405,603,1008
+MARTIN,Non-Hispanic Black,30-39,617,387,1004
+MARTIN,Non-Hispanic Black,40-49,841,244,1085
+MARTIN,Non-Hispanic Black,50-64,2037,285,2322
+MARTIN,Non-Hispanic Black,65+,2659,269,2928
+MARTIN,Non-Hispanic Mixed,18-29,2,11,13
+MARTIN,Non-Hispanic Mixed,30-39,4,5,9
+MARTIN,Non-Hispanic Mixed,40-49,3,3,6
+MARTIN,Non-Hispanic Mixed,50-64,6,0,6
+MARTIN,Non-Hispanic Mixed,65+,5,1,6
+MARTIN,Non-Hispanic Other,18-29,9,19,28
+MARTIN,Non-Hispanic Other,30-39,2,11,13
+MARTIN,Non-Hispanic Other,40-49,3,7,10
+MARTIN,Non-Hispanic Other,50-64,21,8,29
+MARTIN,Non-Hispanic Other,65+,13,6,19
+MARTIN,Non-Hispanic White,18-29,769,633,1402
+MARTIN,Non-Hispanic White,30-39,1119,292,1411
+MARTIN,Non-Hispanic White,40-49,1362,243,1605
+MARTIN,Non-Hispanic White,50-64,3293,324,3617
+MARTIN,Non-Hispanic White,65+,4192,323,4515
+MARTIN,Undetermined,18-29,359,384,743
+MARTIN,Undetermined,30-39,408,219,627
+MARTIN,Undetermined,40-49,390,168,558
+MARTIN,Undetermined,50-64,932,269,1201
+MARTIN,Undetermined,65+,848,198,1046
+MCDOWELL,Hispanic Any Race,18-29,53,152,205
+MCDOWELL,Hispanic Any Race,30-39,37,40,77
+MCDOWELL,Hispanic Any Race,40-49,32,28,60
+MCDOWELL,Hispanic Any Race,50-64,54,31,85
+MCDOWELL,Hispanic Any Race,65+,18,11,29
+MCDOWELL,Non-Hispanic American Indian,18-29,2,3,5
+MCDOWELL,Non-Hispanic American Indian,30-39,0,1,1
+MCDOWELL,Non-Hispanic American Indian,50-64,6,3,9
+MCDOWELL,Non-Hispanic American Indian,65+,7,0,7
+MCDOWELL,Non-Hispanic Asian,18-29,10,20,30
+MCDOWELL,Non-Hispanic Asian,30-39,6,9,15
+MCDOWELL,Non-Hispanic Asian,40-49,14,4,18
+MCDOWELL,Non-Hispanic Asian,50-64,18,5,23
+MCDOWELL,Non-Hispanic Asian,65+,12,3,15
+MCDOWELL,Non-Hispanic Black,18-29,41,67,108
+MCDOWELL,Non-Hispanic Black,30-39,75,49,124
+MCDOWELL,Non-Hispanic Black,40-49,119,40,159
+MCDOWELL,Non-Hispanic Black,50-64,242,50,292
+MCDOWELL,Non-Hispanic Black,65+,285,31,316
+MCDOWELL,Non-Hispanic Mixed,18-29,8,6,14
+MCDOWELL,Non-Hispanic Mixed,30-39,8,4,12
+MCDOWELL,Non-Hispanic Mixed,40-49,7,1,8
+MCDOWELL,Non-Hispanic Mixed,50-64,11,1,12
+MCDOWELL,Non-Hispanic Mixed,65+,3,2,5
+MCDOWELL,Non-Hispanic Other,18-29,17,38,55
+MCDOWELL,Non-Hispanic Other,30-39,9,14,23
+MCDOWELL,Non-Hispanic Other,40-49,22,13,35
+MCDOWELL,Non-Hispanic Other,50-64,46,13,59
+MCDOWELL,Non-Hispanic Other,65+,15,8,23
+MCDOWELL,Non-Hispanic White,18-29,1927,2084,4011
+MCDOWELL,Non-Hispanic White,30-39,2775,1120,3895
+MCDOWELL,Non-Hispanic White,40-49,4255,994,5249
+MCDOWELL,Non-Hispanic White,50-64,9020,1382,10402
+MCDOWELL,Non-Hispanic White,65+,10854,1187,12041
+MCDOWELL,Undetermined,18-29,470,587,1057
+MCDOWELL,Undetermined,30-39,599,349,948
+MCDOWELL,Undetermined,40-49,648,279,927
+MCDOWELL,Undetermined,50-64,1190,401,1591
+MCDOWELL,Undetermined,65+,1172,300,1472
+MECKLENBURG,Hispanic Any Race,18-29,2614,12616,15230
+MECKLENBURG,Hispanic Any Race,30-39,1511,7417,8928
+MECKLENBURG,Hispanic Any Race,40-49,1431,5702,7133
+MECKLENBURG,Hispanic Any Race,50-64,1851,5484,7335
+MECKLENBURG,Hispanic Any Race,65+,720,2325,3045
+MECKLENBURG,Non-Hispanic American Indian,18-29,63,245,308
+MECKLENBURG,Non-Hispanic American Indian,30-39,74,261,335
+MECKLENBURG,Non-Hispanic American Indian,40-49,147,322,469
+MECKLENBURG,Non-Hispanic American Indian,50-64,241,244,485
+MECKLENBURG,Non-Hispanic American Indian,65+,166,138,304
+MECKLENBURG,Non-Hispanic Asian,18-29,697,3083,3780
+MECKLENBURG,Non-Hispanic Asian,30-39,611,2797,3408
+MECKLENBURG,Non-Hispanic Asian,40-49,709,2560,3269
+MECKLENBURG,Non-Hispanic Asian,50-64,857,1972,2829
+MECKLENBURG,Non-Hispanic Asian,65+,522,940,1462
+MECKLENBURG,Non-Hispanic Black,18-29,7042,38021,45063
+MECKLENBURG,Non-Hispanic Black,30-39,10808,33358,44166
+MECKLENBURG,Non-Hispanic Black,40-49,23465,25215,48680
+MECKLENBURG,Non-Hispanic Black,50-64,43246,23613,66859
+MECKLENBURG,Non-Hispanic Black,65+,30814,10043,40857
+MECKLENBURG,Non-Hispanic Mixed,18-29,246,1221,1467
+MECKLENBURG,Non-Hispanic Mixed,30-39,163,700,863
+MECKLENBURG,Non-Hispanic Mixed,40-49,248,326,574
+MECKLENBURG,Non-Hispanic Mixed,50-64,211,235,446
+MECKLENBURG,Non-Hispanic Mixed,65+,86,68,154
+MECKLENBURG,Non-Hispanic Other,18-29,620,3307,3927
+MECKLENBURG,Non-Hispanic Other,30-39,538,2523,3061
+MECKLENBURG,Non-Hispanic Other,40-49,998,2270,3268
+MECKLENBURG,Non-Hispanic Other,50-64,2166,2081,4247
+MECKLENBURG,Non-Hispanic Other,65+,1578,1057,2635
+MECKLENBURG,Non-Hispanic White,18-29,11123,56269,67392
+MECKLENBURG,Non-Hispanic White,30-39,15770,64740,80510
+MECKLENBURG,Non-Hispanic White,40-49,36165,41083,77248
+MECKLENBURG,Non-Hispanic White,50-64,93007,42910,135917
+MECKLENBURG,Non-Hispanic White,65+,88295,31705,120000
+MECKLENBURG,Undetermined,18-29,10996,47660,58656
+MECKLENBURG,Undetermined,30-39,9054,38248,47302
+MECKLENBURG,Undetermined,40-49,9979,26378,36357
+MECKLENBURG,Undetermined,50-64,13734,29549,43283
+MECKLENBURG,Undetermined,65+,7882,16313,24195
+MITCHELL,Hispanic Any Race,18-29,27,26,53
+MITCHELL,Hispanic Any Race,30-39,18,6,24
+MITCHELL,Hispanic Any Race,40-49,11,3,14
+MITCHELL,Hispanic Any Race,50-64,27,4,31
+MITCHELL,Hispanic Any Race,65+,8,2,10
+MITCHELL,Non-Hispanic American Indian,40-49,0,1,1
+MITCHELL,Non-Hispanic American Indian,50-64,2,2,4
+MITCHELL,Non-Hispanic American Indian,65+,6,1,7
+MITCHELL,Non-Hispanic Asian,18-29,2,0,2
+MITCHELL,Non-Hispanic Asian,30-39,0,1,1
+MITCHELL,Non-Hispanic Asian,40-49,2,0,2
+MITCHELL,Non-Hispanic Asian,50-64,2,0,2
+MITCHELL,Non-Hispanic Asian,65+,2,0,2
+MITCHELL,Non-Hispanic Black,18-29,4,5,9
+MITCHELL,Non-Hispanic Black,30-39,3,1,4
+MITCHELL,Non-Hispanic Black,40-49,1,2,3
+MITCHELL,Non-Hispanic Black,50-64,4,0,4
+MITCHELL,Non-Hispanic Black,65+,10,1,11
+MITCHELL,Non-Hispanic Mixed,18-29,2,0,2
+MITCHELL,Non-Hispanic Mixed,30-39,1,0,1
+MITCHELL,Non-Hispanic Mixed,50-64,0,1,1
+MITCHELL,Non-Hispanic Other,18-29,6,7,13
+MITCHELL,Non-Hispanic Other,30-39,1,0,1
+MITCHELL,Non-Hispanic Other,40-49,6,3,9
+MITCHELL,Non-Hispanic Other,50-64,6,1,7
+MITCHELL,Non-Hispanic Other,65+,9,2,11
+MITCHELL,Non-Hispanic White,18-29,692,474,1166
+MITCHELL,Non-Hispanic White,30-39,1027,280,1307
+MITCHELL,Non-Hispanic White,40-49,1419,219,1638
+MITCHELL,Non-Hispanic White,50-64,3459,350,3809
+MITCHELL,Non-Hispanic White,65+,4950,422,5372
+MITCHELL,Undetermined,18-29,279,299,578
+MITCHELL,Undetermined,30-39,378,171,549
+MITCHELL,Undetermined,40-49,353,142,495
+MITCHELL,Undetermined,50-64,697,231,928
+MITCHELL,Undetermined,65+,754,181,935
+MONTGOMERY,Hispanic Any Race,18-29,0,416,416
+MONTGOMERY,Hispanic Any Race,30-39,0,80,80
+MONTGOMERY,Hispanic Any Race,40-49,2,55,57
+MONTGOMERY,Hispanic Any Race,50-64,2,71,73
+MONTGOMERY,Hispanic Any Race,65+,2,15,17
+MONTGOMERY,Non-Hispanic American Indian,18-29,0,2,2
+MONTGOMERY,Non-Hispanic American Indian,30-39,0,6,6
+MONTGOMERY,Non-Hispanic American Indian,40-49,2,4,6
+MONTGOMERY,Non-Hispanic American Indian,50-64,5,7,12
+MONTGOMERY,Non-Hispanic American Indian,65+,4,5,9
+MONTGOMERY,Non-Hispanic Asian,18-29,0,29,29
+MONTGOMERY,Non-Hispanic Asian,30-39,0,25,25
+MONTGOMERY,Non-Hispanic Asian,40-49,2,10,12
+MONTGOMERY,Non-Hispanic Asian,50-64,4,26,30
+MONTGOMERY,Non-Hispanic Asian,65+,0,12,12
+MONTGOMERY,Non-Hispanic Black,18-29,0,422,422
+MONTGOMERY,Non-Hispanic Black,30-39,28,296,324
+MONTGOMERY,Non-Hispanic Black,40-49,255,245,500
+MONTGOMERY,Non-Hispanic Black,50-64,797,257,1054
+MONTGOMERY,Non-Hispanic Black,65+,951,187,1138
+MONTGOMERY,Non-Hispanic Mixed,18-29,0,10,10
+MONTGOMERY,Non-Hispanic Mixed,30-39,0,6,6
+MONTGOMERY,Non-Hispanic Mixed,40-49,0,1,1
+MONTGOMERY,Non-Hispanic Mixed,50-64,0,3,3
+MONTGOMERY,Non-Hispanic Other,18-29,0,20,20
+MONTGOMERY,Non-Hispanic Other,30-39,2,8,10
+MONTGOMERY,Non-Hispanic Other,40-49,4,14,18
+MONTGOMERY,Non-Hispanic Other,50-64,24,15,39
+MONTGOMERY,Non-Hispanic Other,65+,9,9,18
+MONTGOMERY,Non-Hispanic White,18-29,0,1267,1267
+MONTGOMERY,Non-Hispanic White,30-39,63,938,1001
+MONTGOMERY,Non-Hispanic White,40-49,881,734,1615
+MONTGOMERY,Non-Hispanic White,50-64,2427,1421,3848
+MONTGOMERY,Non-Hispanic White,65+,4091,1420,5511
+MONTGOMERY,Undetermined,18-29,0,820,820
+MONTGOMERY,Undetermined,30-39,4,676,680
+MONTGOMERY,Undetermined,40-49,43,578,621
+MONTGOMERY,Undetermined,50-64,87,994,1081
+MONTGOMERY,Undetermined,65+,71,830,901
+MOORE,Hispanic Any Race,18-29,169,393,562
+MOORE,Hispanic Any Race,30-39,212,140,352
+MOORE,Hispanic Any Race,40-49,224,98,322
+MOORE,Hispanic Any Race,50-64,204,80,284
+MOORE,Hispanic Any Race,65+,128,30,158
+MOORE,Non-Hispanic American Indian,18-29,14,35,49
+MOORE,Non-Hispanic American Indian,30-39,36,17,53
+MOORE,Non-Hispanic American Indian,40-49,61,16,77
+MOORE,Non-Hispanic American Indian,50-64,70,24,94
+MOORE,Non-Hispanic American Indian,65+,74,11,85
+MOORE,Non-Hispanic Asian,18-29,34,41,75
+MOORE,Non-Hispanic Asian,30-39,60,43,103
+MOORE,Non-Hispanic Asian,40-49,91,29,120
+MOORE,Non-Hispanic Asian,50-64,101,32,133
+MOORE,Non-Hispanic Asian,65+,55,15,70
+MOORE,Non-Hispanic Black,18-29,666,723,1389
+MOORE,Non-Hispanic Black,30-39,1008,550,1558
+MOORE,Non-Hispanic Black,40-49,1191,360,1551
+MOORE,Non-Hispanic Black,50-64,2878,455,3333
+MOORE,Non-Hispanic Black,65+,2822,302,3124
+MOORE,Non-Hispanic Mixed,18-29,32,44,76
+MOORE,Non-Hispanic Mixed,30-39,38,15,53
+MOORE,Non-Hispanic Mixed,40-49,19,6,25
+MOORE,Non-Hispanic Mixed,50-64,26,4,30
+MOORE,Non-Hispanic Mixed,65+,17,3,20
+MOORE,Non-Hispanic Other,18-29,71,130,201
+MOORE,Non-Hispanic Other,30-39,96,63,159
+MOORE,Non-Hispanic Other,40-49,105,39,144
+MOORE,Non-Hispanic Other,50-64,205,42,247
+MOORE,Non-Hispanic Other,65+,161,28,189
+MOORE,Non-Hispanic White,18-29,3450,3623,7073
+MOORE,Non-Hispanic White,30-39,6582,2910,9492
+MOORE,Non-Hispanic White,40-49,8509,2078,10587
+MOORE,Non-Hispanic White,50-64,18542,2674,21216
+MOORE,Non-Hispanic White,65+,31657,3432,35089
+MOORE,Undetermined,18-29,929,1735,2664
+MOORE,Undetermined,30-39,1325,1075,2400
+MOORE,Undetermined,40-49,1213,678,1891
+MOORE,Undetermined,50-64,2198,902,3100
+MOORE,Undetermined,65+,2348,635,2983
+NASH,Hispanic Any Race,18-29,265,477,742
+NASH,Hispanic Any Race,30-39,170,144,314
+NASH,Hispanic Any Race,40-49,143,76,219
+NASH,Hispanic Any Race,50-64,188,87,275
+NASH,Hispanic Any Race,65+,81,51,132
+NASH,Non-Hispanic American Indian,18-29,23,42,65
+NASH,Non-Hispanic American Indian,30-39,36,20,56
+NASH,Non-Hispanic American Indian,40-49,82,18,100
+NASH,Non-Hispanic American Indian,50-64,96,18,114
+NASH,Non-Hispanic American Indian,65+,43,13,56
+NASH,Non-Hispanic Asian,18-29,23,34,57
+NASH,Non-Hispanic Asian,30-39,24,23,47
+NASH,Non-Hispanic Asian,40-49,50,14,64
+NASH,Non-Hispanic Asian,50-64,48,14,62
+NASH,Non-Hispanic Asian,65+,36,6,42
+NASH,Non-Hispanic Black,18-29,2572,2822,5394
+NASH,Non-Hispanic Black,30-39,3323,1534,4857
+NASH,Non-Hispanic Black,40-49,4426,1050,5476
+NASH,Non-Hispanic Black,50-64,8855,1352,10207
+NASH,Non-Hispanic Black,65+,7297,811,8108
+NASH,Non-Hispanic Mixed,18-29,39,54,93
+NASH,Non-Hispanic Mixed,30-39,25,14,39
+NASH,Non-Hispanic Mixed,40-49,23,7,30
+NASH,Non-Hispanic Mixed,50-64,46,2,48
+NASH,Non-Hispanic Mixed,65+,21,2,23
+NASH,Non-Hispanic Other,18-29,62,144,206
+NASH,Non-Hispanic Other,30-39,72,58,130
+NASH,Non-Hispanic Other,40-49,96,48,144
+NASH,Non-Hispanic Other,50-64,133,48,181
+NASH,Non-Hispanic Other,65+,108,23,131
+NASH,Non-Hispanic White,18-29,2758,2543,5301
+NASH,Non-Hispanic White,30-39,3851,1403,5254
+NASH,Non-Hispanic White,40-49,5735,1130,6865
+NASH,Non-Hispanic White,50-64,13333,1513,14846
+NASH,Non-Hispanic White,65+,16721,1450,18171
+NASH,Undetermined,18-29,1814,1840,3654
+NASH,Undetermined,30-39,2033,947,2980
+NASH,Undetermined,40-49,2007,638,2645
+NASH,Undetermined,50-64,3664,870,4534
+NASH,Undetermined,65+,2805,525,3330
+NEW HANOVER,Hispanic Any Race,18-29,707,949,1656
+NEW HANOVER,Hispanic Any Race,30-39,510,424,934
+NEW HANOVER,Hispanic Any Race,40-49,414,253,667
+NEW HANOVER,Hispanic Any Race,50-64,520,198,718
+NEW HANOVER,Hispanic Any Race,65+,262,84,346
+NEW HANOVER,Non-Hispanic American Indian,18-29,30,35,65
+NEW HANOVER,Non-Hispanic American Indian,30-39,26,23,49
+NEW HANOVER,Non-Hispanic American Indian,40-49,35,21,56
+NEW HANOVER,Non-Hispanic American Indian,50-64,69,26,95
+NEW HANOVER,Non-Hispanic American Indian,65+,58,8,66
+NEW HANOVER,Non-Hispanic Asian,18-29,115,147,262
+NEW HANOVER,Non-Hispanic Asian,30-39,97,109,206
+NEW HANOVER,Non-Hispanic Asian,40-49,104,70,174
+NEW HANOVER,Non-Hispanic Asian,50-64,190,68,258
+NEW HANOVER,Non-Hispanic Asian,65+,89,33,122
+NEW HANOVER,Non-Hispanic Black,18-29,1345,2119,3464
+NEW HANOVER,Non-Hispanic Black,30-39,1893,1263,3156
+NEW HANOVER,Non-Hispanic Black,40-49,2302,864,3166
+NEW HANOVER,Non-Hispanic Black,50-64,4703,986,5689
+NEW HANOVER,Non-Hispanic Black,65+,5392,617,6009
+NEW HANOVER,Non-Hispanic Mixed,18-29,167,148,315
+NEW HANOVER,Non-Hispanic Mixed,30-39,116,69,185
+NEW HANOVER,Non-Hispanic Mixed,40-49,61,21,82
+NEW HANOVER,Non-Hispanic Mixed,50-64,49,17,66
+NEW HANOVER,Non-Hispanic Mixed,65+,27,9,36
+NEW HANOVER,Non-Hispanic Other,18-29,154,308,462
+NEW HANOVER,Non-Hispanic Other,30-39,174,163,337
+NEW HANOVER,Non-Hispanic Other,40-49,249,97,346
+NEW HANOVER,Non-Hispanic Other,50-64,404,87,491
+NEW HANOVER,Non-Hispanic Other,65+,279,62,341
+NEW HANOVER,Non-Hispanic White,18-29,9657,10913,20570
+NEW HANOVER,Non-Hispanic White,30-39,15729,7734,23463
+NEW HANOVER,Non-Hispanic White,40-49,20487,4991,25478
+NEW HANOVER,Non-Hispanic White,50-64,36841,6079,42920
+NEW HANOVER,Non-Hispanic White,65+,46884,5365,52249
+NEW HANOVER,Undetermined,18-29,7596,8184,15780
+NEW HANOVER,Undetermined,30-39,8072,5155,13227
+NEW HANOVER,Undetermined,40-49,7416,2970,10386
+NEW HANOVER,Undetermined,50-64,11747,3672,15419
+NEW HANOVER,Undetermined,65+,11893,2266,14159
+NORTHAMPTON,Hispanic Any Race,18-29,6,21,27
+NORTHAMPTON,Hispanic Any Race,30-39,3,5,8
+NORTHAMPTON,Hispanic Any Race,40-49,6,1,7
+NORTHAMPTON,Hispanic Any Race,50-64,8,2,10
+NORTHAMPTON,Hispanic Any Race,65+,7,2,9
+NORTHAMPTON,Non-Hispanic American Indian,18-29,1,2,3
+NORTHAMPTON,Non-Hispanic American Indian,30-39,0,1,1
+NORTHAMPTON,Non-Hispanic American Indian,40-49,1,1,2
+NORTHAMPTON,Non-Hispanic American Indian,50-64,11,2,13
+NORTHAMPTON,Non-Hispanic American Indian,65+,5,2,7
+NORTHAMPTON,Non-Hispanic Asian,18-29,0,1,1
+NORTHAMPTON,Non-Hispanic Asian,30-39,0,1,1
+NORTHAMPTON,Non-Hispanic Asian,40-49,1,0,1
+NORTHAMPTON,Non-Hispanic Asian,50-64,1,1,2
+NORTHAMPTON,Non-Hispanic Asian,65+,2,1,3
+NORTHAMPTON,Non-Hispanic Black,18-29,425,640,1065
+NORTHAMPTON,Non-Hispanic Black,30-39,591,356,947
+NORTHAMPTON,Non-Hispanic Black,40-49,826,284,1110
+NORTHAMPTON,Non-Hispanic Black,50-64,2490,362,2852
+NORTHAMPTON,Non-Hispanic Black,65+,3087,311,3398
+NORTHAMPTON,Non-Hispanic Mixed,18-29,6,2,8
+NORTHAMPTON,Non-Hispanic Mixed,30-39,4,2,6
+NORTHAMPTON,Non-Hispanic Mixed,50-64,4,0,4
+NORTHAMPTON,Non-Hispanic Mixed,65+,2,0,2
+NORTHAMPTON,Non-Hispanic Other,18-29,3,10,13
+NORTHAMPTON,Non-Hispanic Other,30-39,1,3,4
+NORTHAMPTON,Non-Hispanic Other,40-49,5,3,8
+NORTHAMPTON,Non-Hispanic Other,50-64,8,0,8
+NORTHAMPTON,Non-Hispanic Other,65+,12,1,13
+NORTHAMPTON,Non-Hispanic White,18-29,267,305,572
+NORTHAMPTON,Non-Hispanic White,30-39,464,146,610
+NORTHAMPTON,Non-Hispanic White,40-49,595,153,748
+NORTHAMPTON,Non-Hispanic White,50-64,1880,230,2110
+NORTHAMPTON,Non-Hispanic White,65+,2984,392,3376
+NORTHAMPTON,Undetermined,18-29,305,399,704
+NORTHAMPTON,Undetermined,30-39,466,266,732
+NORTHAMPTON,Undetermined,40-49,417,159,576
+NORTHAMPTON,Undetermined,50-64,1014,298,1312
+NORTHAMPTON,Undetermined,65+,801,211,1012
+ONSLOW,Hispanic Any Race,18-29,499,2123,2622
+ONSLOW,Hispanic Any Race,30-39,730,1193,1923
+ONSLOW,Hispanic Any Race,40-49,688,527,1215
+ONSLOW,Hispanic Any Race,50-64,628,351,979
+ONSLOW,Hispanic Any Race,65+,304,137,441
+ONSLOW,Non-Hispanic American Indian,18-29,21,60,81
+ONSLOW,Non-Hispanic American Indian,30-39,31,47,78
+ONSLOW,Non-Hispanic American Indian,40-49,34,24,58
+ONSLOW,Non-Hispanic American Indian,50-64,64,20,84
+ONSLOW,Non-Hispanic American Indian,65+,41,5,46
+ONSLOW,Non-Hispanic Asian,18-29,55,253,308
+ONSLOW,Non-Hispanic Asian,30-39,89,153,242
+ONSLOW,Non-Hispanic Asian,40-49,109,95,204
+ONSLOW,Non-Hispanic Asian,50-64,155,67,222
+ONSLOW,Non-Hispanic Asian,65+,95,34,129
+ONSLOW,Non-Hispanic Black,18-29,1088,3101,4189
+ONSLOW,Non-Hispanic Black,30-39,1864,2012,3876
+ONSLOW,Non-Hispanic Black,40-49,2002,1114,3116
+ONSLOW,Non-Hispanic Black,50-64,4560,972,5532
+ONSLOW,Non-Hispanic Black,65+,3717,420,4137
+ONSLOW,Non-Hispanic Mixed,18-29,58,130,188
+ONSLOW,Non-Hispanic Mixed,30-39,94,74,168
+ONSLOW,Non-Hispanic Mixed,40-49,53,27,80
+ONSLOW,Non-Hispanic Mixed,50-64,59,9,68
+ONSLOW,Non-Hispanic Mixed,65+,24,0,24
+ONSLOW,Non-Hispanic Other,18-29,174,722,896
+ONSLOW,Non-Hispanic Other,30-39,224,349,573
+ONSLOW,Non-Hispanic Other,40-49,236,161,397
+ONSLOW,Non-Hispanic Other,50-64,455,148,603
+ONSLOW,Non-Hispanic Other,65+,382,83,465
+ONSLOW,Non-Hispanic White,18-29,4284,11345,15629
+ONSLOW,Non-Hispanic White,30-39,8213,8007,16220
+ONSLOW,Non-Hispanic White,40-49,8861,4446,13307
+ONSLOW,Non-Hispanic White,50-64,18710,4771,23481
+ONSLOW,Non-Hispanic White,65+,18655,2785,21440
+ONSLOW,Undetermined,18-29,1851,4656,6507
+ONSLOW,Undetermined,30-39,2871,3419,6290
+ONSLOW,Undetermined,40-49,2772,1948,4720
+ONSLOW,Undetermined,50-64,5347,1981,7328
+ONSLOW,Undetermined,65+,3660,1132,4792
+ORANGE,Hispanic Any Race,18-29,1514,1267,2781
+ORANGE,Hispanic Any Race,30-39,625,412,1037
+ORANGE,Hispanic Any Race,40-49,566,170,736
+ORANGE,Hispanic Any Race,50-64,564,161,725
+ORANGE,Hispanic Any Race,65+,236,69,305
+ORANGE,Non-Hispanic American Indian,18-29,56,44,100
+ORANGE,Non-Hispanic American Indian,30-39,34,14,48
+ORANGE,Non-Hispanic American Indian,40-49,19,7,26
+ORANGE,Non-Hispanic American Indian,50-64,62,14,76
+ORANGE,Non-Hispanic American Indian,65+,24,7,31
+ORANGE,Non-Hispanic Asian,18-29,1496,981,2477
+ORANGE,Non-Hispanic Asian,30-39,582,326,908
+ORANGE,Non-Hispanic Asian,40-49,687,180,867
+ORANGE,Non-Hispanic Asian,50-64,909,169,1078
+ORANGE,Non-Hispanic Asian,65+,234,52,286
+ORANGE,Non-Hispanic Black,18-29,1857,1439,3296
+ORANGE,Non-Hispanic Black,30-39,1350,789,2139
+ORANGE,Non-Hispanic Black,40-49,1411,377,1788
+ORANGE,Non-Hispanic Black,50-64,3101,494,3595
+ORANGE,Non-Hispanic Black,65+,3078,258,3336
+ORANGE,Non-Hispanic Mixed,18-29,515,210,725
+ORANGE,Non-Hispanic Mixed,30-39,149,80,229
+ORANGE,Non-Hispanic Mixed,40-49,90,26,116
+ORANGE,Non-Hispanic Mixed,50-64,64,8,72
+ORANGE,Non-Hispanic Mixed,65+,22,5,27
+ORANGE,Non-Hispanic Other,18-29,328,315,643
+ORANGE,Non-Hispanic Other,30-39,257,186,443
+ORANGE,Non-Hispanic Other,40-49,358,78,436
+ORANGE,Non-Hispanic Other,50-64,744,120,864
+ORANGE,Non-Hispanic Other,65+,436,60,496
+ORANGE,Non-Hispanic White,18-29,13886,7503,21389
+ORANGE,Non-Hispanic White,30-39,11415,5683,17098
+ORANGE,Non-Hispanic White,40-49,13050,2365,15415
+ORANGE,Non-Hispanic White,50-64,25788,2481,28269
+ORANGE,Non-Hispanic White,65+,26082,1981,28063
+ORANGE,Undetermined,18-29,8308,5696,14004
+ORANGE,Undetermined,30-39,5617,3118,8735
+ORANGE,Undetermined,40-49,5444,1371,6815
+ORANGE,Undetermined,50-64,7644,1418,9062
+ORANGE,Undetermined,65+,5196,899,6095
+PAMLICO,Hispanic Any Race,18-29,4,18,22
+PAMLICO,Hispanic Any Race,30-39,8,10,18
+PAMLICO,Hispanic Any Race,40-49,6,5,11
+PAMLICO,Hispanic Any Race,50-64,24,9,33
+PAMLICO,Hispanic Any Race,65+,18,3,21
+PAMLICO,Non-Hispanic American Indian,18-29,0,2,2
+PAMLICO,Non-Hispanic American Indian,30-39,1,2,3
+PAMLICO,Non-Hispanic American Indian,40-49,3,1,4
+PAMLICO,Non-Hispanic American Indian,50-64,5,0,5
+PAMLICO,Non-Hispanic American Indian,65+,7,0,7
+PAMLICO,Non-Hispanic Asian,18-29,0,1,1
+PAMLICO,Non-Hispanic Asian,30-39,0,5,5
+PAMLICO,Non-Hispanic Asian,40-49,2,1,3
+PAMLICO,Non-Hispanic Asian,50-64,1,2,3
+PAMLICO,Non-Hispanic Asian,65+,6,3,9
+PAMLICO,Non-Hispanic Black,18-29,82,96,178
+PAMLICO,Non-Hispanic Black,30-39,145,66,211
+PAMLICO,Non-Hispanic Black,40-49,118,41,159
+PAMLICO,Non-Hispanic Black,50-64,542,64,606
+PAMLICO,Non-Hispanic Black,65+,737,93,830
+PAMLICO,Non-Hispanic Mixed,18-29,5,1,6
+PAMLICO,Non-Hispanic Mixed,30-39,4,1,5
+PAMLICO,Non-Hispanic Mixed,40-49,1,1,2
+PAMLICO,Non-Hispanic Mixed,65+,1,0,1
+PAMLICO,Non-Hispanic Other,18-29,5,12,17
+PAMLICO,Non-Hispanic Other,30-39,2,9,11
+PAMLICO,Non-Hispanic Other,40-49,6,8,14
+PAMLICO,Non-Hispanic Other,50-64,8,2,10
+PAMLICO,Non-Hispanic Other,65+,17,4,21
+PAMLICO,Non-Hispanic White,18-29,349,395,744
+PAMLICO,Non-Hispanic White,30-39,526,211,737
+PAMLICO,Non-Hispanic White,40-49,674,204,878
+PAMLICO,Non-Hispanic White,50-64,2225,401,2626
+PAMLICO,Non-Hispanic White,65+,4052,527,4579
+PAMLICO,Undetermined,18-29,110,156,266
+PAMLICO,Undetermined,30-39,300,139,439
+PAMLICO,Undetermined,40-49,253,86,339
+PAMLICO,Undetermined,50-64,747,181,928
+PAMLICO,Undetermined,65+,1003,174,1177
+PASQUOTANK,Hispanic Any Race,18-29,39,89,128
+PASQUOTANK,Hispanic Any Race,30-39,40,43,83
+PASQUOTANK,Hispanic Any Race,40-49,56,26,82
+PASQUOTANK,Hispanic Any Race,50-64,53,19,72
+PASQUOTANK,Hispanic Any Race,65+,24,5,29
+PASQUOTANK,Non-Hispanic American Indian,18-29,2,2,4
+PASQUOTANK,Non-Hispanic American Indian,30-39,4,3,7
+PASQUOTANK,Non-Hispanic American Indian,40-49,1,2,3
+PASQUOTANK,Non-Hispanic American Indian,50-64,4,1,5
+PASQUOTANK,Non-Hispanic American Indian,65+,7,2,9
+PASQUOTANK,Non-Hispanic Asian,18-29,6,13,19
+PASQUOTANK,Non-Hispanic Asian,30-39,5,9,14
+PASQUOTANK,Non-Hispanic Asian,40-49,6,6,12
+PASQUOTANK,Non-Hispanic Asian,50-64,25,5,30
+PASQUOTANK,Non-Hispanic Asian,65+,11,3,14
+PASQUOTANK,Non-Hispanic Black,18-29,520,664,1184
+PASQUOTANK,Non-Hispanic Black,30-39,546,293,839
+PASQUOTANK,Non-Hispanic Black,40-49,657,162,819
+PASQUOTANK,Non-Hispanic Black,50-64,1862,219,2081
+PASQUOTANK,Non-Hispanic Black,65+,2124,187,2311
+PASQUOTANK,Non-Hispanic Mixed,18-29,19,33,52
+PASQUOTANK,Non-Hispanic Mixed,30-39,13,11,24
+PASQUOTANK,Non-Hispanic Mixed,40-49,12,3,15
+PASQUOTANK,Non-Hispanic Mixed,50-64,13,4,17
+PASQUOTANK,Non-Hispanic Mixed,65+,7,0,7
+PASQUOTANK,Non-Hispanic Other,18-29,7,36,43
+PASQUOTANK,Non-Hispanic Other,30-39,11,8,19
+PASQUOTANK,Non-Hispanic Other,40-49,8,6,14
+PASQUOTANK,Non-Hispanic Other,50-64,38,5,43
+PASQUOTANK,Non-Hispanic Other,65+,67,5,72
+PASQUOTANK,Non-Hispanic White,18-29,445,485,930
+PASQUOTANK,Non-Hispanic White,30-39,691,383,1074
+PASQUOTANK,Non-Hispanic White,40-49,1053,293,1346
+PASQUOTANK,Non-Hispanic White,50-64,2984,426,3410
+PASQUOTANK,Non-Hispanic White,65+,4532,512,5044
+PASQUOTANK,Undetermined,18-29,1752,2883,4635
+PASQUOTANK,Undetermined,30-39,2388,1718,4106
+PASQUOTANK,Undetermined,40-49,2389,1063,3452
+PASQUOTANK,Undetermined,50-64,4343,1431,5774
+PASQUOTANK,Undetermined,65+,3498,846,4344
+PENDER,Hispanic Any Race,18-29,153,286,439
+PENDER,Hispanic Any Race,30-39,110,86,196
+PENDER,Hispanic Any Race,40-49,127,62,189
+PENDER,Hispanic Any Race,50-64,123,48,171
+PENDER,Hispanic Any Race,65+,80,18,98
+PENDER,Non-Hispanic American Indian,18-29,2,13,15
+PENDER,Non-Hispanic American Indian,30-39,7,9,16
+PENDER,Non-Hispanic American Indian,40-49,17,6,23
+PENDER,Non-Hispanic American Indian,50-64,15,4,19
+PENDER,Non-Hispanic American Indian,65+,19,3,22
+PENDER,Non-Hispanic Asian,18-29,12,10,22
+PENDER,Non-Hispanic Asian,30-39,16,14,30
+PENDER,Non-Hispanic Asian,40-49,17,10,27
+PENDER,Non-Hispanic Asian,50-64,27,6,33
+PENDER,Non-Hispanic Asian,65+,21,2,23
+PENDER,Non-Hispanic Black,18-29,371,534,905
+PENDER,Non-Hispanic Black,30-39,496,286,782
+PENDER,Non-Hispanic Black,40-49,704,205,909
+PENDER,Non-Hispanic Black,50-64,1691,283,1974
+PENDER,Non-Hispanic Black,65+,2220,221,2441
+PENDER,Non-Hispanic Mixed,18-29,12,17,29
+PENDER,Non-Hispanic Mixed,30-39,9,7,16
+PENDER,Non-Hispanic Mixed,40-49,16,4,20
+PENDER,Non-Hispanic Mixed,50-64,14,0,14
+PENDER,Non-Hispanic Mixed,65+,2,1,3
+PENDER,Non-Hispanic Other,18-29,32,85,117
+PENDER,Non-Hispanic Other,30-39,34,25,59
+PENDER,Non-Hispanic Other,40-49,51,23,74
+PENDER,Non-Hispanic Other,50-64,62,19,81
+PENDER,Non-Hispanic Other,65+,50,8,58
+PENDER,Non-Hispanic White,18-29,1672,2718,4390
+PENDER,Non-Hispanic White,30-39,3196,1574,4770
+PENDER,Non-Hispanic White,40-49,5068,1338,6406
+PENDER,Non-Hispanic White,50-64,10319,1793,12112
+PENDER,Non-Hispanic White,65+,11439,1435,12874
+PENDER,Undetermined,18-29,883,1136,2019
+PENDER,Undetermined,30-39,1447,818,2265
+PENDER,Undetermined,40-49,1924,673,2597
+PENDER,Undetermined,50-64,3467,814,4281
+PENDER,Undetermined,65+,2945,492,3437
+PERQUIMANS,Hispanic Any Race,18-29,9,7,16
+PERQUIMANS,Hispanic Any Race,30-39,6,2,8
+PERQUIMANS,Hispanic Any Race,40-49,6,2,8
+PERQUIMANS,Hispanic Any Race,50-64,20,1,21
+PERQUIMANS,Hispanic Any Race,65+,4,1,5
+PERQUIMANS,Non-Hispanic American Indian,18-29,0,1,1
+PERQUIMANS,Non-Hispanic American Indian,30-39,2,0,2
+PERQUIMANS,Non-Hispanic American Indian,40-49,2,2,4
+PERQUIMANS,Non-Hispanic American Indian,50-64,4,0,4
+PERQUIMANS,Non-Hispanic American Indian,65+,8,0,8
+PERQUIMANS,Non-Hispanic Asian,18-29,1,1,2
+PERQUIMANS,Non-Hispanic Asian,30-39,2,0,2
+PERQUIMANS,Non-Hispanic Asian,40-49,1,1,2
+PERQUIMANS,Non-Hispanic Asian,65+,2,0,2
+PERQUIMANS,Non-Hispanic Black,18-29,79,113,192
+PERQUIMANS,Non-Hispanic Black,30-39,87,51,138
+PERQUIMANS,Non-Hispanic Black,40-49,125,43,168
+PERQUIMANS,Non-Hispanic Black,50-64,468,68,536
+PERQUIMANS,Non-Hispanic Black,65+,641,71,712
+PERQUIMANS,Non-Hispanic Mixed,18-29,5,3,8
+PERQUIMANS,Non-Hispanic Mixed,30-39,3,1,4
+PERQUIMANS,Non-Hispanic Mixed,50-64,3,1,4
+PERQUIMANS,Non-Hispanic Mixed,65+,4,0,4
+PERQUIMANS,Non-Hispanic Other,18-29,0,5,5
+PERQUIMANS,Non-Hispanic Other,30-39,6,3,9
+PERQUIMANS,Non-Hispanic Other,40-49,4,0,4
+PERQUIMANS,Non-Hispanic Other,50-64,2,1,3
+PERQUIMANS,Non-Hispanic Other,65+,1,2,3
+PERQUIMANS,Non-Hispanic White,18-29,220,199,419
+PERQUIMANS,Non-Hispanic White,30-39,345,106,451
+PERQUIMANS,Non-Hispanic White,40-49,571,84,655
+PERQUIMANS,Non-Hispanic White,50-64,1479,173,1652
+PERQUIMANS,Non-Hispanic White,65+,2724,316,3040
+PERQUIMANS,Undetermined,18-29,304,461,765
+PERQUIMANS,Undetermined,30-39,628,290,918
+PERQUIMANS,Undetermined,40-49,682,254,936
+PERQUIMANS,Undetermined,50-64,1531,385,1916
+PERQUIMANS,Undetermined,65+,2046,307,2353
+PERSON,Hispanic Any Race,18-29,61,119,180
+PERSON,Hispanic Any Race,30-39,54,42,96
+PERSON,Hispanic Any Race,40-49,42,20,62
+PERSON,Hispanic Any Race,50-64,61,21,82
+PERSON,Hispanic Any Race,65+,36,9,45
+PERSON,Non-Hispanic American Indian,18-29,8,3,11
+PERSON,Non-Hispanic American Indian,30-39,9,1,10
+PERSON,Non-Hispanic American Indian,40-49,13,4,17
+PERSON,Non-Hispanic American Indian,50-64,56,4,60
+PERSON,Non-Hispanic American Indian,65+,51,5,56
+PERSON,Non-Hispanic Asian,18-29,3,4,7
+PERSON,Non-Hispanic Asian,30-39,4,3,7
+PERSON,Non-Hispanic Asian,40-49,6,2,8
+PERSON,Non-Hispanic Asian,50-64,7,3,10
+PERSON,Non-Hispanic Asian,65+,8,4,12
+PERSON,Non-Hispanic Black,18-29,569,594,1163
+PERSON,Non-Hispanic Black,30-39,619,271,890
+PERSON,Non-Hispanic Black,40-49,969,199,1168
+PERSON,Non-Hispanic Black,50-64,2202,264,2466
+PERSON,Non-Hispanic Black,65+,2299,179,2478
+PERSON,Non-Hispanic Mixed,18-29,25,16,41
+PERSON,Non-Hispanic Mixed,30-39,8,3,11
+PERSON,Non-Hispanic Mixed,40-49,12,1,13
+PERSON,Non-Hispanic Mixed,50-64,8,1,9
+PERSON,Non-Hispanic Mixed,65+,12,2,14
+PERSON,Non-Hispanic Other,18-29,12,28,40
+PERSON,Non-Hispanic Other,30-39,10,5,15
+PERSON,Non-Hispanic Other,40-49,22,14,36
+PERSON,Non-Hispanic Other,50-64,59,9,68
+PERSON,Non-Hispanic Other,65+,23,12,35
+PERSON,Non-Hispanic White,18-29,1264,1120,2384
+PERSON,Non-Hispanic White,30-39,1929,574,2503
+PERSON,Non-Hispanic White,40-49,2811,504,3315
+PERSON,Non-Hispanic White,50-64,6384,705,7089
+PERSON,Non-Hispanic White,65+,7108,597,7705
+PERSON,Undetermined,18-29,720,556,1276
+PERSON,Undetermined,30-39,1085,431,1516
+PERSON,Undetermined,40-49,1205,315,1520
+PERSON,Undetermined,50-64,2340,440,2780
+PERSON,Undetermined,65+,1796,289,2085
+PITT,Hispanic Any Race,18-29,102,1639,1741
+PITT,Hispanic Any Race,30-39,102,430,532
+PITT,Hispanic Any Race,40-49,62,334,396
+PITT,Hispanic Any Race,50-64,110,302,412
+PITT,Hispanic Any Race,65+,38,115,153
+PITT,Non-Hispanic American Indian,18-29,2,70,72
+PITT,Non-Hispanic American Indian,30-39,9,48,57
+PITT,Non-Hispanic American Indian,40-49,16,28,44
+PITT,Non-Hispanic American Indian,50-64,17,34,51
+PITT,Non-Hispanic American Indian,65+,17,18,35
+PITT,Non-Hispanic Asian,18-29,22,335,357
+PITT,Non-Hispanic Asian,30-39,30,174,204
+PITT,Non-Hispanic Asian,40-49,27,134,161
+PITT,Non-Hispanic Asian,50-64,37,153,190
+PITT,Non-Hispanic Asian,65+,22,58,80
+PITT,Non-Hispanic Black,18-29,1532,9949,11481
+PITT,Non-Hispanic Black,30-39,2017,6616,8633
+PITT,Non-Hispanic Black,40-49,3162,4744,7906
+PITT,Non-Hispanic Black,50-64,7178,5335,12513
+PITT,Non-Hispanic Black,65+,6460,3101,9561
+PITT,Non-Hispanic Mixed,18-29,56,336,392
+PITT,Non-Hispanic Mixed,30-39,36,96,132
+PITT,Non-Hispanic Mixed,40-49,17,41,58
+PITT,Non-Hispanic Mixed,50-64,9,22,31
+PITT,Non-Hispanic Mixed,65+,6,13,19
+PITT,Non-Hispanic Other,18-29,60,543,603
+PITT,Non-Hispanic Other,30-39,73,299,372
+PITT,Non-Hispanic Other,40-49,61,227,288
+PITT,Non-Hispanic Other,50-64,164,224,388
+PITT,Non-Hispanic Other,65+,100,129,229
+PITT,Non-Hispanic White,18-29,1713,14903,16616
+PITT,Non-Hispanic White,30-39,2916,10103,13019
+PITT,Non-Hispanic White,40-49,5375,6982,12357
+PITT,Non-Hispanic White,50-64,13856,7620,21476
+PITT,Non-Hispanic White,65+,16378,5841,22219
+PITT,Undetermined,18-29,480,8346,8826
+PITT,Undetermined,30-39,573,2901,3474
+PITT,Undetermined,40-49,478,1861,2339
+PITT,Undetermined,50-64,859,2336,3195
+PITT,Undetermined,65+,749,1508,2257
+POLK,Hispanic Any Race,18-29,44,54,98
+POLK,Hispanic Any Race,30-39,32,22,54
+POLK,Hispanic Any Race,40-49,29,7,36
+POLK,Hispanic Any Race,50-64,47,18,65
+POLK,Hispanic Any Race,65+,12,12,24
+POLK,Non-Hispanic American Indian,18-29,2,1,3
+POLK,Non-Hispanic American Indian,50-64,0,1,1
+POLK,Non-Hispanic American Indian,65+,4,1,5
+POLK,Non-Hispanic Asian,18-29,5,3,8
+POLK,Non-Hispanic Asian,30-39,6,3,9
+POLK,Non-Hispanic Asian,40-49,1,3,4
+POLK,Non-Hispanic Asian,50-64,9,0,9
+POLK,Non-Hispanic Asian,65+,8,1,9
+POLK,Non-Hispanic Black,18-29,44,50,94
+POLK,Non-Hispanic Black,30-39,57,39,96
+POLK,Non-Hispanic Black,40-49,103,37,140
+POLK,Non-Hispanic Black,50-64,185,24,209
+POLK,Non-Hispanic Black,65+,267,40,307
+POLK,Non-Hispanic Mixed,18-29,10,3,13
+POLK,Non-Hispanic Mixed,30-39,3,3,6
+POLK,Non-Hispanic Mixed,40-49,1,1,2
+POLK,Non-Hispanic Mixed,50-64,2,0,2
+POLK,Non-Hispanic Mixed,65+,12,3,15
+POLK,Non-Hispanic Other,18-29,2,12,14
+POLK,Non-Hispanic Other,30-39,6,6,12
+POLK,Non-Hispanic Other,40-49,7,4,11
+POLK,Non-Hispanic Other,50-64,26,8,34
+POLK,Non-Hispanic Other,65+,13,1,14
+POLK,Non-Hispanic White,18-29,774,703,1477
+POLK,Non-Hispanic White,30-39,1157,506,1663
+POLK,Non-Hispanic White,40-49,1630,382,2012
+POLK,Non-Hispanic White,50-64,4366,717,5083
+POLK,Non-Hispanic White,65+,7687,1056,8743
+POLK,Undetermined,18-29,290,371,661
+POLK,Undetermined,30-39,376,244,620
+POLK,Undetermined,40-49,381,205,586
+POLK,Undetermined,50-64,940,365,1305
+POLK,Undetermined,65+,1379,334,1713
+RANDOLPH,Hispanic Any Race,18-29,728,1079,1807
+RANDOLPH,Hispanic Any Race,30-39,374,208,582
+RANDOLPH,Hispanic Any Race,40-49,281,162,443
+RANDOLPH,Hispanic Any Race,50-64,387,145,532
+RANDOLPH,Hispanic Any Race,65+,178,68,246
+RANDOLPH,Non-Hispanic American Indian,18-29,17,21,38
+RANDOLPH,Non-Hispanic American Indian,30-39,18,7,25
+RANDOLPH,Non-Hispanic American Indian,40-49,44,17,61
+RANDOLPH,Non-Hispanic American Indian,50-64,82,23,105
+RANDOLPH,Non-Hispanic American Indian,65+,35,11,46
+RANDOLPH,Non-Hispanic Asian,18-29,49,60,109
+RANDOLPH,Non-Hispanic Asian,30-39,56,33,89
+RANDOLPH,Non-Hispanic Asian,40-49,59,20,79
+RANDOLPH,Non-Hispanic Asian,50-64,68,24,92
+RANDOLPH,Non-Hispanic Asian,65+,38,13,51
+RANDOLPH,Non-Hispanic Black,18-29,319,521,840
+RANDOLPH,Non-Hispanic Black,30-39,471,311,782
+RANDOLPH,Non-Hispanic Black,40-49,665,248,913
+RANDOLPH,Non-Hispanic Black,50-64,1552,270,1822
+RANDOLPH,Non-Hispanic Black,65+,1460,144,1604
+RANDOLPH,Non-Hispanic Mixed,18-29,36,23,59
+RANDOLPH,Non-Hispanic Mixed,30-39,26,14,40
+RANDOLPH,Non-Hispanic Mixed,40-49,13,3,16
+RANDOLPH,Non-Hispanic Mixed,50-64,14,2,16
+RANDOLPH,Non-Hispanic Mixed,65+,4,1,5
+RANDOLPH,Non-Hispanic Other,18-29,58,135,193
+RANDOLPH,Non-Hispanic Other,30-39,59,48,107
+RANDOLPH,Non-Hispanic Other,40-49,79,54,133
+RANDOLPH,Non-Hispanic Other,50-64,149,49,198
+RANDOLPH,Non-Hispanic Other,65+,118,22,140
+RANDOLPH,Non-Hispanic White,18-29,5368,5159,10527
+RANDOLPH,Non-Hispanic White,30-39,7828,2498,10326
+RANDOLPH,Non-Hispanic White,40-49,11380,2087,13467
+RANDOLPH,Non-Hispanic White,50-64,26259,3048,29307
+RANDOLPH,Non-Hispanic White,65+,28868,2506,31374
+RANDOLPH,Undetermined,18-29,2465,3754,6219
+RANDOLPH,Undetermined,30-39,3682,1790,5472
+RANDOLPH,Undetermined,40-49,3862,1308,5170
+RANDOLPH,Undetermined,50-64,6594,1733,8327
+RANDOLPH,Undetermined,65+,5164,1055,6219
+RICHMOND,Hispanic Any Race,18-29,79,124,203
+RICHMOND,Hispanic Any Race,30-39,55,36,91
+RICHMOND,Hispanic Any Race,40-49,42,32,74
+RICHMOND,Hispanic Any Race,50-64,78,13,91
+RICHMOND,Hispanic Any Race,65+,44,10,54
+RICHMOND,Non-Hispanic American Indian,18-29,23,72,95
+RICHMOND,Non-Hispanic American Indian,30-39,32,28,60
+RICHMOND,Non-Hispanic American Indian,40-49,59,33,92
+RICHMOND,Non-Hispanic American Indian,50-64,79,29,108
+RICHMOND,Non-Hispanic American Indian,65+,56,14,70
+RICHMOND,Non-Hispanic Asian,18-29,3,22,25
+RICHMOND,Non-Hispanic Asian,30-39,8,15,23
+RICHMOND,Non-Hispanic Asian,40-49,10,8,18
+RICHMOND,Non-Hispanic Asian,50-64,23,5,28
+RICHMOND,Non-Hispanic Asian,65+,8,10,18
+RICHMOND,Non-Hispanic Black,18-29,794,990,1784
+RICHMOND,Non-Hispanic Black,30-39,952,556,1508
+RICHMOND,Non-Hispanic Black,40-49,1432,403,1835
+RICHMOND,Non-Hispanic Black,50-64,2937,426,3363
+RICHMOND,Non-Hispanic Black,65+,2633,236,2869
+RICHMOND,Non-Hispanic Mixed,18-29,6,13,19
+RICHMOND,Non-Hispanic Mixed,30-39,6,3,9
+RICHMOND,Non-Hispanic Mixed,40-49,5,2,7
+RICHMOND,Non-Hispanic Mixed,50-64,7,0,7
+RICHMOND,Non-Hispanic Mixed,65+,13,0,13
+RICHMOND,Non-Hispanic Other,18-29,24,81,105
+RICHMOND,Non-Hispanic Other,30-39,12,21,33
+RICHMOND,Non-Hispanic Other,40-49,20,18,38
+RICHMOND,Non-Hispanic Other,50-64,25,20,45
+RICHMOND,Non-Hispanic Other,65+,35,7,42
+RICHMOND,Non-Hispanic White,18-29,1135,1438,2573
+RICHMOND,Non-Hispanic White,30-39,1628,727,2355
+RICHMOND,Non-Hispanic White,40-49,2678,612,3290
+RICHMOND,Non-Hispanic White,50-64,5789,894,6683
+RICHMOND,Non-Hispanic White,65+,7271,772,8043
+RICHMOND,Undetermined,18-29,564,1115,1679
+RICHMOND,Undetermined,30-39,806,595,1401
+RICHMOND,Undetermined,40-49,690,425,1115
+RICHMOND,Undetermined,50-64,1267,500,1767
+RICHMOND,Undetermined,65+,1059,280,1339
+ROBESON,Hispanic Any Race,18-29,287,835,1122
+ROBESON,Hispanic Any Race,30-39,116,185,301
+ROBESON,Hispanic Any Race,40-49,95,131,226
+ROBESON,Hispanic Any Race,50-64,183,126,309
+ROBESON,Hispanic Any Race,65+,35,65,100
+ROBESON,Non-Hispanic American Indian,18-29,1599,4463,6062
+ROBESON,Non-Hispanic American Indian,30-39,2407,2461,4868
+ROBESON,Non-Hispanic American Indian,40-49,3658,2301,5959
+ROBESON,Non-Hispanic American Indian,50-64,6467,2611,9078
+ROBESON,Non-Hispanic American Indian,65+,6794,1592,8386
+ROBESON,Non-Hispanic Asian,18-29,16,77,93
+ROBESON,Non-Hispanic Asian,30-39,26,46,72
+ROBESON,Non-Hispanic Asian,40-49,27,26,53
+ROBESON,Non-Hispanic Asian,50-64,57,35,92
+ROBESON,Non-Hispanic Asian,65+,32,10,42
+ROBESON,Non-Hispanic Black,18-29,2094,3651,5745
+ROBESON,Non-Hispanic Black,30-39,2368,1908,4276
+ROBESON,Non-Hispanic Black,40-49,2916,1452,4368
+ROBESON,Non-Hispanic Black,50-64,6229,1597,7826
+ROBESON,Non-Hispanic Black,65+,5959,967,6926
+ROBESON,Non-Hispanic Mixed,18-29,81,180,261
+ROBESON,Non-Hispanic Mixed,30-39,58,65,123
+ROBESON,Non-Hispanic Mixed,40-49,31,20,51
+ROBESON,Non-Hispanic Mixed,50-64,44,27,71
+ROBESON,Non-Hispanic Mixed,65+,14,3,17
+ROBESON,Non-Hispanic Other,18-29,145,415,560
+ROBESON,Non-Hispanic Other,30-39,103,130,233
+ROBESON,Non-Hispanic Other,40-49,104,86,190
+ROBESON,Non-Hispanic Other,50-64,204,94,298
+ROBESON,Non-Hispanic Other,65+,120,44,164
+ROBESON,Non-Hispanic White,18-29,1524,2217,3741
+ROBESON,Non-Hispanic White,30-39,2181,1335,3516
+ROBESON,Non-Hispanic White,40-49,3145,1069,4214
+ROBESON,Non-Hispanic White,50-64,7518,1657,9175
+ROBESON,Non-Hispanic White,65+,9528,1350,10878
+ROBESON,Undetermined,18-29,478,2235,2713
+ROBESON,Undetermined,30-39,553,864,1417
+ROBESON,Undetermined,40-49,586,593,1179
+ROBESON,Undetermined,50-64,1106,663,1769
+ROBESON,Undetermined,65+,999,415,1414
+ROCKINGHAM,Hispanic Any Race,18-29,202,317,519
+ROCKINGHAM,Hispanic Any Race,30-39,137,86,223
+ROCKINGHAM,Hispanic Any Race,40-49,92,49,141
+ROCKINGHAM,Hispanic Any Race,50-64,128,52,180
+ROCKINGHAM,Hispanic Any Race,65+,66,22,88
+ROCKINGHAM,Non-Hispanic American Indian,18-29,10,4,14
+ROCKINGHAM,Non-Hispanic American Indian,30-39,13,7,20
+ROCKINGHAM,Non-Hispanic American Indian,40-49,7,3,10
+ROCKINGHAM,Non-Hispanic American Indian,50-64,29,4,33
+ROCKINGHAM,Non-Hispanic American Indian,65+,22,7,29
+ROCKINGHAM,Non-Hispanic Asian,18-29,8,22,30
+ROCKINGHAM,Non-Hispanic Asian,30-39,18,9,27
+ROCKINGHAM,Non-Hispanic Asian,40-49,20,9,29
+ROCKINGHAM,Non-Hispanic Asian,50-64,19,15,34
+ROCKINGHAM,Non-Hispanic Asian,65+,24,4,28
+ROCKINGHAM,Non-Hispanic Black,18-29,886,835,1721
+ROCKINGHAM,Non-Hispanic Black,30-39,1086,528,1614
+ROCKINGHAM,Non-Hispanic Black,40-49,1679,381,2060
+ROCKINGHAM,Non-Hispanic Black,50-64,3911,508,4419
+ROCKINGHAM,Non-Hispanic Black,65+,4154,290,4444
+ROCKINGHAM,Non-Hispanic Mixed,18-29,34,32,66
+ROCKINGHAM,Non-Hispanic Mixed,30-39,10,15,25
+ROCKINGHAM,Non-Hispanic Mixed,40-49,8,3,11
+ROCKINGHAM,Non-Hispanic Mixed,50-64,10,2,12
+ROCKINGHAM,Non-Hispanic Mixed,65+,9,1,10
+ROCKINGHAM,Non-Hispanic Other,18-29,38,111,149
+ROCKINGHAM,Non-Hispanic Other,30-39,14,15,29
+ROCKINGHAM,Non-Hispanic Other,40-49,41,19,60
+ROCKINGHAM,Non-Hispanic Other,50-64,95,29,124
+ROCKINGHAM,Non-Hispanic Other,65+,71,14,85
+ROCKINGHAM,Non-Hispanic White,18-29,2888,2980,5868
+ROCKINGHAM,Non-Hispanic White,30-39,4579,1570,6149
+ROCKINGHAM,Non-Hispanic White,40-49,6693,1463,8156
+ROCKINGHAM,Non-Hispanic White,50-64,15789,2158,17947
+ROCKINGHAM,Non-Hispanic White,65+,19268,1802,21070
+ROCKINGHAM,Undetermined,18-29,1383,1712,3095
+ROCKINGHAM,Undetermined,30-39,1816,999,2815
+ROCKINGHAM,Undetermined,40-49,1744,676,2420
+ROCKINGHAM,Undetermined,50-64,3414,1015,4429
+ROCKINGHAM,Undetermined,65+,2682,617,3299
+ROWAN,Hispanic Any Race,18-29,423,752,1175
+ROWAN,Hispanic Any Race,30-39,289,180,469
+ROWAN,Hispanic Any Race,40-49,227,105,332
+ROWAN,Hispanic Any Race,50-64,345,120,465
+ROWAN,Hispanic Any Race,65+,156,53,209
+ROWAN,Non-Hispanic American Indian,18-29,9,16,25
+ROWAN,Non-Hispanic American Indian,30-39,10,12,22
+ROWAN,Non-Hispanic American Indian,40-49,19,8,27
+ROWAN,Non-Hispanic American Indian,50-64,42,8,50
+ROWAN,Non-Hispanic American Indian,65+,26,7,33
+ROWAN,Non-Hispanic Asian,18-29,44,52,96
+ROWAN,Non-Hispanic Asian,30-39,46,29,75
+ROWAN,Non-Hispanic Asian,40-49,46,19,65
+ROWAN,Non-Hispanic Asian,50-64,71,15,86
+ROWAN,Non-Hispanic Asian,65+,34,6,40
+ROWAN,Non-Hispanic Black,18-29,1498,2113,3611
+ROWAN,Non-Hispanic Black,30-39,1606,952,2558
+ROWAN,Non-Hispanic Black,40-49,2038,612,2650
+ROWAN,Non-Hispanic Black,50-64,4255,760,5015
+ROWAN,Non-Hispanic Black,65+,3894,376,4270
+ROWAN,Non-Hispanic Mixed,18-29,66,69,135
+ROWAN,Non-Hispanic Mixed,30-39,34,19,53
+ROWAN,Non-Hispanic Mixed,40-49,13,4,17
+ROWAN,Non-Hispanic Mixed,50-64,22,6,28
+ROWAN,Non-Hispanic Mixed,65+,26,3,29
+ROWAN,Non-Hispanic Other,18-29,85,205,290
+ROWAN,Non-Hispanic Other,30-39,91,57,148
+ROWAN,Non-Hispanic Other,40-49,101,41,142
+ROWAN,Non-Hispanic Other,50-64,205,63,268
+ROWAN,Non-Hispanic Other,65+,142,28,170
+ROWAN,Non-Hispanic White,18-29,5044,5291,10335
+ROWAN,Non-Hispanic White,30-39,7910,2742,10652
+ROWAN,Non-Hispanic White,40-49,11017,2258,13275
+ROWAN,Non-Hispanic White,50-64,25492,3253,28745
+ROWAN,Non-Hispanic White,65+,28731,2497,31228
+ROWAN,Undetermined,18-29,2242,3435,5677
+ROWAN,Undetermined,30-39,2774,1656,4430
+ROWAN,Undetermined,40-49,2690,1073,3763
+ROWAN,Undetermined,50-64,4881,1454,6335
+ROWAN,Undetermined,65+,3689,814,4503
+RUTHERFORD,Hispanic Any Race,18-29,156,177,333
+RUTHERFORD,Hispanic Any Race,30-39,67,86,153
+RUTHERFORD,Hispanic Any Race,40-49,49,66,115
+RUTHERFORD,Hispanic Any Race,50-64,65,86,151
+RUTHERFORD,Hispanic Any Race,65+,33,50,83
+RUTHERFORD,Non-Hispanic American Indian,18-29,2,5,7
+RUTHERFORD,Non-Hispanic American Indian,30-39,5,7,12
+RUTHERFORD,Non-Hispanic American Indian,40-49,7,7,14
+RUTHERFORD,Non-Hispanic American Indian,50-64,15,11,26
+RUTHERFORD,Non-Hispanic American Indian,65+,5,6,11
+RUTHERFORD,Non-Hispanic Asian,18-29,5,13,18
+RUTHERFORD,Non-Hispanic Asian,30-39,11,9,20
+RUTHERFORD,Non-Hispanic Asian,40-49,3,14,17
+RUTHERFORD,Non-Hispanic Asian,50-64,7,11,18
+RUTHERFORD,Non-Hispanic Asian,65+,2,9,11
+RUTHERFORD,Non-Hispanic Black,18-29,313,396,709
+RUTHERFORD,Non-Hispanic Black,30-39,236,387,623
+RUTHERFORD,Non-Hispanic Black,40-49,424,296,720
+RUTHERFORD,Non-Hispanic Black,50-64,1026,420,1446
+RUTHERFORD,Non-Hispanic Black,65+,1005,231,1236
+RUTHERFORD,Non-Hispanic Mixed,18-29,23,18,41
+RUTHERFORD,Non-Hispanic Mixed,30-39,6,10,16
+RUTHERFORD,Non-Hispanic Mixed,40-49,5,10,15
+RUTHERFORD,Non-Hispanic Mixed,50-64,2,1,3
+RUTHERFORD,Non-Hispanic Mixed,65+,5,3,8
+RUTHERFORD,Non-Hispanic Other,18-29,32,45,77
+RUTHERFORD,Non-Hispanic Other,30-39,15,17,32
+RUTHERFORD,Non-Hispanic Other,40-49,19,22,41
+RUTHERFORD,Non-Hispanic Other,50-64,36,31,67
+RUTHERFORD,Non-Hispanic Other,65+,25,27,52
+RUTHERFORD,Non-Hispanic White,18-29,2461,3287,5748
+RUTHERFORD,Non-Hispanic White,30-39,1855,2946,4801
+RUTHERFORD,Non-Hispanic White,40-49,3938,2482,6420
+RUTHERFORD,Non-Hispanic White,50-64,9709,3860,13569
+RUTHERFORD,Non-Hispanic White,65+,12227,3979,16206
+RUTHERFORD,Undetermined,18-29,1125,1370,2495
+RUTHERFORD,Undetermined,30-39,629,968,1597
+RUTHERFORD,Undetermined,40-49,749,871,1620
+RUTHERFORD,Undetermined,50-64,1253,1583,2836
+RUTHERFORD,Undetermined,65+,999,1267,2266
+SAMPSON,Hispanic Any Race,18-29,422,788,1210
+SAMPSON,Hispanic Any Race,30-39,219,186,405
+SAMPSON,Hispanic Any Race,40-49,159,106,265
+SAMPSON,Hispanic Any Race,50-64,218,132,350
+SAMPSON,Hispanic Any Race,65+,110,36,146
+SAMPSON,Non-Hispanic American Indian,18-29,41,36,77
+SAMPSON,Non-Hispanic American Indian,30-39,28,24,52
+SAMPSON,Non-Hispanic American Indian,40-49,68,27,95
+SAMPSON,Non-Hispanic American Indian,50-64,180,35,215
+SAMPSON,Non-Hispanic American Indian,65+,189,23,212
+SAMPSON,Non-Hispanic Asian,18-29,6,9,15
+SAMPSON,Non-Hispanic Asian,30-39,8,5,13
+SAMPSON,Non-Hispanic Asian,40-49,7,3,10
+SAMPSON,Non-Hispanic Asian,50-64,24,4,28
+SAMPSON,Non-Hispanic Asian,65+,14,0,14
+SAMPSON,Non-Hispanic Black,18-29,644,967,1611
+SAMPSON,Non-Hispanic Black,30-39,1100,537,1637
+SAMPSON,Non-Hispanic Black,40-49,1680,389,2069
+SAMPSON,Non-Hispanic Black,50-64,3543,555,4098
+SAMPSON,Non-Hispanic Black,65+,4266,396,4662
+SAMPSON,Non-Hispanic Mixed,18-29,13,24,37
+SAMPSON,Non-Hispanic Mixed,30-39,18,11,29
+SAMPSON,Non-Hispanic Mixed,40-49,10,3,13
+SAMPSON,Non-Hispanic Mixed,50-64,7,1,8
+SAMPSON,Non-Hispanic Mixed,65+,10,3,13
+SAMPSON,Non-Hispanic Other,18-29,45,91,136
+SAMPSON,Non-Hispanic Other,30-39,29,26,55
+SAMPSON,Non-Hispanic Other,40-49,31,28,59
+SAMPSON,Non-Hispanic Other,50-64,93,34,127
+SAMPSON,Non-Hispanic Other,65+,32,14,46
+SAMPSON,Non-Hispanic White,18-29,1766,1568,3334
+SAMPSON,Non-Hispanic White,30-39,2572,702,3274
+SAMPSON,Non-Hispanic White,40-49,4042,667,4709
+SAMPSON,Non-Hispanic White,50-64,8207,945,9152
+SAMPSON,Non-Hispanic White,65+,9802,907,10709
+SAMPSON,Undetermined,18-29,661,968,1629
+SAMPSON,Undetermined,30-39,784,458,1242
+SAMPSON,Undetermined,40-49,754,332,1086
+SAMPSON,Undetermined,50-64,1322,403,1725
+SAMPSON,Undetermined,65+,932,205,1137
+SCOTLAND,Hispanic Any Race,18-29,29,52,81
+SCOTLAND,Hispanic Any Race,30-39,22,18,40
+SCOTLAND,Hispanic Any Race,40-49,31,10,41
+SCOTLAND,Hispanic Any Race,50-64,41,11,52
+SCOTLAND,Hispanic Any Race,65+,37,3,40
+SCOTLAND,Non-Hispanic American Indian,18-29,119,256,375
+SCOTLAND,Non-Hispanic American Indian,30-39,129,95,224
+SCOTLAND,Non-Hispanic American Indian,40-49,180,72,252
+SCOTLAND,Non-Hispanic American Indian,50-64,278,68,346
+SCOTLAND,Non-Hispanic American Indian,65+,215,57,272
+SCOTLAND,Non-Hispanic Asian,18-29,6,11,17
+SCOTLAND,Non-Hispanic Asian,30-39,6,11,17
+SCOTLAND,Non-Hispanic Asian,40-49,13,7,20
+SCOTLAND,Non-Hispanic Asian,50-64,11,5,16
+SCOTLAND,Non-Hispanic Asian,65+,8,6,14
+SCOTLAND,Non-Hispanic Black,18-29,590,921,1511
+SCOTLAND,Non-Hispanic Black,30-39,647,461,1108
+SCOTLAND,Non-Hispanic Black,40-49,945,353,1298
+SCOTLAND,Non-Hispanic Black,50-64,2213,370,2583
+SCOTLAND,Non-Hispanic Black,65+,2574,215,2789
+SCOTLAND,Non-Hispanic Mixed,18-29,6,14,20
+SCOTLAND,Non-Hispanic Mixed,30-39,2,8,10
+SCOTLAND,Non-Hispanic Mixed,40-49,3,5,8
+SCOTLAND,Non-Hispanic Mixed,50-64,6,3,9
+SCOTLAND,Non-Hispanic Mixed,65+,3,1,4
+SCOTLAND,Non-Hispanic Other,18-29,6,18,24
+SCOTLAND,Non-Hispanic Other,30-39,1,11,12
+SCOTLAND,Non-Hispanic Other,40-49,12,7,19
+SCOTLAND,Non-Hispanic Other,50-64,35,12,47
+SCOTLAND,Non-Hispanic Other,65+,26,4,30
+SCOTLAND,Non-Hispanic White,18-29,535,663,1198
+SCOTLAND,Non-Hispanic White,30-39,722,438,1160
+SCOTLAND,Non-Hispanic White,40-49,1314,345,1659
+SCOTLAND,Non-Hispanic White,50-64,3094,488,3582
+SCOTLAND,Non-Hispanic White,65+,4497,490,4987
+SCOTLAND,Undetermined,18-29,545,967,1512
+SCOTLAND,Undetermined,30-39,823,578,1401
+SCOTLAND,Undetermined,40-49,917,458,1375
+SCOTLAND,Undetermined,50-64,1697,536,2233
+SCOTLAND,Undetermined,65+,1529,373,1902
+STANLY,Hispanic Any Race,18-29,87,200,287
+STANLY,Hispanic Any Race,30-39,46,41,87
+STANLY,Hispanic Any Race,40-49,48,22,70
+STANLY,Hispanic Any Race,50-64,43,21,64
+STANLY,Hispanic Any Race,65+,21,14,35
+STANLY,Non-Hispanic American Indian,18-29,8,6,14
+STANLY,Non-Hispanic American Indian,30-39,9,5,14
+STANLY,Non-Hispanic American Indian,40-49,19,3,22
+STANLY,Non-Hispanic American Indian,50-64,10,7,17
+STANLY,Non-Hispanic American Indian,65+,14,2,16
+STANLY,Non-Hispanic Asian,18-29,32,95,127
+STANLY,Non-Hispanic Asian,30-39,35,44,79
+STANLY,Non-Hispanic Asian,40-49,39,18,57
+STANLY,Non-Hispanic Asian,50-64,34,13,47
+STANLY,Non-Hispanic Asian,65+,42,8,50
+STANLY,Non-Hispanic Black,18-29,356,483,839
+STANLY,Non-Hispanic Black,30-39,525,270,795
+STANLY,Non-Hispanic Black,40-49,626,161,787
+STANLY,Non-Hispanic Black,50-64,1378,199,1577
+STANLY,Non-Hispanic Black,65+,1209,107,1316
+STANLY,Non-Hispanic Mixed,18-29,6,16,22
+STANLY,Non-Hispanic Mixed,30-39,10,5,15
+STANLY,Non-Hispanic Mixed,40-49,7,1,8
+STANLY,Non-Hispanic Mixed,50-64,8,3,11
+STANLY,Non-Hispanic Mixed,65+,5,2,7
+STANLY,Non-Hispanic Other,18-29,14,60,74
+STANLY,Non-Hispanic Other,30-39,19,29,48
+STANLY,Non-Hispanic Other,40-49,20,8,28
+STANLY,Non-Hispanic Other,50-64,57,16,73
+STANLY,Non-Hispanic Other,65+,41,4,45
+STANLY,Non-Hispanic White,18-29,2923,2766,5689
+STANLY,Non-Hispanic White,30-39,4318,1197,5515
+STANLY,Non-Hispanic White,40-49,5943,919,6862
+STANLY,Non-Hispanic White,50-64,12650,1341,13991
+STANLY,Non-Hispanic White,65+,14550,1169,15719
+STANLY,Undetermined,18-29,994,1084,2078
+STANLY,Undetermined,30-39,1319,645,1964
+STANLY,Undetermined,40-49,1066,394,1460
+STANLY,Undetermined,50-64,1939,566,2505
+STANLY,Undetermined,65+,1321,300,1621
+STOKES,Hispanic Any Race,18-29,58,86,144
+STOKES,Hispanic Any Race,30-39,19,35,54
+STOKES,Hispanic Any Race,40-49,21,43,64
+STOKES,Hispanic Any Race,50-64,31,52,83
+STOKES,Hispanic Any Race,65+,21,20,41
+STOKES,Non-Hispanic American Indian,18-29,2,6,8
+STOKES,Non-Hispanic American Indian,30-39,2,3,5
+STOKES,Non-Hispanic American Indian,40-49,7,1,8
+STOKES,Non-Hispanic American Indian,50-64,10,8,18
+STOKES,Non-Hispanic American Indian,65+,8,3,11
+STOKES,Non-Hispanic Asian,18-29,8,5,13
+STOKES,Non-Hispanic Asian,30-39,0,1,1
+STOKES,Non-Hispanic Asian,40-49,2,7,9
+STOKES,Non-Hispanic Asian,50-64,10,8,18
+STOKES,Non-Hispanic Asian,65+,4,1,5
+STOKES,Non-Hispanic Black,18-29,77,111,188
+STOKES,Non-Hispanic Black,30-39,40,78,118
+STOKES,Non-Hispanic Black,40-49,104,90,194
+STOKES,Non-Hispanic Black,50-64,331,135,466
+STOKES,Non-Hispanic Black,65+,423,82,505
+STOKES,Non-Hispanic Mixed,18-29,8,15,23
+STOKES,Non-Hispanic Mixed,30-39,6,8,14
+STOKES,Non-Hispanic Mixed,40-49,0,2,2
+STOKES,Non-Hispanic Mixed,50-64,12,6,18
+STOKES,Non-Hispanic Mixed,65+,2,2,4
+STOKES,Non-Hispanic Other,18-29,17,28,45
+STOKES,Non-Hispanic Other,30-39,5,10,15
+STOKES,Non-Hispanic Other,40-49,16,13,29
+STOKES,Non-Hispanic Other,50-64,16,15,31
+STOKES,Non-Hispanic Other,65+,29,7,36
+STOKES,Non-Hispanic White,18-29,1779,2665,4444
+STOKES,Non-Hispanic White,30-39,1181,2105,3286
+STOKES,Non-Hispanic White,40-49,2814,1859,4673
+STOKES,Non-Hispanic White,50-64,7886,3006,10892
+STOKES,Non-Hispanic White,65+,9385,2136,11521
+STOKES,Undetermined,18-29,506,750,1256
+STOKES,Undetermined,30-39,429,721,1150
+STOKES,Undetermined,40-49,437,618,1055
+STOKES,Undetermined,50-64,791,994,1785
+STOKES,Undetermined,65+,578,763,1341
+SURRY,Hispanic Any Race,18-29,460,555,1015
+SURRY,Hispanic Any Race,30-39,135,195,330
+SURRY,Hispanic Any Race,40-49,106,94,200
+SURRY,Hispanic Any Race,50-64,95,132,227
+SURRY,Hispanic Any Race,65+,48,41,89
+SURRY,Non-Hispanic American Indian,18-29,4,6,10
+SURRY,Non-Hispanic American Indian,30-39,0,3,3
+SURRY,Non-Hispanic American Indian,40-49,5,1,6
+SURRY,Non-Hispanic American Indian,50-64,8,11,19
+SURRY,Non-Hispanic American Indian,65+,4,3,7
+SURRY,Non-Hispanic Asian,18-29,6,10,16
+SURRY,Non-Hispanic Asian,30-39,7,11,18
+SURRY,Non-Hispanic Asian,40-49,2,6,8
+SURRY,Non-Hispanic Asian,50-64,5,7,12
+SURRY,Non-Hispanic Asian,65+,3,3,6
+SURRY,Non-Hispanic Black,18-29,110,188,298
+SURRY,Non-Hispanic Black,30-39,94,135,229
+SURRY,Non-Hispanic Black,40-49,130,87,217
+SURRY,Non-Hispanic Black,50-64,400,174,574
+SURRY,Non-Hispanic Black,65+,503,122,625
+SURRY,Non-Hispanic Mixed,18-29,12,18,30
+SURRY,Non-Hispanic Mixed,30-39,1,7,8
+SURRY,Non-Hispanic Mixed,40-49,2,2,4
+SURRY,Non-Hispanic Mixed,50-64,9,7,16
+SURRY,Non-Hispanic Mixed,65+,0,2,2
+SURRY,Non-Hispanic Other,18-29,43,59,102
+SURRY,Non-Hispanic Other,30-39,28,29,57
+SURRY,Non-Hispanic Other,40-49,29,17,46
+SURRY,Non-Hispanic Other,50-64,45,31,76
+SURRY,Non-Hispanic Other,65+,37,15,52
+SURRY,Non-Hispanic White,18-29,2632,3792,6424
+SURRY,Non-Hispanic White,30-39,2156,2981,5137
+SURRY,Non-Hispanic White,40-49,4559,2539,7098
+SURRY,Non-Hispanic White,50-64,11352,3612,14964
+SURRY,Non-Hispanic White,65+,14214,3245,17459
+SURRY,Undetermined,18-29,774,1030,1804
+SURRY,Undetermined,30-39,650,890,1540
+SURRY,Undetermined,40-49,740,699,1439
+SURRY,Undetermined,50-64,1318,1279,2597
+SURRY,Undetermined,65+,1247,1056,2303
+SWAIN,Hispanic Any Race,18-29,4,25,29
+SWAIN,Hispanic Any Race,30-39,10,8,18
+SWAIN,Hispanic Any Race,40-49,1,7,8
+SWAIN,Hispanic Any Race,50-64,4,8,12
+SWAIN,Hispanic Any Race,65+,8,2,10
+SWAIN,Non-Hispanic American Indian,18-29,130,197,327
+SWAIN,Non-Hispanic American Indian,30-39,214,105,319
+SWAIN,Non-Hispanic American Indian,40-49,288,87,375
+SWAIN,Non-Hispanic American Indian,50-64,461,111,572
+SWAIN,Non-Hispanic American Indian,65+,321,61,382
+SWAIN,Non-Hispanic Asian,18-29,2,0,2
+SWAIN,Non-Hispanic Asian,30-39,2,1,3
+SWAIN,Non-Hispanic Asian,40-49,6,3,9
+SWAIN,Non-Hispanic Asian,50-64,1,0,1
+SWAIN,Non-Hispanic Asian,65+,4,0,4
+SWAIN,Non-Hispanic Black,18-29,15,50,65
+SWAIN,Non-Hispanic Black,30-39,2,9,11
+SWAIN,Non-Hispanic Black,40-49,8,8,16
+SWAIN,Non-Hispanic Black,50-64,18,10,28
+SWAIN,Non-Hispanic Black,65+,16,1,17
+SWAIN,Non-Hispanic Mixed,18-29,11,7,18
+SWAIN,Non-Hispanic Mixed,30-39,4,4,8
+SWAIN,Non-Hispanic Mixed,50-64,5,3,8
+SWAIN,Non-Hispanic Mixed,65+,4,0,4
+SWAIN,Non-Hispanic Other,18-29,1,8,9
+SWAIN,Non-Hispanic Other,30-39,8,5,13
+SWAIN,Non-Hispanic Other,40-49,12,3,15
+SWAIN,Non-Hispanic Other,50-64,8,3,11
+SWAIN,Non-Hispanic Other,65+,23,4,27
+SWAIN,Non-Hispanic White,18-29,558,481,1039
+SWAIN,Non-Hispanic White,30-39,876,371,1247
+SWAIN,Non-Hispanic White,40-49,1299,281,1580
+SWAIN,Non-Hispanic White,50-64,2748,486,3234
+SWAIN,Non-Hispanic White,65+,3527,454,3981
+SWAIN,Undetermined,18-29,111,301,412
+SWAIN,Undetermined,30-39,110,141,251
+SWAIN,Undetermined,40-49,85,119,204
+SWAIN,Undetermined,50-64,169,180,349
+SWAIN,Undetermined,65+,139,106,245
+TRANSYLVANIA,Hispanic Any Race,18-29,30,71,101
+TRANSYLVANIA,Hispanic Any Race,30-39,17,38,55
+TRANSYLVANIA,Hispanic Any Race,40-49,12,23,35
+TRANSYLVANIA,Hispanic Any Race,50-64,6,30,36
+TRANSYLVANIA,Hispanic Any Race,65+,4,15,19
+TRANSYLVANIA,Non-Hispanic American Indian,18-29,3,4,7
+TRANSYLVANIA,Non-Hispanic American Indian,30-39,0,8,8
+TRANSYLVANIA,Non-Hispanic American Indian,40-49,0,3,3
+TRANSYLVANIA,Non-Hispanic American Indian,50-64,4,2,6
+TRANSYLVANIA,Non-Hispanic American Indian,65+,5,3,8
+TRANSYLVANIA,Non-Hispanic Asian,18-29,1,19,20
+TRANSYLVANIA,Non-Hispanic Asian,30-39,6,8,14
+TRANSYLVANIA,Non-Hispanic Asian,40-49,0,2,2
+TRANSYLVANIA,Non-Hispanic Asian,50-64,5,5,10
+TRANSYLVANIA,Non-Hispanic Asian,65+,6,2,8
+TRANSYLVANIA,Non-Hispanic Black,18-29,55,110,165
+TRANSYLVANIA,Non-Hispanic Black,30-39,37,73,110
+TRANSYLVANIA,Non-Hispanic Black,40-49,87,45,132
+TRANSYLVANIA,Non-Hispanic Black,50-64,157,57,214
+TRANSYLVANIA,Non-Hispanic Black,65+,228,33,261
+TRANSYLVANIA,Non-Hispanic Mixed,18-29,8,27,35
+TRANSYLVANIA,Non-Hispanic Mixed,30-39,2,8,10
+TRANSYLVANIA,Non-Hispanic Mixed,40-49,6,5,11
+TRANSYLVANIA,Non-Hispanic Mixed,50-64,2,2,4
+TRANSYLVANIA,Non-Hispanic Mixed,65+,7,7,14
+TRANSYLVANIA,Non-Hispanic Other,18-29,21,36,57
+TRANSYLVANIA,Non-Hispanic Other,30-39,17,14,31
+TRANSYLVANIA,Non-Hispanic Other,40-49,9,11,20
+TRANSYLVANIA,Non-Hispanic Other,50-64,20,7,27
+TRANSYLVANIA,Non-Hispanic Other,65+,9,15,24
+TRANSYLVANIA,Non-Hispanic White,18-29,900,2006,2906
+TRANSYLVANIA,Non-Hispanic White,30-39,859,1749,2608
+TRANSYLVANIA,Non-Hispanic White,40-49,1677,1323,3000
+TRANSYLVANIA,Non-Hispanic White,50-64,4475,2375,6850
+TRANSYLVANIA,Non-Hispanic White,65+,8269,3940,12209
+TRANSYLVANIA,Undetermined,18-29,482,1019,1501
+TRANSYLVANIA,Undetermined,30-39,363,858,1221
+TRANSYLVANIA,Undetermined,40-49,339,610,949
+TRANSYLVANIA,Undetermined,50-64,642,1033,1675
+TRANSYLVANIA,Undetermined,65+,818,1306,2124
+TYRRELL,Hispanic Any Race,18-29,6,8,14
+TYRRELL,Hispanic Any Race,30-39,11,3,14
+TYRRELL,Hispanic Any Race,40-49,2,3,5
+TYRRELL,Hispanic Any Race,50-64,5,2,7
+TYRRELL,Hispanic Any Race,65+,7,0,7
+TYRRELL,Non-Hispanic American Indian,30-39,0,2,2
+TYRRELL,Non-Hispanic American Indian,65+,2,0,2
+TYRRELL,Non-Hispanic Asian,18-29,0,1,1
+TYRRELL,Non-Hispanic Asian,30-39,4,0,4
+TYRRELL,Non-Hispanic Asian,40-49,2,0,2
+TYRRELL,Non-Hispanic Asian,50-64,2,2,4
+TYRRELL,Non-Hispanic Asian,65+,0,1,1
+TYRRELL,Non-Hispanic Black,18-29,21,34,55
+TYRRELL,Non-Hispanic Black,30-39,45,19,64
+TYRRELL,Non-Hispanic Black,40-49,74,18,92
+TYRRELL,Non-Hispanic Black,50-64,234,25,259
+TYRRELL,Non-Hispanic Black,65+,273,34,307
+TYRRELL,Non-Hispanic Mixed,30-39,0,1,1
+TYRRELL,Non-Hispanic Mixed,40-49,0,1,1
+TYRRELL,Non-Hispanic Mixed,50-64,2,0,2
+TYRRELL,Non-Hispanic Other,18-29,2,2,4
+TYRRELL,Non-Hispanic Other,30-39,1,0,1
+TYRRELL,Non-Hispanic Other,40-49,1,0,1
+TYRRELL,Non-Hispanic Other,50-64,2,3,5
+TYRRELL,Non-Hispanic Other,65+,0,3,3
+TYRRELL,Non-Hispanic White,18-29,82,62,144
+TYRRELL,Non-Hispanic White,30-39,156,48,204
+TYRRELL,Non-Hispanic White,40-49,173,25,198
+TYRRELL,Non-Hispanic White,50-64,496,56,552
+TYRRELL,Non-Hispanic White,65+,664,70,734
+TYRRELL,Undetermined,18-29,69,70,139
+TYRRELL,Undetermined,30-39,123,46,169
+TYRRELL,Undetermined,40-49,105,35,140
+TYRRELL,Undetermined,50-64,236,60,296
+TYRRELL,Undetermined,65+,176,42,218
+UNION,Hispanic Any Race,18-29,1142,1910,3052
+UNION,Hispanic Any Race,30-39,911,429,1340
+UNION,Hispanic Any Race,40-49,1278,404,1682
+UNION,Hispanic Any Race,50-64,1593,403,1996
+UNION,Hispanic Any Race,65+,621,191,812
+UNION,Non-Hispanic American Indian,18-29,13,35,48
+UNION,Non-Hispanic American Indian,30-39,41,21,62
+UNION,Non-Hispanic American Indian,40-49,106,29,135
+UNION,Non-Hispanic American Indian,50-64,97,20,117
+UNION,Non-Hispanic American Indian,65+,88,18,106
+UNION,Non-Hispanic Asian,18-29,154,297,451
+UNION,Non-Hispanic Asian,30-39,206,161,367
+UNION,Non-Hispanic Asian,40-49,728,231,959
+UNION,Non-Hispanic Asian,50-64,605,130,735
+UNION,Non-Hispanic Asian,65+,177,66,243
+UNION,Non-Hispanic Black,18-29,1781,2423,4204
+UNION,Non-Hispanic Black,30-39,2213,1076,3289
+UNION,Non-Hispanic Black,40-49,3727,913,4640
+UNION,Non-Hispanic Black,50-64,6082,898,6980
+UNION,Non-Hispanic Black,65+,3891,428,4319
+UNION,Non-Hispanic Mixed,18-29,117,81,198
+UNION,Non-Hispanic Mixed,30-39,72,28,100
+UNION,Non-Hispanic Mixed,40-49,104,10,114
+UNION,Non-Hispanic Mixed,50-64,78,5,83
+UNION,Non-Hispanic Mixed,65+,40,4,44
+UNION,Non-Hispanic Other,18-29,223,578,801
+UNION,Non-Hispanic Other,30-39,257,150,407
+UNION,Non-Hispanic Other,40-49,535,186,721
+UNION,Non-Hispanic Other,50-64,620,142,762
+UNION,Non-Hispanic Other,65+,323,82,405
+UNION,Non-Hispanic White,18-29,10580,12638,23218
+UNION,Non-Hispanic White,30-39,13953,4788,18741
+UNION,Non-Hispanic White,40-49,26162,4984,31146
+UNION,Non-Hispanic White,50-64,47336,5905,53241
+UNION,Non-Hispanic White,65+,34455,3976,38431
+UNION,Undetermined,18-29,3731,4428,8159
+UNION,Undetermined,30-39,4835,2293,7128
+UNION,Undetermined,40-49,7172,2055,9227
+UNION,Undetermined,50-64,9777,2005,11782
+UNION,Undetermined,65+,5937,1079,7016
+VANCE,Hispanic Any Race,18-29,127,265,392
+VANCE,Hispanic Any Race,30-39,58,40,98
+VANCE,Hispanic Any Race,40-49,48,29,77
+VANCE,Hispanic Any Race,50-64,43,26,69
+VANCE,Hispanic Any Race,65+,46,12,58
+VANCE,Non-Hispanic American Indian,18-29,5,8,13
+VANCE,Non-Hispanic American Indian,30-39,2,3,5
+VANCE,Non-Hispanic American Indian,40-49,5,5,10
+VANCE,Non-Hispanic American Indian,50-64,8,4,12
+VANCE,Non-Hispanic American Indian,65+,6,2,8
+VANCE,Non-Hispanic Asian,18-29,2,9,11
+VANCE,Non-Hispanic Asian,30-39,4,5,9
+VANCE,Non-Hispanic Asian,40-49,6,11,17
+VANCE,Non-Hispanic Asian,50-64,22,2,24
+VANCE,Non-Hispanic Asian,65+,16,1,17
+VANCE,Non-Hispanic Black,18-29,1330,1687,3017
+VANCE,Non-Hispanic Black,30-39,1757,867,2624
+VANCE,Non-Hispanic Black,40-49,2094,571,2665
+VANCE,Non-Hispanic Black,50-64,4752,741,5493
+VANCE,Non-Hispanic Black,65+,4417,446,4863
+VANCE,Non-Hispanic Mixed,18-29,12,10,22
+VANCE,Non-Hispanic Mixed,30-39,8,9,17
+VANCE,Non-Hispanic Mixed,40-49,9,2,11
+VANCE,Non-Hispanic Mixed,50-64,13,1,14
+VANCE,Non-Hispanic Mixed,65+,13,0,13
+VANCE,Non-Hispanic Other,18-29,19,43,62
+VANCE,Non-Hispanic Other,30-39,28,19,47
+VANCE,Non-Hispanic Other,40-49,43,13,56
+VANCE,Non-Hispanic Other,50-64,35,15,50
+VANCE,Non-Hispanic Other,65+,57,6,63
+VANCE,Non-Hispanic White,18-29,703,907,1610
+VANCE,Non-Hispanic White,30-39,1034,460,1494
+VANCE,Non-Hispanic White,40-49,1653,407,2060
+VANCE,Non-Hispanic White,50-64,4179,631,4810
+VANCE,Non-Hispanic White,65+,6099,586,6685
+VANCE,Undetermined,18-29,589,883,1472
+VANCE,Undetermined,30-39,740,459,1199
+VANCE,Undetermined,40-49,746,353,1099
+VANCE,Undetermined,50-64,1439,456,1895
+VANCE,Undetermined,65+,991,246,1237
+WAKE,Hispanic Any Race,18-29,39,11225,11264
+WAKE,Hispanic Any Race,30-39,61,6337,6398
+WAKE,Hispanic Any Race,40-49,50,5596,5646
+WAKE,Hispanic Any Race,50-64,85,5067,5152
+WAKE,Hispanic Any Race,65+,54,2143,2197
+WAKE,Non-Hispanic American Indian,18-29,0,244,244
+WAKE,Non-Hispanic American Indian,30-39,4,260,264
+WAKE,Non-Hispanic American Indian,40-49,2,331,333
+WAKE,Non-Hispanic American Indian,50-64,17,306,323
+WAKE,Non-Hispanic American Indian,65+,29,164,193
+WAKE,Non-Hispanic Asian,18-29,18,4572,4590
+WAKE,Non-Hispanic Asian,30-39,49,3236,3285
+WAKE,Non-Hispanic Asian,40-49,40,4747,4787
+WAKE,Non-Hispanic Asian,50-64,40,3784,3824
+WAKE,Non-Hispanic Asian,65+,55,1480,1535
+WAKE,Non-Hispanic Black,18-29,124,24140,24264
+WAKE,Non-Hispanic Black,30-39,259,20837,21096
+WAKE,Non-Hispanic Black,40-49,219,21326,21545
+WAKE,Non-Hispanic Black,50-64,4077,25238,29315
+WAKE,Non-Hispanic Black,65+,9232,11043,20275
+WAKE,Non-Hispanic Mixed,18-29,4,1523,1527
+WAKE,Non-Hispanic Mixed,30-39,11,796,807
+WAKE,Non-Hispanic Mixed,40-49,3,444,447
+WAKE,Non-Hispanic Mixed,50-64,14,273,287
+WAKE,Non-Hispanic Mixed,65+,25,120,145
+WAKE,Non-Hispanic Other,18-29,18,4025,4043
+WAKE,Non-Hispanic Other,30-39,44,3081,3125
+WAKE,Non-Hispanic Other,40-49,27,3675,3702
+WAKE,Non-Hispanic Other,50-64,138,4350,4488
+WAKE,Non-Hispanic Other,65+,362,2522,2884
+WAKE,Non-Hispanic White,18-29,267,71816,72083
+WAKE,Non-Hispanic White,30-39,839,72837,73676
+WAKE,Non-Hispanic White,40-49,999,71752,72751
+WAKE,Non-Hispanic White,50-64,16476,104207,120683
+WAKE,Non-Hispanic White,65+,49122,61989,111111
+WAKE,Undetermined,18-29,214,63009,63223
+WAKE,Undetermined,30-39,414,50454,50868
+WAKE,Undetermined,40-49,243,43333,43576
+WAKE,Undetermined,50-64,1848,46912,48760
+WAKE,Undetermined,65+,3945,25354,29299
+WARREN,Hispanic Any Race,18-29,14,22,36
+WARREN,Hispanic Any Race,30-39,14,7,21
+WARREN,Hispanic Any Race,40-49,12,2,14
+WARREN,Hispanic Any Race,50-64,9,4,13
+WARREN,Hispanic Any Race,65+,5,2,7
+WARREN,Non-Hispanic American Indian,18-29,36,30,66
+WARREN,Non-Hispanic American Indian,30-39,41,11,52
+WARREN,Non-Hispanic American Indian,40-49,82,7,89
+WARREN,Non-Hispanic American Indian,50-64,152,13,165
+WARREN,Non-Hispanic American Indian,65+,204,16,220
+WARREN,Non-Hispanic Asian,18-29,1,1,2
+WARREN,Non-Hispanic Asian,30-39,2,2,4
+WARREN,Non-Hispanic Asian,50-64,2,2,4
+WARREN,Non-Hispanic Asian,65+,2,0,2
+WARREN,Non-Hispanic Black,18-29,405,460,865
+WARREN,Non-Hispanic Black,30-39,564,200,764
+WARREN,Non-Hispanic Black,40-49,736,126,862
+WARREN,Non-Hispanic Black,50-64,1896,236,2132
+WARREN,Non-Hispanic Black,65+,2533,191,2724
+WARREN,Non-Hispanic Mixed,18-29,4,2,6
+WARREN,Non-Hispanic Mixed,30-39,4,0,4
+WARREN,Non-Hispanic Mixed,40-49,1,0,1
+WARREN,Non-Hispanic Mixed,50-64,3,1,4
+WARREN,Non-Hispanic Mixed,65+,8,1,9
+WARREN,Non-Hispanic Other,18-29,5,18,23
+WARREN,Non-Hispanic Other,30-39,6,4,10
+WARREN,Non-Hispanic Other,40-49,11,1,12
+WARREN,Non-Hispanic Other,50-64,7,5,12
+WARREN,Non-Hispanic Other,65+,20,2,22
+WARREN,Non-Hispanic White,18-29,192,249,441
+WARREN,Non-Hispanic White,30-39,400,142,542
+WARREN,Non-Hispanic White,40-49,395,123,518
+WARREN,Non-Hispanic White,50-64,1571,272,1843
+WARREN,Non-Hispanic White,65+,2534,369,2903
+WARREN,Undetermined,18-29,444,409,853
+WARREN,Undetermined,30-39,678,274,952
+WARREN,Undetermined,40-49,630,204,834
+WARREN,Undetermined,50-64,1419,271,1690
+WARREN,Undetermined,65+,1529,285,1814
+WASHINGTON,Hispanic Any Race,18-29,8,20,28
+WASHINGTON,Hispanic Any Race,30-39,4,6,10
+WASHINGTON,Hispanic Any Race,40-49,6,5,11
+WASHINGTON,Hispanic Any Race,50-64,5,4,9
+WASHINGTON,Hispanic Any Race,65+,4,2,6
+WASHINGTON,Non-Hispanic American Indian,40-49,1,1,2
+WASHINGTON,Non-Hispanic American Indian,50-64,5,2,7
+WASHINGTON,Non-Hispanic American Indian,65+,2,1,3
+WASHINGTON,Non-Hispanic Asian,18-29,2,1,3
+WASHINGTON,Non-Hispanic Asian,40-49,1,2,3
+WASHINGTON,Non-Hispanic Asian,50-64,0,3,3
+WASHINGTON,Non-Hispanic Asian,65+,3,2,5
+WASHINGTON,Non-Hispanic Black,18-29,294,477,771
+WASHINGTON,Non-Hispanic Black,30-39,239,407,646
+WASHINGTON,Non-Hispanic Black,40-49,367,271,638
+WASHINGTON,Non-Hispanic Black,50-64,1191,356,1547
+WASHINGTON,Non-Hispanic Black,65+,1378,291,1669
+WASHINGTON,Non-Hispanic Mixed,18-29,3,4,7
+WASHINGTON,Non-Hispanic Mixed,30-39,1,2,3
+WASHINGTON,Non-Hispanic Mixed,50-64,2,3,5
+WASHINGTON,Non-Hispanic Other,18-29,7,13,20
+WASHINGTON,Non-Hispanic Other,30-39,4,0,4
+WASHINGTON,Non-Hispanic Other,40-49,4,5,9
+WASHINGTON,Non-Hispanic Other,50-64,2,1,3
+WASHINGTON,Non-Hispanic Other,65+,4,4,8
+WASHINGTON,Non-Hispanic White,18-29,162,269,431
+WASHINGTON,Non-Hispanic White,30-39,132,239,371
+WASHINGTON,Non-Hispanic White,40-49,307,210,517
+WASHINGTON,Non-Hispanic White,50-64,1023,380,1403
+WASHINGTON,Non-Hispanic White,65+,1893,424,2317
+WASHINGTON,Undetermined,18-29,181,318,499
+WASHINGTON,Undetermined,30-39,104,182,286
+WASHINGTON,Undetermined,40-49,94,145,239
+WASHINGTON,Undetermined,50-64,201,298,499
+WASHINGTON,Undetermined,65+,150,183,333
+WATAUGA,Hispanic Any Race,18-29,760,567,1327
+WATAUGA,Hispanic Any Race,30-39,59,72,131
+WATAUGA,Hispanic Any Race,40-49,43,15,58
+WATAUGA,Hispanic Any Race,50-64,42,14,56
+WATAUGA,Hispanic Any Race,65+,26,10,36
+WATAUGA,Non-Hispanic American Indian,18-29,28,9,37
+WATAUGA,Non-Hispanic American Indian,30-39,1,2,3
+WATAUGA,Non-Hispanic American Indian,40-49,1,4,5
+WATAUGA,Non-Hispanic American Indian,50-64,7,1,8
+WATAUGA,Non-Hispanic American Indian,65+,7,1,8
+WATAUGA,Non-Hispanic Asian,18-29,157,105,262
+WATAUGA,Non-Hispanic Asian,30-39,23,17,40
+WATAUGA,Non-Hispanic Asian,40-49,32,12,44
+WATAUGA,Non-Hispanic Asian,50-64,29,4,33
+WATAUGA,Non-Hispanic Asian,65+,7,3,10
+WATAUGA,Non-Hispanic Black,18-29,363,248,611
+WATAUGA,Non-Hispanic Black,30-39,55,57,112
+WATAUGA,Non-Hispanic Black,40-49,44,23,67
+WATAUGA,Non-Hispanic Black,50-64,87,22,109
+WATAUGA,Non-Hispanic Black,65+,58,8,66
+WATAUGA,Non-Hispanic Mixed,18-29,230,130,360
+WATAUGA,Non-Hispanic Mixed,30-39,8,14,22
+WATAUGA,Non-Hispanic Mixed,40-49,5,3,8
+WATAUGA,Non-Hispanic Mixed,50-64,12,4,16
+WATAUGA,Non-Hispanic Mixed,65+,3,0,3
+WATAUGA,Non-Hispanic Other,18-29,74,59,133
+WATAUGA,Non-Hispanic Other,30-39,27,30,57
+WATAUGA,Non-Hispanic Other,40-49,46,12,58
+WATAUGA,Non-Hispanic Other,50-64,50,12,62
+WATAUGA,Non-Hispanic Other,65+,34,5,39
+WATAUGA,Non-Hispanic White,18-29,10416,6618,17034
+WATAUGA,Non-Hispanic White,30-39,4508,2034,6542
+WATAUGA,Non-Hispanic White,40-49,4988,976,5964
+WATAUGA,Non-Hispanic White,50-64,10119,1256,11375
+WATAUGA,Non-Hispanic White,65+,12417,1282,13699
+WATAUGA,Undetermined,18-29,2892,2934,5826
+WATAUGA,Undetermined,30-39,1028,1126,2154
+WATAUGA,Undetermined,40-49,773,247,1020
+WATAUGA,Undetermined,50-64,1340,304,1644
+WATAUGA,Undetermined,65+,1271,221,1492
+WAYNE,Hispanic Any Race,18-29,43,1188,1231
+WAYNE,Hispanic Any Race,30-39,93,443,536
+WAYNE,Hispanic Any Race,40-49,66,265,331
+WAYNE,Hispanic Any Race,50-64,106,283,389
+WAYNE,Hispanic Any Race,65+,46,108,154
+WAYNE,Non-Hispanic American Indian,18-29,0,13,13
+WAYNE,Non-Hispanic American Indian,30-39,5,14,19
+WAYNE,Non-Hispanic American Indian,40-49,8,8,16
+WAYNE,Non-Hispanic American Indian,50-64,28,19,47
+WAYNE,Non-Hispanic American Indian,65+,26,9,35
+WAYNE,Non-Hispanic Asian,18-29,6,75,81
+WAYNE,Non-Hispanic Asian,30-39,13,42,55
+WAYNE,Non-Hispanic Asian,40-49,19,40,59
+WAYNE,Non-Hispanic Asian,50-64,38,56,94
+WAYNE,Non-Hispanic Asian,65+,29,34,63
+WAYNE,Non-Hispanic Black,18-29,461,3442,3903
+WAYNE,Non-Hispanic Black,30-39,1092,2430,3522
+WAYNE,Non-Hispanic Black,40-49,1745,1732,3477
+WAYNE,Non-Hispanic Black,50-64,4222,2362,6584
+WAYNE,Non-Hispanic Black,65+,5583,1352,6935
+WAYNE,Non-Hispanic Mixed,18-29,4,76,80
+WAYNE,Non-Hispanic Mixed,30-39,11,28,39
+WAYNE,Non-Hispanic Mixed,40-49,14,20,34
+WAYNE,Non-Hispanic Mixed,50-64,2,13,15
+WAYNE,Non-Hispanic Mixed,65+,9,4,13
+WAYNE,Non-Hispanic Other,18-29,8,325,333
+WAYNE,Non-Hispanic Other,30-39,25,134,159
+WAYNE,Non-Hispanic Other,40-49,45,91,136
+WAYNE,Non-Hispanic Other,50-64,82,123,205
+WAYNE,Non-Hispanic Other,65+,139,62,201
+WAYNE,Non-Hispanic White,18-29,577,5609,6186
+WAYNE,Non-Hispanic White,30-39,1777,4151,5928
+WAYNE,Non-Hispanic White,40-49,3551,3226,6777
+WAYNE,Non-Hispanic White,50-64,10179,4403,14582
+WAYNE,Non-Hispanic White,65+,13135,2891,16026
+WAYNE,Undetermined,18-29,228,3766,3994
+WAYNE,Undetermined,30-39,959,2945,3904
+WAYNE,Undetermined,40-49,1200,2348,3548
+WAYNE,Undetermined,50-64,2613,3527,6140
+WAYNE,Undetermined,65+,2692,2282,4974
+WILKES,Hispanic Any Race,18-29,176,271,447
+WILKES,Hispanic Any Race,30-39,53,100,153
+WILKES,Hispanic Any Race,40-49,51,76,127
+WILKES,Hispanic Any Race,50-64,62,79,141
+WILKES,Hispanic Any Race,65+,38,44,82
+WILKES,Non-Hispanic American Indian,18-29,2,4,6
+WILKES,Non-Hispanic American Indian,30-39,2,6,8
+WILKES,Non-Hispanic American Indian,40-49,1,4,5
+WILKES,Non-Hispanic American Indian,50-64,5,4,9
+WILKES,Non-Hispanic American Indian,65+,3,6,9
+WILKES,Non-Hispanic Asian,18-29,6,8,14
+WILKES,Non-Hispanic Asian,30-39,5,8,13
+WILKES,Non-Hispanic Asian,40-49,6,11,17
+WILKES,Non-Hispanic Asian,50-64,3,9,12
+WILKES,Non-Hispanic Asian,65+,2,7,9
+WILKES,Non-Hispanic Black,18-29,110,160,270
+WILKES,Non-Hispanic Black,30-39,90,140,230
+WILKES,Non-Hispanic Black,40-49,144,134,278
+WILKES,Non-Hispanic Black,50-64,398,155,553
+WILKES,Non-Hispanic Black,65+,511,107,618
+WILKES,Non-Hispanic Mixed,18-29,12,23,35
+WILKES,Non-Hispanic Mixed,30-39,7,6,13
+WILKES,Non-Hispanic Mixed,40-49,4,3,7
+WILKES,Non-Hispanic Mixed,50-64,2,4,6
+WILKES,Non-Hispanic Mixed,65+,7,0,7
+WILKES,Non-Hispanic Other,18-29,18,37,55
+WILKES,Non-Hispanic Other,30-39,11,12,23
+WILKES,Non-Hispanic Other,40-49,8,22,30
+WILKES,Non-Hispanic Other,50-64,26,26,52
+WILKES,Non-Hispanic Other,65+,27,10,37
+WILKES,Non-Hispanic White,18-29,2072,3541,5613
+WILKES,Non-Hispanic White,30-39,1857,2949,4806
+WILKES,Non-Hispanic White,40-49,4585,2408,6993
+WILKES,Non-Hispanic White,50-64,11116,3618,14734
+WILKES,Non-Hispanic White,65+,15217,3139,18356
+WILKES,Undetermined,18-29,647,1083,1730
+WILKES,Undetermined,30-39,511,827,1338
+WILKES,Undetermined,40-49,433,598,1031
+WILKES,Undetermined,50-64,726,1044,1770
+WILKES,Undetermined,65+,607,865,1472
+WILSON,Hispanic Any Race,18-29,0,764,764
+WILSON,Hispanic Any Race,30-39,2,251,253
+WILSON,Hispanic Any Race,40-49,10,166,176
+WILSON,Hispanic Any Race,50-64,10,184,194
+WILSON,Hispanic Any Race,65+,5,70,75
+WILSON,Non-Hispanic American Indian,18-29,0,7,7
+WILSON,Non-Hispanic American Indian,30-39,0,8,8
+WILSON,Non-Hispanic American Indian,40-49,3,9,12
+WILSON,Non-Hispanic American Indian,50-64,8,14,22
+WILSON,Non-Hispanic American Indian,65+,0,7,7
+WILSON,Non-Hispanic Asian,18-29,0,28,28
+WILSON,Non-Hispanic Asian,30-39,0,12,12
+WILSON,Non-Hispanic Asian,40-49,0,15,15
+WILSON,Non-Hispanic Asian,50-64,2,23,25
+WILSON,Non-Hispanic Asian,65+,6,18,24
+WILSON,Non-Hispanic Black,18-29,0,2735,2735
+WILSON,Non-Hispanic Black,30-39,203,2684,2887
+WILSON,Non-Hispanic Black,40-49,1722,1687,3409
+WILSON,Non-Hispanic Black,50-64,4577,2305,6882
+WILSON,Non-Hispanic Black,65+,4613,1587,6200
+WILSON,Non-Hispanic Mixed,18-29,0,19,19
+WILSON,Non-Hispanic Mixed,30-39,0,16,16
+WILSON,Non-Hispanic Mixed,40-49,1,8,9
+WILSON,Non-Hispanic Mixed,50-64,7,9,16
+WILSON,Non-Hispanic Mixed,65+,2,2,4
+WILSON,Non-Hispanic Other,18-29,0,156,156
+WILSON,Non-Hispanic Other,30-39,8,88,96
+WILSON,Non-Hispanic Other,40-49,26,77,103
+WILSON,Non-Hispanic Other,50-64,53,99,152
+WILSON,Non-Hispanic Other,65+,31,57,88
+WILSON,Non-Hispanic White,18-29,0,2586,2586
+WILSON,Non-Hispanic White,30-39,232,2648,2880
+WILSON,Non-Hispanic White,40-49,2098,2064,4162
+WILSON,Non-Hispanic White,50-64,6668,2886,9554
+WILSON,Non-Hispanic White,65+,9872,2492,12364
+WILSON,Undetermined,18-29,0,5235,5235
+WILSON,Undetermined,30-39,50,2751,2801
+WILSON,Undetermined,40-49,268,2022,2290
+WILSON,Undetermined,50-64,559,2965,3524
+WILSON,Undetermined,65+,458,1932,2390
+YADKIN,Hispanic Any Race,18-29,193,293,486
+YADKIN,Hispanic Any Race,30-39,120,60,180
+YADKIN,Hispanic Any Race,40-49,73,25,98
+YADKIN,Hispanic Any Race,50-64,88,40,128
+YADKIN,Hispanic Any Race,65+,30,8,38
+YADKIN,Non-Hispanic American Indian,18-29,3,3,6
+YADKIN,Non-Hispanic American Indian,30-39,2,1,3
+YADKIN,Non-Hispanic American Indian,40-49,3,0,3
+YADKIN,Non-Hispanic American Indian,50-64,13,1,14
+YADKIN,Non-Hispanic American Indian,65+,4,1,5
+YADKIN,Non-Hispanic Asian,18-29,4,3,7
+YADKIN,Non-Hispanic Asian,30-39,3,1,4
+YADKIN,Non-Hispanic Asian,40-49,4,3,7
+YADKIN,Non-Hispanic Asian,50-64,15,2,17
+YADKIN,Non-Hispanic Asian,65+,2,4,6
+YADKIN,Non-Hispanic Black,18-29,49,73,122
+YADKIN,Non-Hispanic Black,30-39,39,45,84
+YADKIN,Non-Hispanic Black,40-49,101,27,128
+YADKIN,Non-Hispanic Black,50-64,234,37,271
+YADKIN,Non-Hispanic Black,65+,241,33,274
+YADKIN,Non-Hispanic Mixed,18-29,3,3,6
+YADKIN,Non-Hispanic Mixed,30-39,1,2,3
+YADKIN,Non-Hispanic Mixed,40-49,6,0,6
+YADKIN,Non-Hispanic Mixed,50-64,3,0,3
+YADKIN,Non-Hispanic Mixed,65+,0,2,2
+YADKIN,Non-Hispanic Other,18-29,13,23,36
+YADKIN,Non-Hispanic Other,30-39,3,6,9
+YADKIN,Non-Hispanic Other,40-49,15,6,21
+YADKIN,Non-Hispanic Other,50-64,44,12,56
+YADKIN,Non-Hispanic Other,65+,17,3,20
+YADKIN,Non-Hispanic White,18-29,1704,1486,3190
+YADKIN,Non-Hispanic White,30-39,2198,661,2859
+YADKIN,Non-Hispanic White,40-49,3464,549,4013
+YADKIN,Non-Hispanic White,50-64,8529,839,9368
+YADKIN,Non-Hispanic White,65+,9331,735,10066
+YADKIN,Undetermined,18-29,473,645,1118
+YADKIN,Undetermined,30-39,630,325,955
+YADKIN,Undetermined,40-49,532,217,749
+YADKIN,Undetermined,50-64,1160,322,1482
+YADKIN,Undetermined,65+,892,193,1085
+YANCEY,Hispanic Any Race,18-29,28,16,44
+YANCEY,Hispanic Any Race,30-39,11,3,14
+YANCEY,Hispanic Any Race,40-49,11,9,20
+YANCEY,Hispanic Any Race,50-64,12,3,15
+YANCEY,Hispanic Any Race,65+,10,9,19
+YANCEY,Non-Hispanic American Indian,18-29,1,1,2
+YANCEY,Non-Hispanic American Indian,30-39,7,0,7
+YANCEY,Non-Hispanic American Indian,40-49,4,0,4
+YANCEY,Non-Hispanic American Indian,50-64,7,0,7
+YANCEY,Non-Hispanic American Indian,65+,6,0,6
+YANCEY,Non-Hispanic Asian,18-29,4,2,6
+YANCEY,Non-Hispanic Asian,30-39,1,1,2
+YANCEY,Non-Hispanic Asian,40-49,5,1,6
+YANCEY,Non-Hispanic Asian,50-64,10,2,12
+YANCEY,Non-Hispanic Asian,65+,3,0,3
+YANCEY,Non-Hispanic Black,18-29,11,7,18
+YANCEY,Non-Hispanic Black,30-39,10,3,13
+YANCEY,Non-Hispanic Black,40-49,11,2,13
+YANCEY,Non-Hispanic Black,50-64,23,5,28
+YANCEY,Non-Hispanic Black,65+,33,1,34
+YANCEY,Non-Hispanic Mixed,18-29,4,3,7
+YANCEY,Non-Hispanic Mixed,30-39,4,2,6
+YANCEY,Non-Hispanic Mixed,65+,9,0,9
+YANCEY,Non-Hispanic Other,18-29,2,9,11
+YANCEY,Non-Hispanic Other,30-39,1,5,6
+YANCEY,Non-Hispanic Other,40-49,2,3,5
+YANCEY,Non-Hispanic Other,50-64,4,0,4
+YANCEY,Non-Hispanic Other,65+,12,2,14
+YANCEY,Non-Hispanic White,18-29,1260,559,1819
+YANCEY,Non-Hispanic White,30-39,1406,383,1789
+YANCEY,Non-Hispanic White,40-49,2088,361,2449
+YANCEY,Non-Hispanic White,50-64,4457,502,4959
+YANCEY,Non-Hispanic White,65+,6413,599,7012
+YANCEY,Undetermined,18-29,424,409,833
+YANCEY,Undetermined,30-39,523,250,773
+YANCEY,Undetermined,40-49,517,167,684
+YANCEY,Undetermined,50-64,861,287,1148
+YANCEY,Undetermined,65+,1050,295,1345

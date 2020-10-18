@@ -183,7 +183,7 @@ district_est*100 + 1.96 * sds_district
 ```
 
 ```{r}
-voter_data <- left_join(nc_voter,nc_reg_data,by=c("voter_reg_num", "county_id", "county_desc"))
+voter_data <- left_join(nc_voter,nc_reg_data %>% filter(voted_party_desc != ""),by=c("voter_reg_num", "county_id", "county_desc"))
 #left_voter_reg <- right_join(nc_voter,nc_reg_data,by="voter_reg_num")
 
 voter_data <- voter_data %>% 
@@ -194,11 +194,34 @@ voter_data <- voter_data %>%
            birth_age >= 40 & birth_age <= 49 ~ "40-49",
            birth_age >= 50 & birth_age <= 64 ~ "50-64",
            birth_age >= 65 ~ "65+"
+         ),
+         race_ethnicity = case_when(
+           ethnic_code == "HL" ~ "Hispanic Any Race",
+           ethnic_code == "NL" & race_code == "W" ~ "Non-Hispanic White",
+           ethnic_code == "NL" & race_code == "B" ~ "Non-Hispanic Black",
+           ethnic_code == "NL" & race_code == "O" ~ "Non-Hispanic Other",
+           ethnic_code == "NL" & race_code == "A" ~ "Non-Hispanic Asian",
+           ethnic_code == "NL" & race_code == "M" ~ "Non-Hispanic Mixed",
+           ethnic_code == "NL" & race_code == "I" ~ "Non-Hispanic American Indian",
+           ethnic_code == "NL" & race_code == "P" ~ "Non-Hispanic Pacific Islander",
+           ethnic_code == "NL" & race_code == "U" ~ "Undetermined",
+           TRUE ~ "Undetermined"
+         ),
+         voted_party_desc = case_when(
+           voted_party_desc == "DEMOCRATIC" ~ "DEMOCRATIC",
+           voted_party_desc == "REPUBLICAN" ~ "REPUBLICAN",
+           voted_party_desc== "UNAFFILIATED" ~ "UNAFFILIATED",
+           voted_party_desc %in% c("LIBERTARIAN", "GREEN", "CONSTITUTION") ~ "THIRD PARTY",
+           TRUE ~ as.character(voted_party_desc)
          )
+         
   )
 
+voter_data <- voter_data %>% 
+  filter(voted_party_desc != "")
+
 voter_data %>% head()
-#left_voter$race_code %>% unique()
+voter_data$race_code %>% unique()
 #left_voter$ethnic_code %>% unique()
 # join by 
 #1. county_id, 2. age bins, 3. race_code, 4. ethnic_code 5. combining race and ethnic code, 5. voted_party_cd, 6. gender if possible 
@@ -207,5 +230,47 @@ voter_data %>% head()
 #29-39
 #39-49
 #49-65
-#65+
 ```
+
+
+```{r}
+#65+
+#voting method for sensitivity
+```
+```{r}
+voter_data %>%
+  count(voted_party_desc)
+```
+
+```{r}
+grouped_voter_data <- voter_data %>%
+  group_by(county_desc, race_ethnicity, #voted_party_desc, 
+           age_bin) %>%
+  summarize(Likely = sum(likely_voter==1), 
+            unlikely = sum(likely_voter == 0),
+            total = n())
+```
+
+```{r}
+grouped_voter_data %>% write_csv("grouped_voter_data.csv")
+```
+
+```{r}
+voter_data %>% filter(county_desc == "ALAMANCE",
+                      race_code = "A",
+                      ethnic_code)
+```
+
+
+
+```{r}
+library(brms)
+
+adm3 <- brm(data = grouped_voter_data, family = binomial,
+      Likely | trials(total) ~ 1 + age_bin + (1 + age_bin | county_desc),
+      iter = 5000, warmup = 1000, chains = 1, cores = 4,
+      seed = 13,
+      control = list(adapt_delta = .99,
+                     max_treedepth = 12))
+```
+
