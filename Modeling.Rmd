@@ -51,31 +51,31 @@ jags_data <- list(y=y,t=t,r=r,N_polls=N_polls,N_states=N_states,N_days=N_days)
 
 ```{r model,eval = TRUE}
 model <- function(){
-for(k in 1:N_polls){
-  y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
-  p[k] = beta[r[k],t[k]] 
-}
-for(j in 2:N_days){
-  for(i in 1:N_states){
-    beta[i,j] ~ dnorm(beta[i,j-1],pow(sigma2_beta[i],-1))
+  for(k in 1:N_polls){
+    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
+    p[k] = beta[r[k],t[k]] 
   }
-}
+  for(j in 2:N_days){
+    for(i in 1:N_states){
+      beta[i,j] ~ dnorm(beta[i,j-1],pow(sigma2_beta[i],-1))
+    }
+  }
   
-#EXERCISE: add hierarhciacl prior for sigma2_beta and sigma2_y, i.e. sigma2_beta[j] all come from a common distribution 
-for(j in 1:N_states){
-  sigma2_y[j] = 1/sigma2_y_inv[j]
-  sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
-  
-  sigma2_beta[j] = 1/sigma2_beta_inv[j]
-  sigma2_beta_inv[j] ~ dgamma(nu_beta,nu_beta*tau_beta) 
-  beta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+  #EXERCISE: add hierarhciacl prior for sigma2_beta and sigma2_y, i.e. sigma2_beta[j] all come from a common distribution 
+  for(j in 1:N_states){
+    sigma2_y[j] = 1/sigma2_y_inv[j]
+    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+    
+    sigma2_beta[j] = 1/sigma2_beta_inv[j]
+    sigma2_beta_inv[j] ~ dgamma(nu_beta,nu_beta*tau_beta) 
+    beta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
   }
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
-
+  
   nu_beta ~ dunif(0,100)
   tau_beta ~ dunif(0,100)
-
+  
   mu0 ~ dnorm(50,pow(7.5,-2))
   sigma2_0 = 1/sigma2_0_inv
   sigma2_0_inv ~ dgamma(.5,.5)
@@ -160,10 +160,13 @@ for(i in 1:10) {
 ```
 
 ```{r}
-nc_voter <- read_rds("ncvoter_Statewide_small.rds")
-nc_voter$voter_reg_num <- substr(nc_voter$voter_reg_num,6,12)
+nc_voter <- read_rds("ncvoter_Statewide_small.rds")  # all districts, Graham doesnt think it's  all voters, one row for each voter 
+nc_voter <- nc_voter %>% 
+  filter(voter_status_reason_desc != "DECEASED") %>% 
+  mutate(voter_reg_num = as.integer(substr(voter_reg_num,6,12)))
+#nc_voter$voter_reg_num <- substr(nc_voter$voter_reg_num,6,12)
 
-nc_reg_data <- read_rds("ncvhis_Statewide_small.rds")
+nc_reg_data <- read_rds("ncvhis_Statewide_small.rds") # history of every voter in NC
 
 merged_df <- merge(nc_voter,nc_reg_data,by="voter_reg_num")
 
@@ -179,20 +182,30 @@ district_est*100 - 1.96 * sds_district
 district_est*100 + 1.96 * sds_district
 ```
 
+```{r}
+voter_data <- left_join(nc_voter,nc_reg_data,by=c("voter_reg_num", "county_id", "county_desc"))
+#left_voter_reg <- right_join(nc_voter,nc_reg_data,by="voter_reg_num")
 
+voter_data <- voter_data %>% 
+  mutate(likely_voter = ifelse(is.na(election_lbl), 0, 1),
+         age_bin = case_when(
+           birth_age <= 29 ~ "18-29",
+           birth_age >= 30 & birth_age <= 39 ~ "30-39",
+           birth_age >= 40 & birth_age <= 49 ~ "40-49",
+           birth_age >= 50 & birth_age <= 64 ~ "50-64",
+           birth_age >= 65 ~ "65+"
+         )
+  )
 
+voter_data %>% head()
+#left_voter$race_code %>% unique()
+#left_voter$ethnic_code %>% unique()
+# join by 
+#1. county_id, 2. age bins, 3. race_code, 4. ethnic_code 5. combining race and ethnic code, 5. voted_party_cd, 6. gender if possible 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#18-29 
+#29-39
+#39-49
+#49-65
+#65+
+```
