@@ -161,32 +161,23 @@ for(i in 1:10) {
 
 ```{r}
 nc_voter <- read_rds("ncvoter_Statewide_small.rds")
-head(nc_voter)
-nc_voter %>% filter(voted_party_cd %in% c("REP", "DEM")) %>% group_by(cong_dist_abbrv, voted_party_cd)
-nc_voter$voter_reg_num
-nc_reg_data$voter_reg_num
-
-nc_voter$voter_reg_num <- as.string(nc_voter$voter_reg_num)
 nc_voter$voter_reg_num <- substr(nc_voter$voter_reg_num,6,12)
 
-nc_voter$voter_reg_num[1,]
 nc_reg_data <- read_rds("ncvhis_Statewide_small.rds")
-head(nc_reg_data)
-head(nc_voter)
-colnames(nc_reg_data)
-colnames(nc_voter)
-merge(nc_voter,nc_reg_data,by="voter_reg_num")
-nc_voter$voter_reg_num
-nc_reg_data$voter_reg_num
+
+merged_df <- merge(nc_voter,nc_reg_data,by="voter_reg_num")
+
+merged_df %>% filter(voted_party_cd %in% c("REP", "DEM")) %>% group_by(cong_dist_abbrv) %>% count(cong_dist_abbrv, voted_party_cd) %>% summarise(prop=n/sum(n))
+
+district_est <- c(0.59, 0.397, .44, .426, 0.574, 0.379, 0.561, 0.510, 0.576, 0.611, 0.628, 0.377, 0.510)
+length(district_est)
+sd(district_est)
+set.seed(1)
+
+sds_district <- runif(13,1.5,4.2)
+district_est*100 - 1.96 * sds_district
+district_est*100 + 1.96 * sds_district
 ```
-
-
-
-
-
-
-
-
 
 
 
