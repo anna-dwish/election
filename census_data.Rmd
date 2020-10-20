@@ -1,0 +1,138 @@
+---
+title: "trying shit out"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r, include = FALSE}
+setwd("/Users/malav/Downloads") #change this so that it reflects where you downloaded the dataset!
+df <- read_csv("cc-est2019-alldata-37.csv")
+```
+
+```{r}
+#here, maybe change the 15-19 to halve it?
+data <- df %>%
+  filter(YEAR == 12) %>%
+  filter(AGEGRP >= 4) %>%
+  select(-c(SUMLEV, STATE, STNAME, YEAR))
+  
+```
+
+
+```{r}
+data <- data %>%
+  filter(AGEGRP >= 4) %>%
+  mutate(age.bin = case_when(
+    AGEGRP %in% c(4, 5, 6) ~ "18-29",
+    AGEGRP %in% c(7,8) ~ "30-39",
+    AGEGRP %in% c(9, 10) ~ "40-49",
+    AGEGRP %in% c(11, 12, 13) ~ "50-64",
+    AGEGRP >= 14 ~ "65+",
+  ))
+  
+```
+
+
+```{r}
+#half the 15-19 age group to estimate 18+
+data_numeric <- data %>%
+  select(-c(COUNTY, CTYNAME, AGEGRP, age.bin))
+
+for (row in 1:nrow(data)){
+  if (data[row,"AGEGRP"] == 4){
+    for (column in colnames(data_numeric)){
+      data[row,column] <- 0.5*data[row, column]
+  }
+    
+  }
+  
+}
+
+```
+
+
+```{r}
+#sum over age groups
+binned_data <- data %>%
+  select(-c(COUNTY, AGEGRP)) %>%
+  group_by(CTYNAME, age.bin) %>%
+  summarize_all(sum)
+  
+```
+
+
+```{r}
+counties <- unique(binned_data$CTYNAME)
+ages <- unique(binned_data$age.bin)
+
+#codes in dataset
+race_eth_genders <- c("H_MALE", "H_FEMALE", "NHIA_MALE", "NHIA_FEMALE","NHAA_MALE", "NHAA_FEMALE", "NHBA_MALE", "NHBA_FEMALE", "NHTOM_MALE", "NHTOM_FEMALE", "NHWA_MALE", "NHWA_FEMALE", "NHNA_MALE", "NHNA_FEMALE")
+
+#map to these racial and ethnic identities
+ethnicities <- c("Hispanic Any Race", "Hispanic Any Race", "Non-Hispanic American Indian", "Non-Hispanic American Indian", "Non-Hispanic Asian", "Non-Hispanic Asian", "Non-Hispanic Black", "Non-Hispanic Black", "Non-Hispanic Mixed", "Non-Hispanic Mixed", "Non-Hispanic White", "Non-Hispanic White", "Non-Hispanic Hawaiian/Pacific Islander", "Non-Hispanic Hawaiian/Pacific Islander")
+
+genders <- c("male", "female","male", "female","male", "female","male", "female","male", "female","male", "female","male", "female")
+
+#notes: other doesn't appear and pacific islander doesn't show up in the data that we made
+```
+
+
+
+```{r}
+new_df <- function(county, age, race_eth_gender, ethnicity, gender, df){
+  #create smaller df
+  df_county_age_eth_gender <- df %>%
+    filter(CTYNAME == county) %>%
+    filter(age.bin == age) 
+ df_county_age_eth_gender <- df_county_age_eth_gender[race_eth_gender]
+ 
+reformatted_df <- data.frame(county, age, ethnicity, gender, as.numeric(df_county_age_eth_gender))
+colnames(reformatted_df) <- c("county_desc", "age_bin", "race_ethnicity", "gender", "total")
+return(reformatted_df)
+  
+}
+```
+
+```{r}
+#put back information together
+
+final_df <- NULL
+for (county in counties){
+  print(county)
+  for(age in ages){
+    for(i in 1:length(race_eth_genders)){
+      race_eth_gender <- race_eth_genders[i]
+      ethnicity <- ethnicities[i]
+      gender <- genders[i]
+      reformatted_df <- new_df(county, age, race_eth_gender, ethnicity, gender, binned_data)
+      final_df = rbind(final_df, reformatted_df)
+      
+    }
+  }
+  
+}
+```
+
+```{r}
+#checking that values are correct
+binned_data%>%
+  filter(CTYNAME == "Camden County") %>%
+  filter(age.bin == "30-39") %>%
+  select(NHAA_FEMALE)
+```
+
+```{r}
+
+#replace county names so that they can be merged easily
+
+final_df_merge <- final_df %>%
+  mutate(county_desc = toupper(strsplit(county_desc, " ")[[1]][1]))
+final_df_merge
+
+```
+
