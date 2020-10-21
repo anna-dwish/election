@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## R Markdown
 
 ```{r, include = FALSE}
-setwd("/Users/malav/Downloads") #change this so that it reflects where you downloaded the dataset!
+#setwd("/Users/malav/Downloads") #change this so that it reflects where you downloaded the dataset!
 df <- read_csv("cc-est2019-alldata-37.csv")
 ```
 
@@ -131,8 +131,10 @@ binned_data%>%
 #replace county names so that they can be merged easily
 
 final_df_merge <- final_df %>%
-  mutate(county_desc = toupper(strsplit(county_desc, " ")[[1]][1]))
+  mutate(county_desc = toupper(str_remove_all(county_desc, "County")))
 final_df_merge
 
+
+strsplit(final_df$county_desc, " ")[1]
 ```
 
