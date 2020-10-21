@@ -361,13 +361,13 @@ voter_data %>% filter(county_desc == "ALAMANCE",
 ```{r}
 library(brms)
 library(optimx)
-
-adm3 <- brm(data = who_votes_data, family = binomial,
-            Likely | trials(Likely + Unlikely) ~ 1 + age_bin + (1 | gender),
-            iter = 500, chains = 1, cores = 4,
-            seed = 13,
-            control = list(adapt_delta = .99,
-                           max_treedepth = 12))
+who_votes_data <- readRDS("who_votes_data.Rds")
+# adm3 <- brm(data = who_votes_data, family = binomial,
+#             Likely | trials(Likely + Unlikely) ~ 1 + age_bin + (1 | gender),
+#             iter = 500, chains = 1, cores = 4,
+#             seed = 13,
+#             control = list(adapt_delta = .99,
+#                            max_treedepth = 12))
 
 
 
@@ -382,10 +382,33 @@ m1 %>% summary()
 
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "40-49")
 m2 <- glmer(prop ~ age_bin + race_ethnicity + gender * race_ethnicity + gender + (1 | county_desc), 
-           data = who_votes_data %>% mutate(prop = Likely / (Likely + Unlikely)), 
-           family = binomial, weights = Likely + Unlikely, 
-           control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+            data = who_votes_data %>% mutate(prop = Likely / (Likely + Unlikely)), 
+            family = binomial, weights = Likely + Unlikely, 
+            control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
 m2 %>% summary() # get to the fucking point
+```
+
+```{r}
+library(groupdata2)
+
+accuracy_list <- c()
+fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc"))
+
+for (i in 1:5) {
+  train <- fold_df %>% filter(.folds != i)
+  test <- fold_df %>% filter(.folds == i)
+  
+  m.fit <- glmer(prop ~ age_bin + race_ethnicity + #gender * race_ethnicity + 
+                   gender + (1 | gender), 
+                 data = train, 
+                 family = binomial, weights = Likely + Unlikely, 
+                 control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  
+  m.probs <- predict(m.fit,  test,  type = "response")
+  m.pred <- rep(0,  nrow(test))
+  m.pred[m.probs > 0.5] <- 1
+}
+
 ```
 
 
@@ -408,9 +431,9 @@ merTools::plotREsim(merTools::REsim(m2)) %>% +
 ```{r}
 
 sjPlot::plot_model(m2,
-show.values=TRUE, show.p=TRUE, jitter = TRUE, 
-dot.size = 1, value.offset = 0.35,value.size = 3, wrap.title = 100,
-title="can i get a waffle")
+                   show.values=TRUE, show.p=TRUE, jitter = TRUE, 
+                   dot.size = 1, value.offset = 0.35,value.size = 3, wrap.title = 100,
+                   title="can i get a waffle")
 ```
 
 ```{r}
@@ -419,14 +442,14 @@ results <- data.frame(VarCorr(m1))
 random.effects.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
 
 rand.county.mod.results = data.frame(Estimates=summary(m1)$coefficients[, 1], 
-Std.Err=summary(m1)$coefficients[, 2], 
-P.Value=summary(m1)$coefficients[, 3])
+                                     Std.Err=summary(m1)$coefficients[, 2], 
+                                     P.Value=summary(m1)$coefficients[, 3])
 pander(m1, caption = "Random County Effects Model")
 ```
 
 ```{r}
 sjPlot::tab_model(m2, 
-show.re.var= TRUE,
-dv.labels= "plz can i get a waffle", p.style = "numeric_stars")
+                  show.re.var= TRUE,
+                  dv.labels= "plz can i get a waffle", p.style = "numeric_stars")
 ```
 

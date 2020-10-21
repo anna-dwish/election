@@ -145,24 +145,27 @@ who_votes_data <- final_df_merge %>%
                    "race_ethnicity",
                    "age_bin",
                    "gender" = "gender_code")) %>% 
-  mutate(Likely = case_when(
-    is.na(Likely) ~ 0,
-    TRUE ~ Likely
-  ),
-  unlikely = case_when(
-    is.na(unlikely) ~ 0,
-    TRUE ~ unlikely
-  ),
-  total.y = case_when(
-    is.na(total.y) ~ 0,
-    TRUE ~ total.y
-  ), 
-  Likely = total.y,
-  Unlikely = ifelse((total.x - total.y) %>% floor() < 0, 0, (total.x - total.y) %>% floor())) %>% 
-  select(-total.x, -unlikely, -total.y) 
+  mutate(
+    Likely = case_when(
+      is.na(Likely) ~ 0,
+      TRUE ~ Likely
+    ),
+    unlikely = case_when(
+      is.na(unlikely) ~ 0,
+      TRUE ~ unlikely
+    ),
+    total.y = case_when(
+      is.na(total.y) ~ 0,
+      TRUE ~ total.y
+    ), 
+    Likely = total.y,
+    Unlikely = ifelse((total.x - total.y) %>% floor() < 0, 0, (total.x - total.y) %>% floor())) %>% 
+  select(-total.x, -unlikely, -total.y) %>% 
+  mutate(prop = Likely / (Likely + Unlikely))
 
 
 who_votes_data %>% saveRDS("who_votes_data.Rds")
+
 ```
 
 
