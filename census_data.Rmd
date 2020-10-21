@@ -71,7 +71,7 @@ counties <- unique(binned_data$CTYNAME)
 ages <- unique(binned_data$age.bin)
 
 #codes in dataset
-race_eth_genders <- c("H_MALE", "H_FEMALE", "NHIA_MALE", "NHIA_FEMALE","NHAA_MALE", "NHAA_FEMALE", "NHBA_MALE", "NHBA_FEMALE", "NHTOM_MALE", "NHTOM_FEMALE", "NHWA_MALE", "NHWA_FEMALE", "NHNA_MALE", "NHNA_FEMALE")
+race_eth_genders <- c("H_MALE", "H_FEMALE", "NHIA_MALE", "NHIA_FEMALE","NHAA_MALE", "NHAA_FEMALE", "NHBA_MALE", "NHBA_FEMALE", "NHTOM_MALE", "NHTOM_FEMALE", "NHWA_MALE", "NHWA_FEMALE")
 
 #map to these racial and ethnic identities
 ethnicities <- c("Hispanic Any Race", "Hispanic Any Race", "Non-Hispanic American Indian", "Non-Hispanic American Indian", "Non-Hispanic Asian", "Non-Hispanic Asian", "Non-Hispanic Black", "Non-Hispanic Black", "Non-Hispanic Mixed", "Non-Hispanic Mixed", "Non-Hispanic White", "Non-Hispanic White")
