@@ -360,12 +360,73 @@ voter_data %>% filter(county_desc == "ALAMANCE",
 
 ```{r}
 library(brms)
+library(optimx)
 
-adm3 <- brm(data = grouped_voter_data, family = binomial,
-      Likely | trials(total) ~ 1 + age_bin + (1 + age_bin | county_desc),
-      iter = 5000, warmup = 1000, chains = 1, cores = 4,
-      seed = 13,
-      control = list(adapt_delta = .99,
-                     max_treedepth = 12))
+adm3 <- brm(data = who_votes_data, family = binomial,
+            Likely | trials(Likely + Unlikely) ~ 1 + age_bin + (1 | gender),
+            iter = 500, chains = 1, cores = 4,
+            seed = 13,
+            control = list(adapt_delta = .99,
+                           max_treedepth = 12))
+
+
+
+library(lme4)
+library(plyr)
+library(lmerTest)
+library(glmnet)
+m1 <- lmer(prop ~ age_bin + race_ethnicity + gender + (1  | county_desc), 
+           data = who_votes_data %>% mutate(prop = Likely / (Likely + Unlikely)), 
+           control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "nlminb", starttests=FALSE, kkt=FALSE)))
+m1 %>% summary()
+
+who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "40-49")
+m2 <- glmer(prop ~ age_bin + race_ethnicity + gender * race_ethnicity + gender + (1 | county_desc), 
+           data = who_votes_data %>% mutate(prop = Likely / (Likely + Unlikely)), 
+           family = binomial, weights = Likely + Unlikely, 
+           control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+m2 %>% summary() # get to the fucking point
+```
+
+
+
+```{r out.width="75%",out.height="75%",fig.show='hold',fig.align='center',fig.cap="Representation of the interval estimates of the random effects"}
+merTools::plotREsim(merTools::REsim(m2)) %>% +
+  labs(x='Student', y='Value', title='Interval Estimates of Random Effects by Student') +
+  geom_hline(aes(yintercept=0), color='orange', alpha=.5) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        strip.text.x = element_blank(),
+        strip.text.y = element_blank(),
+        panel.background = element_rect(fill='transparent', color=NA),   # apparently all ignored for reasons unknown
+        plot.background = element_rect(fill='transparent', color=NA),
+        strip.background =  element_rect(fill='transparent', color=NA))
+```
+
+
+
+```{r}
+
+sjPlot::plot_model(m2,
+show.values=TRUE, show.p=TRUE, jitter = TRUE, 
+dot.size = 1, value.offset = 0.35,value.size = 3, wrap.title = 100,
+title="can i get a waffle")
+```
+
+```{r}
+#covid.df.county <- covid.df[!is.na(covid.df$county_name), ]
+results <- data.frame(VarCorr(m1))
+random.effects.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
+
+rand.county.mod.results = data.frame(Estimates=summary(m1)$coefficients[, 1], 
+Std.Err=summary(m1)$coefficients[, 2], 
+P.Value=summary(m1)$coefficients[, 3])
+pander(m1, caption = "Random County Effects Model")
+```
+
+```{r}
+sjPlot::tab_model(m2, 
+show.re.var= TRUE,
+dv.labels= "plz can i get a waffle", p.style = "numeric_stars")
 ```
 
