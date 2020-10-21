@@ -131,7 +131,7 @@ binned_data%>%
 #replace county names so that they can be merged easily
 
 final_df_merge <- final_df %>%
-  mutate(county_desc = toupper(str_remove_all(county_desc, "County")))
+  mutate(county_desc = toupper(str_remove_all(county_desc, "County")) %>% str_trim())
 final_df_merge
 
 
