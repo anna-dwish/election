@@ -1,0 +1,142 @@
+---
+title: "Case Study 3 Interim Report: Who Votes in North Carolina?"
+author: "Ethan Shen, Malavi Ravindran, Steven Herrera Tenorio, Anna Darwish"
+output: pdf_document
+---
+
+```{r, function checking for installed packages, include=FALSE}
+# Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,repos = "http://cran.r-project.org", dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+```
+
+```{r package test, include=FALSE}
+# Installing packages 
+pkgTest("tidyverse")
+pkgTest("optimx")
+pkgTest("lme4")
+pkgTest("plyr")
+pkgTest("lmerTest")
+pkgTest("glmnet")
+pkgTest("optimx")
+pkgTest("groupdata2")
+pkgTest("merTools")
+pkgTest("sjPlot")
+```
+
+```{r load packages, include=FALSE}
+library(tidyverse)
+library(optimx)
+library(lme4)
+library(plyr)
+library(lmerTest)
+library(glmnet)
+library(optimx)
+library(groupdata2)
+library(merTools)
+library(sjPlot)
+```
+
+```{r Read Data}
+who_votes_data <- readRDS("who_votes_data.Rds")
+who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "40-49")
+```
+
+```{r cross validation}
+set.seed(20201022) # has to be this seed
+fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc"))
+test %>% mutate(vote = ifelse(prop > 0.5, 1, 0))
+for (i in 1:5) {
+  train <- fold_df %>% filter(.folds != i)
+  test <- fold_df %>% filter(.folds == i) 
+
+  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+                     data = train,
+                     family = binomial, 
+                     control = glmerControl(optimizer = "optimx", 
+                                           calc.derivs = FALSE, 
+                                           optCtrl = list(method = "nlminb", 
+                                                          starttests=FALSE, 
+                                                          kkt=FALSE)))
+
+  glmer.probs <- predict(glmer.fit,  test,  type = "response")
+  glmer.pred <- rep(0, nrow(test))
+  glmer.pred[glmer.probs > 0.5] <- 1
+}
+
+```
+
+
+
+```{r}
+train <- fold_df %>% filter(.folds != 1)
+glmer.fit1 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+                     data = train,
+                     family = binomial, 
+                     control = glmerControl(optimizer = "optimx", 
+                                           calc.derivs = FALSE, 
+                                           optCtrl = list(method = "nlminb", 
+                                                          starttests=FALSE, 
+                                                          kkt=FALSE))) 
+
+sjPlot::tab_model(glmer.fit1, 
+                  show.re.var= TRUE,
+                  dv.labels= "plz can i get a waffle", p.style = "numeric_stars") #0.682
+```
+
+```{r}
+train <- fold_df %>% filter(.folds != 2)
+glmer.fit2 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+                     data = train,
+                     family = binomial, 
+                     control = glmerControl(optimizer = "optimx", 
+                                           calc.derivs = FALSE, 
+                                           optCtrl = list(method = "nlminb", 
+                                                          starttests=FALSE, 
+                                                          kkt=FALSE))) 
+```
+
+```{r}
+train <- fold_df %>% filter(.folds != 3)
+glmer.fit3 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+                     data = train,
+                     family = binomial, 
+                     control = glmerControl(optimizer = "optimx", 
+                                           calc.derivs = FALSE, 
+                                           optCtrl = list(method = "nlminb", 
+                                                          starttests=FALSE, 
+                                                          kkt=FALSE))) 
+```
+
+```{r}
+train <- fold_df %>% filter(.folds != 4)
+glmer.fit4 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+                     data = train,
+                     family = binomial, 
+                     control = glmerControl(optimizer = "optimx", 
+                                           calc.derivs = FALSE, 
+                                           optCtrl = list(method = "nlminb", 
+                                                          starttests=FALSE, 
+                                                          kkt=FALSE))) 
+```
+
+```{r}
+train <- fold_df %>% filter(.folds != 5)
+glmer.fit5 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+                     data = train,
+                     family = binomial, 
+                     control = glmerControl(optimizer = "optimx", 
+                                           calc.derivs = FALSE, 
+                                           optCtrl = list(method = "nlminb", 
+                                                          starttests=FALSE, 
+                                                          kkt=FALSE))) 
+```
+
+
+
