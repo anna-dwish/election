@@ -304,20 +304,31 @@ In regards to the random effects for county, visual comparisons between Figure 2
 
 Finally, with respect to the random effect slopes, we can examine the changing relationship of age bin and likelihood to vote. Holding race-ethnicity and sex constant, we are 95% confident the odds 18-29 year olds are likely voters is between 0.06 and 0.11 times less likely than 40-49 year olds in ** County (?). In contrast, we estimate that the odds 65+ year olds are likely voters is between 10.15 and 14.84 times more likely than 40-49 year olds in County (?).
 
-```{r Out of sample analysis, warning=FALSE,echo=FALSE}
-# ad hoc summaries, created using assumptions from this website https://democracync.org/wp-content/uploads/2018/04/20142010TurnoutChanges-1.pdf
-election2014 <- data.frame(county_desc = c("ALLEGHANY","YANCEY", "TYRRELL", "ROBESON" ), 
-                           age_bin=c("65+", "18-29", "50-64", "30-39"), 
-                           race_ethnicity=c("Non-Hispanic White","Non-Hispanic Black", "Hispanic Any Race", "Non-Hispanic American Indian"), 
-                           gender=c("M","F", "M", "F"), vote=c(1,1,0,1))
+```{r Out of sample analysis, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+election2014 <- readRDS("who_votes_data_2014.Rds")
+election2014 <- election2014 %>%
+  mutate(vote = ifelse(prop > 0.5, 1, 0),
+         vote = ifelse(is.nan(prop), 0, vote),
+         vote = case_when(
+           Likely == 0 & Unlikely == 0 ~ 0,
+           TRUE ~ vote
+         )) %>%
+  mutate(vote = case_when(
+    Likely == 0 & Unlikely == 0 ~ 0,
+    TRUE ~ vote
+))
 election2014.probs <- predict(glmer.fit.final, election2014,  type = "response")
 election2014.pred <- rep(0, nrow(election2014))
 election2014.pred[election2014.probs > 0.5] <- 1
 
 election2014.acc <- mean(election2014$vote == election2014.pred)
+election2014.pred.cm <- ifelse(election2014.pred == 0, "Unlikely", "Likely")
+election2014.vote.cm <- ifelse(election2014$vote == 0, "Unlikely", "Likely")
+plot_confusion_matrix(confusion_matrix(election2014.pred.cm ,election2014.vote.cm))
+
 ```
 
-Now, we will consider our model's ability to predict on North Carolina's 2014 Senate election. For our out of sample predictions, we achieved an `r round(election2014.acc,3)*100`% accuracy. This suggests...
+Now, we will consider our model's ability to predict on North Carolina's 2014 Senate election. For our out of sample predictions, we achieved an `r round(election2014.acc,3)*100`% accuracy and our confusion matrix is above. These results are quite similar to our previous confusion matrix, which provides evidence that our model is capable of predicting voter trends outside of the dataset's associated election years.
 
 # Conclusion and Limitations
 
