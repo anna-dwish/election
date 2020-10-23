@@ -429,6 +429,30 @@ arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scale
 # validation_set[which(test.glmer.probs > .6 &  test.glmer.probs < .7), ]
 ```
 
+```{r Out of sample analysis no intrxn, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+election2012 <- readRDS("who_votes_data_2012.Rds")
+election2012 <- election2012 %>%
+  mutate(vote = ifelse(prop > 0.5, 1, 0),
+         vote = ifelse(is.nan(prop), 0, vote),
+         vote = case_when(
+           Likely == 0 & Unlikely == 0 ~ 0,
+           TRUE ~ vote
+         )) %>%
+  mutate(vote = case_when(
+    Likely == 0 & Unlikely == 0 ~ 0,
+    TRUE ~ vote
+))
+election2012.probs <- predict(glmer.fit.final, election2012,  type = "response")
+election2012.pred <- rep(0, nrow(election2012))
+election2012.pred[election2012.probs > 0.5] <- 1
+
+election2012.acc <- mean(election2012$vote == election2012.pred)
+election2012.pred.cm <- ifelse(election2012.pred == 0, "Unlikely", "Likely")
+election2012.vote.cm <- ifelse(election2012$vote == 0, "Unlikely", "Likely")
+plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.cm))
+
+```
+
 ## Age Bin Sensitivity
 
 ```{r age bin sensitivity df, warning=F,message=F,echo=FALSE,results='hide'}
