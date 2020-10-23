@@ -229,7 +229,7 @@ We performed sensitivity analysis to validate the resulting estimates for our co
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "65+")
 ```
 
-```{r cross validation, warning=FALSE, message=F,cache=TRUE}
+```{r cross validation, warning=FALSE, message=F}
 
 set.seed(5934512) # has to be this seed
 fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
@@ -320,14 +320,14 @@ mapdata <- merge(nc, likely.by.county, by = "county_desc")
 ggplot(data=mapdata) + 
   labs(caption="Figure 3") +
   geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts)) +
-  scale_fill_gradient2(low="#948294", mid="#391c3b", high="#301934", "Intercepts By County") +
+  scale_fill_gradient2(low="#948294", mid="#543c54", high="#281934", "Intercepts By County") +
   theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
     panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12),
     legend.key.width =unit(3,"line")) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
 ```
 
-The results of our final model can be viewed in Table 1 in our Appendix, and Figure 3 is a heatmap of the intercepts by county. Visual comparisons suggest that the intercepts account for the variation between counties, but quantitative scores are more valuable to examine the fit of this model. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
+The results of our final model can be viewed in Table 1 in our Appendix, and Figure 3 is a heatmap of the intercepts by county. Relative to our heatmap of likely voter percentage, these intercepts appear to take on less extreme values. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
 
 ```{r initial model cm, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
@@ -347,7 +347,7 @@ arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scale
 # validation_set[which(test.glmer.probs > .6 &  test.glmer.probs < .7), ]
 ```
 
-Our binned residuals, however, reveal some issues for our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote, along with a fanning of a residuals as the likelihood increases. This may cause issues as groups that are less likely to vote have been more active in the past few elections [CITE] and is important to keep in mind. Another possible cause of this issue was the non-linear relationships between age bins and some Race/Ethnicity groups in our exploratory data analysis. This curvature is more clearly visualized in Figure **, which is a binned residual plot resulting from the same model but without the interaction effect between Race/Ethnicity and age. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
+Our binned residuals, however, reveal some issues for our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote, along with a fanning of a residuals as the likelihood increases. This may cause issues as groups that are less likely to vote have been more active in the past few elections [CITE] and is important to keep in mind. Another possible cause of this issue was the non-linear relationships between age bins and some Race/Ethnicity groups in our exploratory data analysis. This curvature is more clearly visualized in Figure 4, which is a binned residual plot resulting from the same model but without the interaction effect between Race/Ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which suggested some differences in counties with very high and very low voter turnout. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
 
 With respect to fixed effects, ...
 
