@@ -389,7 +389,7 @@ With respect to limitations, we will begin by noting that while ** reported biol
 
 ## No Interaction Effect
 
-```{r cross validation, results='hide'}
+```{r cross validation no intrxn, results='hide'}
 set.seed(5934512) # has to be this seed
 fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   mutate(vote = ifelse(prop > 0.5, 1, 0),
@@ -403,88 +403,15 @@ fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_
     TRUE ~ vote
 ))
 
-acc_list = c()
-f1_list = c()
-AUC_list = c()
-
-for (i in 1:5) {
-  print(i)
-  train <- fold_df %>% filter(.folds != i)
-  test <- fold_df %>% filter(.folds == i)
-
-  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 | county_desc),
-                     data = train,
-                     family = binomial,
-                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-
-  glmer.probs <- predict(glmer.fit,  test,  type = "response")
-  glmer.pred <- rep(0, nrow(test))
-  glmer.pred[glmer.probs > 0.5] <- 1
-  
-  
-  acc_list[i] <-  mean(glmer.pred == test$vote)
-  
-  f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
-  
-  # AUC
-  AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
-}
-
-round_perc = function(x) {
-  if (is.double(x)) {
-    round(x*100, digits = 2)
-  }
-}
-acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
-acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc()
-f1_mean = f1_list %>% mean(na.rm=T)  %>% round_perc()
-f1_sd = f1_list %>% sd(na.rm=T)  %>% round_perc()
-AUC_mean = AUC_list %>% mean(na.rm=T)  %>% round_perc()
-AUC_sd = AUC_list %>% sd(na.rm=T)  %>% round_perc()
-
-cv_df <- tibble(
-  Accuracy = paste0(acc_mean, "% ± ", acc_sd, "%"),
-  F1 = paste(f1_mean, "±", f1_sd),
-  AUC = paste(AUC_mean, "±", AUC_sd)
-)
-
 glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 | county_desc),
                     data = fold_df,
                     family = binomial,
                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-
-# sjPlot::tab_model(glmer.fit.final, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results.html")
-# ws <- webshot("results.html", "results.png")
-```
-
-
-```{r intercept heatmap, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-
-map <- map_data("county")
-nc <- subset(map, region =="north carolina")
-nc$subregion <- toupper(nc$subregion)
-nc <- nc %>% dplyr::rename(county_desc=subregion)
-
-county.intercepts <- as.data.frame(coef(glmer.fit.final)[1])
-county.intercepts <- county.intercepts %>% dplyr::rename(intercepts=county_desc..Intercept.)
-county.intercepts$count_desc <- rownames(county.intercepts)
-
-likely.by.county$intercepts <- county.intercepts$intercepts
-mapdata <- merge(nc, likely.by.county, by = "county_desc")
-
-
-ggplot(data=mapdata) + 
-  labs(caption="Figure 3") +
-  geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts)) +
-  scale_fill_gradient2(low="#ffffb7", mid="#a0d8e6", "Intercepts By County") +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
-  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
 ```
 
 The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The average accuracy and average F1-score on our test sets was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r round(test_AUC,3)`.
 
-```{r initial model cm, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+```{r initial model cm no intrxn, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
 test.glmer.preds <- ifelse(test.glmer.probs <= 0.5, "Unlikely", "Likely")
 test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
@@ -493,7 +420,7 @@ plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 
 From the confusion matrix, we can see that we are much more likely to commit a false negative, or incorrectly classifying a group as unlikely to vote when they are in fact likely to vote.
 
-```{r County Random Effects Model Residual Plot,fig.height=3,fig.width=4,fig.align="center", warning=FALSE,echo=FALSE}
+```{r County Random Effects Model Residual Plot no intrxn,fig.height=3,fig.width=4,fig.align="center", warning=FALSE,echo=FALSE}
 arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
                 xlab="Predicted Probabilities", 
                 ylab="Binned Residuals",
