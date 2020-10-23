@@ -193,8 +193,8 @@ who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = 
 ```
 
 ```{r cross validation, results='hide'}
-set.seed(20) # has to be this seed
-fold_df <- groupdata2::fold(who_votes_data, k = 6, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
+set.seed(2234598) # has to be this seed
+fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   mutate(vote = ifelse(prop > 0.5, 1, 0),
          vote = ifelse(is.nan(prop), 0, vote),
          vote = case_when(
@@ -210,9 +210,8 @@ acc_list = c()
 f1_list = c()
 AUC_list = c()
 
-validation_set <- fold_df %>% filter(.folds == 6)
-fold_df <- fold_df %>% filter(.folds != 6)
 for (i in 1:5) {
+  print(i)
   train <- fold_df %>% filter(.folds != i)
   test <- fold_df %>% filter(.folds == i)
 
@@ -265,19 +264,19 @@ glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + ge
                                                           starttests=FALSE,
                                                           kkt=FALSE)))
 
-test.glmer.probs <- predict(glmer.fit.final, validation_set,  type = "response")
-test.glmer.pred <- rep(0, nrow(validation_set))
-test.glmer.pred[test.glmer.probs > 0.5] <- 1
-
-test_acc <-  mean(test.glmer.pred == validation_set$vote)
-test_f1 <- (caret::confusionMatrix(test.glmer.pred %>% as.factor(), validation_set$vote %>% as.factor()))$byClass["F1"]
-test_AUC <- cvAUC::AUC(test.glmer.pred %>% as.double(), validation_set$vote %>% as.double())
-
-test_df <- tibble(
-    Accuracy = paste0(test_acc %>% round_perc(), "%"),
-    F1 = test_f1 %>% round_perc(),
-    AUC = test_AUC %>% round_perc()
-  )
+# test.glmer.probs <- predict(glmer.fit.final, validation_set,  type = "response")
+# test.glmer.pred <- rep(0, nrow(validation_set))
+# test.glmer.pred[test.glmer.probs > 0.5] <- 1
+# 
+# test_acc <-  mean(test.glmer.pred == validation_set$vote)
+# test_f1 <- (caret::confusionMatrix(test.glmer.pred %>% as.factor(), validation_set$vote %>% as.factor()))$byClass["F1"]
+# test_AUC <- cvAUC::AUC(test.glmer.pred %>% as.double(), validation_set$vote %>% as.double())
+# 
+# test_df <- tibble(
+#     Accuracy = paste0(test_acc %>% round_perc(), "%"),
+#     F1 = test_f1 %>% round_perc(),
+#     AUC = test_AUC %>% round_perc()
+#   )
 # bind_cols(cv_df, test_df)
 sjPlot::tab_model(glmer.fit.final, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results.html")
 ws <- webshot("results.html", "results.png")
@@ -307,7 +306,7 @@ ggplot(data=mapdata) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
 ```
 
-The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The accuracy and F1-score on our test set was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an AUC of `r round(test_AUC,3)`.
+The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The average accuracy and average F1-score on our test sets was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r round(test_AUC,3)`.
 
 ```{r initial model cm, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.pred <- ifelse(test.glmer.pred == 0, "Unlikely", "Likely")
