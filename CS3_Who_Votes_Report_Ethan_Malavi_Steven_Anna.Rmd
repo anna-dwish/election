@@ -37,6 +37,8 @@ pkgTest("dplyr")
 pkgTest("grid")
 pkgTest("maps")
 pkgTest("scales")
+pkgTest("webshot")
+pkgTest("magick")
 ```
 
 ```{r load packages, include=FALSE}
@@ -58,6 +60,9 @@ library(scales)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+library(webshot)
+library(magick)
+webshot::install_phantomjs()
 knitr::opts_chunk$set(echo = F)
 ```
 
@@ -201,7 +206,7 @@ test_df <- tibble(
     F1 = test_f1 %>% round_perc(),
     AUC = test_AUC %>% round_perc()
   )
-bind_cols(cv_df, test_df)
+# bind_cols(cv_df, test_df)
 ```
 
 
@@ -217,21 +222,11 @@ glmer.fit1 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender 
                                                           starttests=FALSE,
                                                           kkt=FALSE)))
 
-
-glmer.fit1.random.eff.results <- data.frame(VarCorr(glmer.fit1)) %>% dplyr::select(var1,sdcor)
-glmer.fit1.random.eff.results <- glmer.fit1.random.eff.results[1:5,]
-
-
-pander(glmer.fit1.random.eff.results)
-
-glmer.fit1.fixed.results = data.frame(Estimates=summary(glmer.fit1)$coefficients[, 1], 
-                              Std.Err=summary(glmer.fit1)$coefficients[, 2], 
-                              P.Value=summary(glmer.fit1)$coefficients[, 4])
-pander(glmer.fit1.fixed.results)
-# sjPlot::tab_model(glmer.fit1,
-#                   show.re.var= TRUE,
-#                   dv.labels= "plz can i get a waffle", p.style = "numeric_stars") #0.682
+x <- sjPlot::tab_model(glmer.fit1, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results.html")
+ws <- webshot("results.html", "results.png")
 ```
+
+![Age Bin Random Slope Model](results.png)
 
 ```{r}
 train <- fold_df %>% filter(.folds != 2)
