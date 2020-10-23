@@ -252,7 +252,7 @@ cv_df <- tibble(
   AUC = paste(AUC_mean, "±", AUC_sd)
 )
 
-glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin * race_ethnicity + gender + (1 | county_desc),
+glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
                     data = fold_df,
                     family = binomial,
                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
