@@ -143,13 +143,43 @@ To begin with our model development, we conducted exploratory data analysis to g
 
 $$ 
 \begin{aligned}
-log(\frac{P_i(Likely)}{1-P_i(Likely)}) = \alpha_j + \sum_{a \in A}\beta_a(Age_i=a) +\sum_{r \in R}^{}\beta_r(Race/Ethnicity_i=r) + \sum_{s \in S}^{}\beta_s(Sex_i=s) \\
-a_j \sim  N(\gamma_0 + \gamma_1\mu_j, \tau^2) \\
-A = \{ 18-29,30-39,40-49,50-64,65+ \} \\
-R = \{Hispanic.Any.Race, American.Indian, Asian, Black, Mixed, White\} \\
-S = \{Female,Male\}
+log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \sum_{a =1}^4\alpha_a*I(Age_{ij}=a) +\sum_{r = 5}^{9}\alpha_r*I(Race/Ethnicity_{ij}=r) + \beta_{10}(Sex_{ij}=Man) \\
+\left(\begin{array}{c} 
+\alpha_{a0j}\\
+\alpha_{a1j}\\
+\alpha_{a2j}\\
+\alpha_{a3j}\\
+\alpha_{a4j}
+\end{array}\right)
+\sim
+N( \left(\begin{array}{c} 
+\gamma_{0}\\
+\beta_{1}\\
+\beta_{2}\\
+\beta_{3}\\
+\beta_{4}
+\end{array}\right), \left(\begin{array}{cc} 
+\sigma_0^2 & \sigma_{0,a1} & \sigma_{0,2} & \sigma_{0,a3} & \sigma_{0,4}\\ 
+\sigma_{1,0} & \sigma_{1}^2 & \sigma_{1,2} & \sigma_{1,3} & \sigma_{1,4}\\ 
+\sigma_{2,0} & \sigma_{2,a1} & \sigma_{2}^2 & \sigma_{2,3} & \sigma_{2,4}\\ 
+\sigma_{3,0} & \sigma_{3,a1} & \sigma_{3,2} & \sigma_{3}^2 & \sigma_{3,4}\\ 
+\sigma_{4,0} & \sigma_{4,a1} & \sigma_{4,2} & \sigma_{4,3} & \sigma_{4}^2
+\end{array}\right)) \\
+A = \{ 18-29,30-39,50-64,65+ \} \\
+R = \{American.Indian, Asian, Black, Mixed, White\}
 \end{aligned}
 $$
+$$ 
+\begin{aligned}
+log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \sum_{a =1}^4\alpha_a*I(Age_{ij}=a) +\sum_{r = 5}^{9}\alpha_r*I(Race/Ethnicity_{ij}=r) + \beta_{10}(Sex_{ij}=Man) \\
+\alpha_j ~
+\sim
+N(\alpha_0,\tau^2) \\
+A = \{ 18-29,30-39,50-64,65+ \} \\
+R = \{American.Indian, Asian, Black, Mixed, White\}
+\end{aligned}
+$$
+
 
 We compared this model to one with only a random intercept for county, ones with a random intercept for county and random effect slopes for race-ethnicity and sex, and ones with interaction effects. In order to compare the fits of these models, we examined F1-scores, confusion matrices, and ROC-curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we partitioned our dataset into 6 folds and performed 5-fold cross validation, predicted on the final test set, and conducted out-of-sample prediction with the 2014 mid-term election.
 
@@ -158,12 +188,12 @@ We performed sensitivity analysis to validate the resulting estimates for our co
 # Results and Discussion
 
 ```{r Relevel age bins}
-who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "40-49")
+who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "65+")
 # who_votes_data$race_ethnicity <- relevel(who_votes_data$race_ethnicity %>% as.factor(), ref = "Non-Hispanic White")
 ```
 
 ```{r cross validation, results='hide'}
-set.seed(20201022) # has to be this seed
+set.seed(20) # has to be this seed
 fold_df <- groupdata2::fold(who_votes_data, k = 6, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   mutate(vote = ifelse(prop > 0.5, 1, 0),
          vote = ifelse(is.nan(prop), 0, vote),
@@ -186,7 +216,7 @@ for (i in 1:5) {
   train <- fold_df %>% filter(.folds != i)
   test <- fold_df %>% filter(.folds == i)
 
-  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
+  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 | county_desc),
                      data = train,
                      family = binomial,
                      control = glmerControl(optimizer = "optimx",
@@ -226,7 +256,7 @@ cv_df <- tibble(
   AUC = paste(AUC_mean, "±", AUC_sd)
 )
 
-glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
+glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 | county_desc),
                     data = fold_df,
                     family = binomial,
                     control = glmerControl(optimizer = "optimx",
@@ -388,11 +418,13 @@ glmer.fit.final.reaged <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnici
                                            optCtrl = list(method = "nlminb",
                                                           starttests=FALSE,
                                                           kkt=FALSE)))
-sjPlot::tab_model(glmer.fit.final.reaged, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results_reaged.html")
-ws <- webshot("results_reaged.html", "results_reaged.png")
+# sjPlot::tab_model(glmer.fit.final.reaged, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results_reaged.html")
+# webshot("results_reaged.html", "results_reaged.png")
 ```
 
-![Table 2: Age Bin Sensitivity Models](results_reaged.png)
+```{r}
+# include_graphics("results_reaged.png")
+```
 
 ## Other Code
 
