@@ -109,6 +109,8 @@ In general, we see an increasing trend with age for *Hispanic Any Race*, *Non-Hi
 
 In general, there appears to be a higher proportion of likely voters among women compared to men. For, *Hispanic Any Race*, *Non-Hispanic Asian*, and *Non-Hispanic Mixed* groups, this trend levels off for the two oldest age groups.
 
+In general, there appears to be a higher proportion of likely voters among women compared to men. For, *Hispanic Any Race*, *Non-Hispanic Asian*, and *Non-Hispanic Mixed* groups, this trend levels off for the two oldest age groups.
+
 ```{r EDA p2, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 # http://www.peterhaschke.com/r/2013/12/05/NCmaps.html
 
@@ -213,12 +215,12 @@ for (i in 1:5) {
   print(i)
   train <- fold_df %>% filter(.folds != i)
   test <- fold_df %>% filter(.folds == i)
-  
+
   glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin * race_ethnicity + gender + (1 | county_desc),
                      data = train,
                      family = binomial,
                      control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-  
+
   glmer.probs <- predict(glmer.fit,  test,  type = "response")
   glmer.pred <- rep(0, nrow(test))
   glmer.pred[glmer.probs > 0.5] <- 1
@@ -272,6 +274,22 @@ county.intercepts$count_desc <- rownames(county.intercepts)
 
 likely.by.county$intercepts <- county.intercepts$intercepts
 mapdata <- merge(nc, likely.by.county, by = "county_desc")
+```
+
+```{r intercept heatmap, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+
+map <- map_data("county")
+nc <- subset(map, region =="north carolina")
+nc$subregion <- toupper(nc$subregion)
+nc <- nc %>% dplyr::rename(county_desc=subregion)
+
+county.intercepts <- as.data.frame(coef(glmer.fit.final)[1])
+county.intercepts <- county.intercepts %>% dplyr::rename(intercepts=county_desc..Intercept.)
+county.intercepts$count_desc <- rownames(county.intercepts)
+
+likely.by.county$intercepts <- county.intercepts$intercepts
+mapdata <- merge(nc, likely.by.county, by = "county_desc")
+
 
 ggplot(data=mapdata) + 
   labs(caption="Figure 3") +
