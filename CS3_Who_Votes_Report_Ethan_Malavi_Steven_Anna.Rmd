@@ -212,35 +212,7 @@ To begin with our model development, we conducted exploratory data analysis to g
 
 $$ 
 \begin{aligned}
-log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \sum_{a =1}^4\alpha_a*I(Age_{ij}=a) +\sum_{r = 5}^{9}\alpha_r*I(Race/Ethnicity_{ij}=r) + \beta_{10}(Sex_{ij}=Man) \\
-\left(\begin{array}{c} 
-\alpha_{a0j}\\
-\alpha_{a1j}\\
-\alpha_{a2j}\\
-\alpha_{a3j}\\
-\alpha_{a4j}
-\end{array}\right)
-\sim
-N( \left(\begin{array}{c} 
-\gamma_{0}\\
-\beta_{1}\\
-\beta_{2}\\
-\beta_{3}\\
-\beta_{4}
-\end{array}\right), \left(\begin{array}{cc} 
-\sigma_0^2 & \sigma_{0,a1} & \sigma_{0,2} & \sigma_{0,a3} & \sigma_{0,4}\\ 
-\sigma_{1,0} & \sigma_{1}^2 & \sigma_{1,2} & \sigma_{1,3} & \sigma_{1,4}\\ 
-\sigma_{2,0} & \sigma_{2,a1} & \sigma_{2}^2 & \sigma_{2,3} & \sigma_{2,4}\\ 
-\sigma_{3,0} & \sigma_{3,a1} & \sigma_{3,2} & \sigma_{3}^2 & \sigma_{3,4}\\ 
-\sigma_{4,0} & \sigma_{4,a1} & \sigma_{4,2} & \sigma_{4,3} & \sigma_{4}^2
-\end{array}\right)) \\
-A = \{ 18-29,30-39,50-64,65+ \} \\
-R = \{American.Indian, Asian, Black, Mixed, White\}
-\end{aligned}
-$$
-$$ 
-\begin{aligned}
-log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \sum_{a =1}^4\alpha_a*I(Age_{ij}=a) +\sum_{r = 5}^{9}\alpha_r*I(Race/Ethnicity_{ij}=r) + \beta_{10}(Sex_{ij}=Man) \\
+log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{0j} + \sum_{a =1}^4\alpha_{1a}*I(Age_{ij}=a) +\sum_{r = 1}^{5}\alpha_{2r}*I(Race/Ethnicity_{ij}=r) +\sum_{c = 1}^{20}\alpha_{3c}*I(Race/Ethnicity_{ij}=r) \beta_{10}(Sex_{ij}=Man) \\
 \alpha_j ~
 \sim
 N(\alpha_0,\tau^2) \\
