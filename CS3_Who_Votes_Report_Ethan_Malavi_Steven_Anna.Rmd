@@ -216,13 +216,11 @@ $$
 \begin{aligned}
 log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \alpha_{1} * I(Gender_{ij}=Male) + &\sum_{a = 2}^5\alpha_{2a}*I(Age_{ij}=a) + \  \\
 \sum_{r = 2}^{6}\alpha_{3r}*I(Race/Ethnicity_{ij}=r) +\sum_{c = 11}^{30}\alpha_{4c}*I & (Age_{ij}, \ Race/Ethnicity_{ij}=c)  \\
-
-\alpha_j \sim N(\alpha_0,\tau^2) \\
-
+\alpha_j \sim N(\alpha_0,\tau^2)
 \end{aligned}
 $$
 
-$A = \{18-29,30-39,40-49,50-64,65+ \} \\$
+$A = \{18-29,30-39,40-49,50-64,65+ \}$
 $R = \{American.Indian, Asian, Black, Mixed, White\}$, specify how C is indexed. 
 We compared this model to one with only a random intercept for county, ones with a random intercept for county and random effect slopes for race-ethnicity and sex, and ones with interaction effects. In order to compare the fits of these models, we examined F1-scores, confusion matrices, and ROC-curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we partitioned our dataset into 6 folds and performed 5-fold cross validation, predicted on the final test set, and conducted out-of-sample prediction with the 2014 mid-term election.
 
@@ -298,10 +296,16 @@ glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + ge
                     family = binomial,
                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
 
-sjPlot::tab_model(glmer.fit.final, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results.html")
-ws <- webshot("results.html", "results.png")
+results <- data.frame(VarCorr(glmer.fit.final))
+final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
+
+final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
+                              Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
+                              P.Value=summary(glmer.fit.final)$coefficients[, 4])
+pander(final.model.fixed.results, caption = "Random County Intercept Model")
+
 ```
-![Table 1: Random County Intercept and Age Slope Model](results.png)
+
 
 ```{r intercept heatmap, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 
@@ -412,8 +416,6 @@ glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + ge
 #The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The average accuracy and average F1-score on our test sets was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r round(test_AUC,3)`.
 ```
 
-
-
 ```{r initial model cm no intrxn, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
 test.glmer.preds <- ifelse(test.glmer.probs <= 0.5, "Unlikely", "Likely")
@@ -472,13 +474,12 @@ who_votes_data_reaged <- who_votes_data_reaged %>%
   dplyr::select(everything()) %>% 
   dplyr::group_by(county_desc,age_bin,race_ethnicity,gender) %>% 
   dplyr::summarise(Likely=sum(Likely),Unlikely=sum(Unlikely)) %>% ungroup() 
-who_votes_data_reaged$age_bin <- relevel(who_votes_data_reaged$age_bin %>% as.factor(), ref = "40-64")
+who_votes_data_reaged$age_bin <- relevel(who_votes_data_reaged$age_bin %>% as.factor(), ref = "65+")
 who_votes_data_reaged$prop = who_votes_data_reaged$Likely/(who_votes_data_reaged$Likely + who_votes_data_reaged$Unlikely)
 ```
 
-```{r age bin cross validation, results='hide'}
-set.seed(20) # has to be this seed
-fold_df <- groupdata2::fold(who_votes_data_reaged, k = 6, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
+```{r age bin sensitivity analysis model results}
+fold_df <- groupdata2::fold(who_votes_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   mutate(vote = ifelse(prop > 0.5, 1, 0),
          vote = ifelse(is.nan(prop), 0, vote),
          vote = case_when(
@@ -494,11 +495,7 @@ acc_list = c()
 f1_list = c()
 AUC_list = c()
 
-validation_set <- fold_df %>% filter(.folds == 6)
-fold_df <- fold_df %>% filter(.folds != 6)
-fold_df <- fold_df %>% filter(.folds != 5)
-
-glmer.fit.final.reaged <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
+glmer.fit.final.reaged <- glmer(cbind(Likely, Unlikely) ~ age_bin * race_ethnicity + gender + (1 | county_desc),
                     data = fold_df,
                     family = binomial,
                     control = glmerControl(optimizer = "optimx",
@@ -506,10 +503,12 @@ glmer.fit.final.reaged <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnici
                                            optCtrl = list(method = "nlminb",
                                                           starttests=FALSE,
                                                           kkt=FALSE)))
-# sjPlot::tab_model(glmer.fit.final.reaged, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results_reaged.html")
-# webshot("results_reaged.html", "results_reaged.png")
+results.reaged <- data.frame(VarCorr(glmer.fit.final.reaged))
+final.model.random.results.reaged <- data.frame("Intercept"=c(round(results.reaged[1,4],3)),"Std.Dev"=c(round(results.reaged[1,5],3)))
+
+final.model.fixed.results.reaged = data.frame(Estimates=summary(glmer.fit.final.reaged)$coefficients[, 1], 
+                              Std.Err=summary(glmer.fit.final.reaged)$coefficients[, 2], 
+                              P.Value=summary(glmer.fit.final.reaged)$coefficients[, 4])
+pander(final.model.fixed.results.reaged, caption = "Age Bin Sensitivity Analysis Model")
 ```
 
-```{r}
-# include_graphics("results_reaged.png")
-```
