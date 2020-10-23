@@ -18,7 +18,8 @@ pkgTest <- function(x)
 ```
 
 ```{r package test, include=FALSE}
-# Installing packages 
+# Installing packages
+pkgTest("knitr")
 pkgTest("tidyverse")
 pkgTest("optimx")
 pkgTest("lme4")
@@ -39,6 +40,8 @@ pkgTest("maps")
 pkgTest("scales")
 pkgTest("webshot")
 pkgTest("magick")
+pkgTest("cvms")
+pkgTest("png")
 ```
 
 ```{r load packages, include=FALSE}
@@ -62,6 +65,9 @@ library(tidyr)
 library(dplyr)
 library(webshot)
 library(magick)
+library(cvms)
+library(png)
+library(knitr)
 webshot::install_phantomjs()
 knitr::opts_chunk$set(echo = F)
 ```
@@ -136,23 +142,27 @@ In Figure 2, we see a broad distribution of likely voter percentages. This motiv
 To begin with our model development, we conducted exploratory data analysis to get a sense of which covariates were influential in determining likelihood to vote, along with any possible interactions. This led to our starting model: 
 
 $$ 
-log(\frac{Likely_i}{1-Likely_i}) = \alpha_j + \sum_{a \in A}\beta_a(Age_i=a) +\sum_{r \in R}^{}\beta_r(Race/Ethnicity_i=r) + \sum_{s \in S}^{}\beta_s(Sex_i=s) \\
+\begin{aligned}
+log(\frac{P_i(Likely)}{1-P_i(Likely)}) = \alpha_j + \sum_{a \in A}\beta_a(Age_i=a) +\sum_{r \in R}^{}\beta_r(Race/Ethnicity_i=r) + \sum_{s \in S}^{}\beta_s(Sex_i=s) \\
 a_j \sim  N(\gamma_0 + \gamma_1\mu_j, \tau^2) \\
 A = \{ 18-29,30-39,40-49,50-64,65+ \} \\
 R = \{Hispanic.Any.Race, American.Indian, Asian, Black, Mixed, White\} \\
 S = \{Female,Male\}
+\end{aligned}
 $$
 
-We compared this model to one with only a random intercept for county, ones with a random intercept for county and random effect slopes for race-ethnicity and sex, and ones with interaction effects. In order to compare the fits of these models, we examined F1-scores, confusion matrices, and ROC-curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we performed 5-fold cross validation and out-of-sample prediction with the 2014 mid-term election.
+We compared this model to one with only a random intercept for county, ones with a random intercept for county and random effect slopes for race-ethnicity and sex, and ones with interaction effects. In order to compare the fits of these models, we examined F1-scores, confusion matrices, and ROC-curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we partitioned our dataset into 6 folds and performed 5-fold cross validation, predicted on the final test set, and conducted out-of-sample prediction with the 2014 mid-term election.
 
-We performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models with frequentist methods. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$ and observed similar estimates for the other covariates.
+We performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models with frequentist methods. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$, recreated our final model, and observed similar estimates for the other covariates. The results of this model are in Table 2 in the Appendix.
+
+# Results and Discussion
 
 ```{r Relevel age bins}
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "40-49")
 # who_votes_data$race_ethnicity <- relevel(who_votes_data$race_ethnicity %>% as.factor(), ref = "Non-Hispanic White")
 ```
 
-```{r cross validation}
+```{r cross validation, results='hide'}
 set.seed(20201022) # has to be this seed
 fold_df <- groupdata2::fold(who_votes_data, k = 6, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   mutate(vote = ifelse(prop > 0.5, 1, 0),
@@ -164,8 +174,7 @@ fold_df <- groupdata2::fold(who_votes_data, k = 6, cat_col = c("age_bin", "race_
   mutate(vote = case_when(
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-  ))
-
+))
 
 acc_list = c()
 f1_list = c()
@@ -217,7 +226,16 @@ cv_df <- tibble(
   AUC = paste(AUC_mean, "±", AUC_sd)
 )
 
-test.glmer.probs <- predict(glmer.fit, validation_set,  type = "response")
+glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
+                    data = fold_df,
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
+
+test.glmer.probs <- predict(glmer.fit.final, validation_set,  type = "response")
 test.glmer.pred <- rep(0, nrow(validation_set))
 test.glmer.pred[test.glmer.probs > 0.5] <- 1
 
@@ -231,11 +249,151 @@ test_df <- tibble(
     AUC = test_AUC %>% round_perc()
   )
 # bind_cols(cv_df, test_df)
+sjPlot::tab_model(glmer.fit.final, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results.html")
+ws <- webshot("results.html", "results.png")
+```
+![Table 1: Random County Intercept and Age Slope Model](results.png)
+
+```{r intercept heatmap, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+
+map <- map_data("county")
+nc <- subset(map, region =="north carolina")
+nc$subregion <- toupper(nc$subregion)
+nc <- nc %>% dplyr::rename(county_desc=subregion)
+
+county.intercepts <- as.data.frame(coef(glmer.fit.final)[1])
+county.intercepts <- county.intercepts %>% dplyr::rename(intercepts=county_desc..Intercept.)
+county.intercepts$count_desc <- rownames(county.intercepts)
+
+likely.by.county$intercepts <- county.intercepts$intercepts
+mapdata <- merge(nc, likely.by.county, by = "county_desc")
+
+ggplot(data=mapdata) + 
+  labs(caption="Figure 3") +
+  geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts)) +
+  scale_fill_gradient2(low="#ffffb7", mid="#a0d8e6", "Intercepts By County") +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
+```
+
+The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The accuracy and F1-score on our test set was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an AUC of `r round(test_AUC,3)`.
+
+```{r initial model cm, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+test.glmer.pred <- ifelse(test.glmer.pred == 0, "Unlikely", "Likely")
+validation_set$vote <- ifelse(validation_set$vote == 0, "Unlikely", "Likely")
+plot_confusion_matrix(confusion_matrix(test.glmer.pred,validation_set$vote))
+```
+
+From the confusion matrix, we can see that we are much more likely to commit a false negative, or incorrectly classifying a group as unlikely to vote when they are in fact likely to vote.
+
+```{r County Random Effects Model Residual Plot,fig.height=3,fig.width=4,fig.align="center", warning=FALSE,echo=FALSE}
+arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
+                xlab="Predicted Probabilities", 
+                ylab="Binned Residuals",
+                main = "Figure 4: Random County Intercept and Age Slope Model",
+                cex.main=0.9, cex.lab=0.8)
+# validation_set[which(test.glmer.probs > .6 &  test.glmer.probs < .7), ]
 ```
 
 
+Our binned residuals agree with the issues we saw arise in the confusion matrix, as there is a notable majority of positive residuals, along with a few high outliers. Further examination of this issue showed that it was largely the two oldest age groups that were being misclassified, suggesting we are underestimating the effect of age on likelihood to vote. One possible explanation of this is the varying relationship of age across race-ethnicity groups. While we considered adding an interaction effect between race-ethnicity and age-group, we experienced significant convergence issues and inflated standard errors when doing so.
 
-```{r}
+```{r Out of sample analysis, warning=FALSE,echo=FALSE}
+# ad hoc summaries, created using assumptions from this website https://democracync.org/wp-content/uploads/2018/04/20142010TurnoutChanges-1.pdf
+election2014 <- data.frame(county_desc = c("ALLEGHANY","YANCEY", "TYRRELL", "ROBESON" ), 
+                           age_bin=c("65+", "18-29", "50-64", "30-39"), 
+                           race_ethnicity=c("Non-Hispanic White","Non-Hispanic Black", "Hispanic Any Race", "Non-Hispanic American Indian"), 
+                           gender=c("M","F", "M", "F"), vote=c(1,1,0,1))
+election2014.probs <- predict(glmer.fit.final, election2014,  type = "response")
+election2014.pred <- rep(0, nrow(election2014))
+election2014.pred[election2014.probs > 0.5] <- 1
+
+election2014.acc <- mean(election2014$vote == election2014.pred)
+```
+
+Now, we will consider our model's ability to predict on North Carolina's 2014 Senate election. For our out of sample predictions, we achieved an `r round(election2014.acc,3)*100`% accuracy. This suggests...
+
+# Conclusion and Limitations
+
+Our goal in this case study were to gain a stronger understanding of the demographic composition of Noth Carolina voters relative to its overall population. By combining previous voter registration and history information with the 2020 census data, we were able to create a random effects model that accounted for the relationship between county, age, sex, and race-ethnicity and voter likelihood. By verifying our resulting model with cross validation and out of sample procedures, we were able to interpret and understand the strengths and limitations of our final model.
+
+With respect to limitations, we will begin by noting that while ** reported biological sex, data from ** reported gender. For this reason, we could not map every gender identity from ** onto the different groups we considered. This limited us to a binary on gender. Secondly, the race-ethnicity groups from these two sources also did not align well. Another issue in this area is that we could not afford to be granular of the many different racial-ethnic groups that exist in North Carolina without significantly reducing our models' abilities to converge. Finally, the voter registration data did not include Pacific Islanders at all, so they were also excluded from our estimates.
+
+# Appendix
+
+## Age Bin Sensitivity
+
+```{r age bin sensitivity df, warning=F,message=F,echo=FALSE,results='hide'}
+who_votes_data_reaged <- who_votes_data
+who_votes_data_reaged$age_bin <- as.character(who_votes_data_reaged$age_bin)
+who_votes_data_reaged <- who_votes_data_reaged %>% mutate(age_bin = case_when(
+          age_bin == "18-29" ~ "18-39",
+          age_bin == "30-39" ~ "18-39",
+          age_bin == "40-49" ~ "40-64",
+          age_bin == "50-64" ~ "40-64",
+          age_bin == "65+" ~ "65+",
+          TRUE ~ age_bin))
+who_votes_data_reaged <- who_votes_data_reaged %>% 
+  dplyr::select(everything()) %>% 
+  dplyr::group_by(county_desc,age_bin,race_ethnicity,gender) %>% 
+  dplyr::summarise(Likely=sum(Likely),Unlikely=sum(Unlikely)) %>% ungroup() 
+who_votes_data_reaged$age_bin <- relevel(who_votes_data_reaged$age_bin %>% as.factor(), ref = "40-64")
+who_votes_data_reaged$prop = who_votes_data_reaged$Likely/(who_votes_data_reaged$Likely + who_votes_data_reaged$Unlikely)
+```
+
+```{r age bin cross validation, results='hide'}
+set.seed(20) # has to be this seed
+fold_df <- groupdata2::fold(who_votes_data_reaged, k = 6, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
+  mutate(vote = ifelse(prop > 0.5, 1, 0),
+         vote = ifelse(is.nan(prop), 0, vote),
+         vote = case_when(
+           Likely == 0 & Unlikely == 0 ~ 0,
+           TRUE ~ vote
+         )) %>%
+  mutate(vote = case_when(
+    Likely == 0 & Unlikely == 0 ~ 0,
+    TRUE ~ vote
+))
+
+acc_list = c()
+f1_list = c()
+AUC_list = c()
+
+validation_set <- fold_df %>% filter(.folds == 6)
+fold_df <- fold_df %>% filter(.folds != 6)
+fold_df <- fold_df %>% filter(.folds != 5)
+
+glmer.fit.final.reaged <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
+                    data = fold_df,
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
+sjPlot::tab_model(glmer.fit.final.reaged, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results_reaged.html")
+ws <- webshot("results_reaged.html", "results_reaged.png")
+```
+
+![Table 2: Age Bin Sensitivity Models](results_reaged.png)
+
+## Other Code
+
+```{r, eval=F}
+train <- fold_df %>% filter(.folds != 1)
+glmer.fit1 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
+                    data = train,
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
+```
+
+
+```{r, eval=F}
 train <- fold_df %>% filter(.folds != 1)
 glmer.fit1 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
@@ -246,13 +404,9 @@ glmer.fit1 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender 
                                                           starttests=FALSE,
                                                           kkt=FALSE)))
 
-x <- sjPlot::tab_model(glmer.fit1, show.re.var= TRUE,dv.labels= "Effect of Class and Course Materials", p.style = "numeric_stars", file = "results.html")
-ws <- webshot("results.html", "results.png")
 ```
 
-![Age Bin Random Slope Model](results.png)
-
-```{r}
+```{r, eval=F}
 train <- fold_df %>% filter(.folds != 2)
 glmer.fit2 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
@@ -264,7 +418,7 @@ glmer.fit2 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender 
                                                           kkt=FALSE)))
 ```
 
-```{r}
+```{r, eval=F}
 train <- fold_df %>% filter(.folds != 3)
 glmer.fit3 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
@@ -276,7 +430,7 @@ glmer.fit3 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender 
                                                           kkt=FALSE)))
 ```
 
-```{r}
+```{r, eval=F}
 train <- fold_df %>% filter(.folds != 4)
 glmer.fit4 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
@@ -288,7 +442,7 @@ glmer.fit4 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender 
                                                           kkt=FALSE)))
 ```
 
-```{r}
+```{r, eval=F}
 train <- fold_df %>% filter(.folds != 5)
 glmer.fit5 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
