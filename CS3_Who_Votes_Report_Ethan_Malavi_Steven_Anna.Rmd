@@ -214,26 +214,16 @@ To begin with our model development, we conducted exploratory data analysis to g
 
 $$ 
 \begin{aligned}
-log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{0j} + \sum_{a =1}^4\alpha_{1a}*I(Age_{ij}=a) +\sum_{r = 1}^{5}\alpha_{2r}*I(Race/Ethnicity_{ij}=r) +\sum_{c = 1}^{20}\alpha_{3c}*I(Race/Ethnicity_{ij}=r) \beta_{10}(Sex_{ij}=Man) \\
-\alpha_j ~
-\sim
-N(\alpha_0,\tau^2) \\
-A = \{ 18-29,30-39,50-64,65+ \} \\
-R = \{American.Indian, Asian, Black, Mixed, White\}
+log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \alpha_{1} * I(Gender_{ij}=Male) + &\sum_{a = 2}^5\alpha_{2a}*I(Age_{ij}=a) + \  \\
+\sum_{r = 2}^{6}\alpha_{3r}*I(Race/Ethnicity_{ij}=r) +\sum_{c = 11}^{30}\alpha_{4c}*I & (Age_{ij}, \ Race/Ethnicity_{ij}=c)  \\
+
+\alpha_j \sim N(\alpha_0,\tau^2) \\
+
 \end{aligned}
 $$
 
-$$ 
-\begin{aligned}
-log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{0j} + \alpha_{1???}(Gender_{ij}=Male) + \sum_{a = 1}^4\alpha_{2a}*I(Age_{ij}=a) + \\\sum_{r = 1}^{5}\alpha_{3r}*I(Race/Ethnicity_{ij}=r) +\sum_{c = 1}^{20}\alpha_{4c}*I(Race/Ethnicity_{ij}=r)  \\
-\alpha_j ~
-\sim
-N(\alpha_0,\tau^2) \\
-A = \{ 18-29,30-39,50-64,65+ \} \\
-R = \{American.Indian, Asian, Black, Mixed, White\}
-\end{aligned}
-$$
-
+$A = \{18-29,30-39,40-49,50-64,65+ \} \\$
+$R = \{American.Indian, Asian, Black, Mixed, White\}$, specify how C is indexed. 
 We compared this model to one with only a random intercept for county, ones with a random intercept for county and random effect slopes for race-ethnicity and sex, and ones with interaction effects. In order to compare the fits of these models, we examined F1-scores, confusion matrices, and ROC-curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we partitioned our dataset into 6 folds and performed 5-fold cross validation, predicted on the final test set, and conducted out-of-sample prediction with the 2014 mid-term election.
 
 We performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models with frequentist methods. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$, recreated our final model, and observed similar estimates for the other covariates. The results of this model are in Table 2 in the Appendix.
