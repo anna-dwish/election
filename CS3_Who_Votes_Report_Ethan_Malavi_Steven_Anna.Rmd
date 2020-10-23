@@ -221,6 +221,16 @@ R = \{American.Indian, Asian, Black, Mixed, White\}
 \end{aligned}
 $$
 
+$$ 
+\begin{aligned}
+log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{0j} + \alpha_{1???}(Gender_{ij}=Male) + \sum_{a = 1}^4\alpha_{2a}*I(Age_{ij}=a) + \\\sum_{r = 1}^{5}\alpha_{3r}*I(Race/Ethnicity_{ij}=r) +\sum_{c = 1}^{20}\alpha_{4c}*I(Race/Ethnicity_{ij}=r)  \\
+\alpha_j ~
+\sim
+N(\alpha_0,\tau^2) \\
+A = \{ 18-29,30-39,50-64,65+ \} \\
+R = \{American.Indian, Asian, Black, Mixed, White\}
+\end{aligned}
+$$
 
 We compared this model to one with only a random intercept for county, ones with a random intercept for county and random effect slopes for race-ethnicity and sex, and ones with interaction effects. In order to compare the fits of these models, we examined F1-scores, confusion matrices, and ROC-curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we partitioned our dataset into 6 folds and performed 5-fold cross validation, predicted on the final test set, and conducted out-of-sample prediction with the 2014 mid-term election.
 
@@ -325,7 +335,7 @@ ggplot(data=mapdata) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
 ```
 
-The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The average accuracy and average F1-score on our test sets was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r round(test_AUC,3)`.
+The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
 
 ```{r initial model cm, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
@@ -377,7 +387,7 @@ plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.c
 
 ```
 
-Now, we will consider our model's ability to predict on North Carolina's 2014 Senate election. For our out of sample predictions, we achieved an `r round(election2014.acc,3)*100`% accuracy and our confusion matrix is above. These results are quite similar to our previous confusion matrix, which provides evidence that our model is capable of predicting voter trends outside of the dataset's associated election years.
+Now, we will consider our model's ability to predict on North Carolina's 2014 Senate election. For our out of sample predictions, we achieved an `r round(election2012.acc,3)*100`% accuracy and our confusion matrix is above. These results are quite similar to our previous confusion matrix, which provides evidence that our model is capable of predicting voter trends outside of the dataset's associated election years.
 
 # Conclusion and Limitations
 
@@ -407,9 +417,10 @@ glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + ge
                     data = fold_df,
                     family = binomial,
                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+#The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The average accuracy and average F1-score on our test sets was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r round(test_AUC,3)`.
 ```
 
-The results of our final model can be viewed in Table ** along with a heatmap of the intercepts by county. The average accuracy and average F1-score on our test sets was `r round(test_acc,3)` and `r round(test_f1,3)` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r round(test_AUC,3)`.
+
 
 ```{r initial model cm no intrxn, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
