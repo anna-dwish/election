@@ -78,6 +78,16 @@ In 2019, the Supreme Court asserted that federal courts were not allowed to rule
 
 Our study will use publicly available voter, registration, and census data in order to determine the number of likely and unlikely voters across various demographic groups in the 100 counties of North Carolina. After performing data munging and harmonization, we implement a multilevel logistic regression model with random county intercepts to make statements regarding an individual's likelihood of voting. In order to assess the performance of the model, we then perform both 5-fold cross validation and out of sample validation using data from the 2012 elections. We conclude with a discussion of which demographic characteristics have a significant impact on the likelihood of voting, quantifications of these relationships, and limitations to our data and approach. 
 
+# Data Description
+
+Data for this study comes from North Carolina voter history, North Carolina voter registration information, and the census. Voting and registration data were used in conjunction with the census in order to not only understand who votes, but also who *does not*. Below we describe these various data sources as well as the munging and harmonization process used to obtain a singular, comprehensive dataset. 
+
+## Voter History and Registration Data
+
+The North Carolina voter history dataset shows how each voter in North Carolina, uniquely identified by a voter registration number, voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we designated those who voted in 2016 as “likely” voters for the 2020 elections. This decision was made due to the fact that both 2016 and 2020 are presidential election years. 
+
+
+
 
 # Exploratory Data Analysis
 
