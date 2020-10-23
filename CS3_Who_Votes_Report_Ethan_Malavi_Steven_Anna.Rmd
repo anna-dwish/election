@@ -105,7 +105,7 @@ who_votes_data %>%
 
 In Figure 1, we can see the proportion of likely voters across race-ethnicity, sex, and age group identities. There appears to be profound differences in likely voter proportion among the different race-ethnicity groups. *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups generally have a much higher proportion of likely voters relative to other groups in North Carolina.
 
-In general, we see an increasing trend with age for *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups. This is slightly less profound for *Hispanic Any Race*, *Non-Hispanic Asian*, and *Non-Hispanic Mixed* groups.
+In general, we see an increasing trend with age for *Hispanic Any Race*, *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups. This is slightly less profound for *Non-Hispanic Asian*, and *Non-Hispanic Mixed* groups.
 
 In general, there appears to be a higher proportion of likely voters among women compared to men. For, *Hispanic Any Race*, *Non-Hispanic Asian*, and *Non-Hispanic Mixed* groups, this trend levels off for the two oldest age groups.
 
@@ -296,8 +296,13 @@ arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scale
 # validation_set[which(test.glmer.probs > .6 &  test.glmer.probs < .7), ]
 ```
 
+Our binned residuals agree with the issues we saw arise in the confusion matrix, as there is a notable majority of positive residuals, along with a few high outliers. Further examination of this issue showed that it was largely the two oldest age groups that were being misclassified, suggesting we are underestimating the effect of age on likelihood to vote. One possible explanation of this is the varying relationship of age across race-ethnicity groups. While we considered adding an interaction effect between race-ethnicity and age-group, we experienced significant convergence issues and inflated standard errors when doing so. For these reasons, we have selected this as our final model.
 
-Our binned residuals agree with the issues we saw arise in the confusion matrix, as there is a notable majority of positive residuals, along with a few high outliers. Further examination of this issue showed that it was largely the two oldest age groups that were being misclassified, suggesting we are underestimating the effect of age on likelihood to vote. One possible explanation of this is the varying relationship of age across race-ethnicity groups. While we considered adding an interaction effect between race-ethnicity and age-group, we experienced significant convergence issues and inflated standard errors when doing so.
+With respect to fixed effects, our model reflects the trend we saw with race-ethnicity and sex in our EDA. For race-ethnicity, if we hold age bin and sex constant, we are 95% confident that the odds Non-Hispanic American Indian groups are likely voters is between 1.98 and 2.11 times greater than that of Hispanic Any Race groups. With the same constraints, we are 95% confident that the odds Non-Hispanic Asian groups are likely voters is between 0.54 and 0.56 times less than that of Hispanic Any Race groups. For sex, holding age bin and race-ethnicity constant, we are 95% confident that the odds that group of men are likely voters is between 0.61 and 0.62 times less than that of women.
+
+In regards to the random effects for county, visual comparisons between Figure 2 and Figure 3 indicate a relatively similar distribution. There appears to be slightly more homogeneity in Figure 3 in neighboring counties than Figure 2, and this is likely due to the assumption that the county intercepts stem from the same distribution.
+
+Finally, with respect to the random effect slopes, we can examine the changing relationship of age bin and likelihood to vote. Holding race-ethnicity and sex constant, we are 95% confident the odds 18-29 year olds are likely voters is between 0.06 and 0.11 times less likely than 40-49 year olds in ** County (?). In contrast, we estimate that the odds 65+ year olds are likely voters is between 10.15 and 14.84 times more likely than 40-49 year olds in County (?).
 
 ```{r Out of sample analysis, warning=FALSE,echo=FALSE}
 # ad hoc summaries, created using assumptions from this website https://democracync.org/wp-content/uploads/2018/04/20142010TurnoutChanges-1.pdf
