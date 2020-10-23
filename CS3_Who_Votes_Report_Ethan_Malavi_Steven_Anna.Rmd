@@ -1,6 +1,7 @@
 ---
 title: "Case Study 3 Interim Report: Who Votes in North Carolina?"
 author: "Ethan Shen, Malavi Ravindran, Steven Herrera Tenorio, Anna Darwish"
+geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
 output: pdf_document
 ---
 
@@ -28,8 +29,14 @@ pkgTest("optimx")
 pkgTest("groupdata2")
 pkgTest("merTools")
 pkgTest("sjPlot")
-pkgTest("caret")
 pkgTest("cvAUC")
+pkgTest("pander")
+pkgTest("ggplot2")
+pkgTest("tidyr")
+pkgTest("dplyr")
+pkgTest("grid")
+pkgTest("maps")
+pkgTest("scales")
 ```
 
 ```{r load packages, include=FALSE}
@@ -43,65 +50,129 @@ library(optimx)
 library(groupdata2)
 library(merTools)
 library(sjPlot)
-library(caret)
 library(cvAUC)
+library(pander)
+library(grid)
+library(maps)
+library(scales)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+knitr::opts_chunk$set(echo = F)
 ```
+
+# Introduction
+
+# Exploratory Data Analysis
 
 ```{r Read Data}
 who_votes_data <- readRDS("who_votes_data.Rds")
+```
+
+```{r EDA, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
+who_votes_data %>% 
+  dplyr::select(race_ethnicity, age_bin, gender,Likely,Unlikely) %>%
+  dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
+  dplyr::summarize(Likely = sum(Likely), 
+          Unlikely = sum(Unlikely), 
+          proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
+  ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  facet_wrap(~race_ethnicity, nrow = 2) + 
+  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
+            position = position_dodge(width = 1),  
+            colour="Black", 
+            size = 2.2) + 
+  labs(x = expression("Age Group"), 
+       y= ("Proportion of Likely Voters"), 
+       title = "Likely Voters Across Age Groups, Race/Ethnicity, and Sex", 
+       caption="Figure 1") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill=guide_legend(title="Sex"))
+
+# http://www.peterhaschke.com/r/2013/12/05/NCmaps.html
+
+map <- map_data("county")
+nc <- subset(map, region =="north carolina")
+nc$subregion <- toupper(nc$subregion)
+nc <- nc %>% dplyr::rename(county_desc=subregion)
+
+likely.by.county <- who_votes_data %>% dplyr::select(everything()) %>%
+  dplyr::group_by(county_desc) %>% 
+  dplyr::summarise(Likely=sum(Likely),
+            Unlikely=sum(Unlikely),
+            Prop=sum(Likely)/(sum(Likely) + sum(Unlikely)))
+  
+
+mapdata <- merge(nc, likely.by.county, by = "county_desc")
+
+ggplot(data=mapdata) + 
+  labs(caption="Figure 2") +
+  geom_polygon(aes(x=long, y=lat, group = group, fill = Prop)) +
+  scale_fill_gradient2(high="#2aa198", low="#eee8d5", "% Likely Voters By County", labels = percent) +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
+```
+
+# Methods
+
+```{r Relevel age bins}
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "40-49")
+# who_votes_data$race_ethnicity <- relevel(who_votes_data$race_ethnicity %>% as.factor(), ref = "Non-Hispanic White")
 ```
 
 ```{r cross validation}
 set.seed(20201022) # has to be this seed
-fold_df <- groupdata2::fold(who_votes_data, k = 6, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>% 
+fold_df <- groupdata2::fold(who_votes_data, k = 6, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   mutate(vote = ifelse(prop > 0.5, 1, 0),
          vote = ifelse(is.nan(prop), 0, vote),
          vote = case_when(
-           Likely == 0 & Unlikely == 0 ~ 0, 
+           Likely == 0 & Unlikely == 0 ~ 0,
            TRUE ~ vote
-         )) %>% 
+         )) %>%
   mutate(vote = case_when(
-    Likely == 0 & Unlikely == 0 ~ 0, 
+    Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-  )) 
+  ))
 
 
 acc_list = c()
 f1_list = c()
 AUC_list = c()
 
+validation_set <- fold_df %>% filter(.folds == 6)
 fold_df <- fold_df %>% filter(.folds != 6)
-validation_set <- fold_df %>% filter(.folds = 6)
 for (i in 1:5) {
   train <- fold_df %>% filter(.folds != i)
-  test <- fold_df %>% filter(.folds == i) 
-  
-  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+  test <- fold_df %>% filter(.folds == i)
+
+  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                      data = train,
-                     family = binomial, 
-                     control = glmerControl(optimizer = "optimx", 
-                                            calc.derivs = FALSE, 
-                                            optCtrl = list(method = "nlminb", 
-                                                           starttests=FALSE, 
+                     family = binomial,
+                     control = glmerControl(optimizer = "optimx",
+                                            calc.derivs = FALSE,
+                                            optCtrl = list(method = "nlminb",
+                                                           starttests=FALSE,
                                                            kkt=FALSE)))
-  
+
   glmer.probs <- predict(glmer.fit,  test,  type = "response")
   glmer.pred <- rep(0, nrow(test))
   glmer.pred[glmer.probs > 0.5] <- 1
-  
-  
+
+
   acc_list[i] <-  mean(glmer.pred == test$vote)
-  
+
   f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
-  
+
   # AUC
   AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
 }
 
 round_perc = function(x) {
   if (is.double(x)) {
-    round(x*100, digits = 2) 
+    round(x*100, digits = 2)
   }
 }
 acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
@@ -126,8 +197,8 @@ test_f1 <- (caret::confusionMatrix(test.glmer.pred %>% as.factor(), validation_s
 test_AUC <- cvAUC::AUC(test.glmer.pred %>% as.double(), validation_set$vote %>% as.double())
 
 test_df <- tibble(
-    Accuracy = paste0(test_acc %>% round_perc(), "%"), 
-    F1 = test_F1 %>% round_perc(),
+    Accuracy = paste0(test_acc %>% round_perc(), "%"),
+    F1 = test_f1 %>% round_perc(),
     AUC = test_AUC %>% round_perc()
   )
 bind_cols(cv_df, test_df)
@@ -137,66 +208,77 @@ bind_cols(cv_df, test_df)
 
 ```{r}
 train <- fold_df %>% filter(.folds != 1)
-glmer.fit1 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+glmer.fit1 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
-                    family = binomial, 
-                    control = glmerControl(optimizer = "optimx", 
-                                           calc.derivs = FALSE, 
-                                           optCtrl = list(method = "nlminb", 
-                                                          starttests=FALSE, 
-                                                          kkt=FALSE))) 
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
 
-sjPlot::tab_model(glmer.fit1, 
-                  show.re.var= TRUE,
-                  dv.labels= "plz can i get a waffle", p.style = "numeric_stars") #0.682
+
+glmer.fit1.random.eff.results <- data.frame(VarCorr(glmer.fit1)) %>% dplyr::select(var1,sdcor)
+glmer.fit1.random.eff.results <- glmer.fit1.random.eff.results[1:5,]
+
+
+pander(glmer.fit1.random.eff.results)
+
+glmer.fit1.fixed.results = data.frame(Estimates=summary(glmer.fit1)$coefficients[, 1], 
+                              Std.Err=summary(glmer.fit1)$coefficients[, 2], 
+                              P.Value=summary(glmer.fit1)$coefficients[, 4])
+pander(glmer.fit1.fixed.results)
+# sjPlot::tab_model(glmer.fit1,
+#                   show.re.var= TRUE,
+#                   dv.labels= "plz can i get a waffle", p.style = "numeric_stars") #0.682
 ```
 
 ```{r}
 train <- fold_df %>% filter(.folds != 2)
-glmer.fit2 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+glmer.fit2 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
-                    family = binomial, 
-                    control = glmerControl(optimizer = "optimx", 
-                                           calc.derivs = FALSE, 
-                                           optCtrl = list(method = "nlminb", 
-                                                          starttests=FALSE, 
-                                                          kkt=FALSE))) 
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
 ```
 
 ```{r}
 train <- fold_df %>% filter(.folds != 3)
-glmer.fit3 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+glmer.fit3 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
-                    family = binomial, 
-                    control = glmerControl(optimizer = "optimx", 
-                                           calc.derivs = FALSE, 
-                                           optCtrl = list(method = "nlminb", 
-                                                          starttests=FALSE, 
-                                                          kkt=FALSE))) 
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
 ```
 
 ```{r}
 train <- fold_df %>% filter(.folds != 4)
-glmer.fit4 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+glmer.fit4 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
-                    family = binomial, 
-                    control = glmerControl(optimizer = "optimx", 
-                                           calc.derivs = FALSE, 
-                                           optCtrl = list(method = "nlminb", 
-                                                          starttests=FALSE, 
-                                                          kkt=FALSE))) 
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
 ```
 
 ```{r}
 train <- fold_df %>% filter(.folds != 5)
-glmer.fit5 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc), 
+glmer.fit5 <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 + age_bin | county_desc),
                     data = train,
-                    family = binomial, 
-                    control = glmerControl(optimizer = "optimx", 
-                                           calc.derivs = FALSE, 
-                                           optCtrl = list(method = "nlminb", 
-                                                          starttests=FALSE, 
-                                                          kkt=FALSE))) 
+                    family = binomial,
+                    control = glmerControl(optimizer = "optimx",
+                                           calc.derivs = FALSE,
+                                           optCtrl = list(method = "nlminb",
+                                                          starttests=FALSE,
+                                                          kkt=FALSE)))
 ```
 
 
