@@ -86,6 +86,43 @@ Data for this study comes from North Carolina voter history, North Carolina vote
 
 The North Carolina voter history dataset shows how each voter in North Carolina, uniquely identified by a voter registration number, voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we designated those who voted in 2016 as “likely” voters for the 2020 elections. This decision was made due to the fact that both 2016 and 2020 are presidential election years. 
 
+The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their county of residence, unique voter registration number, race, ethnicity, gender, and age. In this dataset, race could take on one of the following categories:
+
+* Asian
+* Black or African American
+* American Indian or Alaska Native
+* Two or more races 
+* Other
+* Native Hawaiian or Pacific Islander
+* Undesignated
+* White
+
+Ethnicity was one of the following:
+
+* Hispanic or Latino
+* Not Hispanic or Not Latino
+* Undesignated
+
+And gender belonged to one of: 
+* Male
+* Female
+* Undetermined
+
+Recall that, in our study, a "likely" voter was one who voted in the 2016 election. Thus, not all individuals in the North Carolina registration dataset were necessarily “likely” voters. This is because certain individuals who were registered to vote and *did* vote within the last 10 years still may not have voted in the 2016 election. Thus, upon joining the voter and registration data by unique voter registration number, only those individuals who were both registered and voted in the 2016 election were kept. In this sense, only “likely” voters remained in the merged data frame. 
+
+After joining the two data sources by  voter registration number, certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, $age \ bin$, which belonged to one of five categories. 
+
+* 18-29
+* 30-39
+* 40-49
+* 50-64
+* 65+ 
+
+In addition, the individual race and ethnic identities were combined into a $race \ and \ ethnicity$ variable which was one of:
+
+* 
+
+
 
 
 
