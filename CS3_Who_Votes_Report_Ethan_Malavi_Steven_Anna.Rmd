@@ -74,6 +74,58 @@ knitr::opts_chunk$set(echo = F)
 
 # Introduction
 
+In 2019, the Supreme Court asserted that federal courts were not allowed to rule cases on partisan gerrymandering, which allows parties that control the state legislature to draw district maps and influence election outcomes (see Rucho v. Common Cause 2019). North Carolina was at the spotlight of this contested 5-4 ruling, cultivating national dialogue about the consequences of district map drawing, such as voter suppression. Our study aims to uncover demographic characteristics, such race, gender, age group, and county of residence, driving voting patterns in North Carolina. We ultimately seek to answer the following question-- *who* votes in North Carolina? Answering this will not only allow for better predictions for the outcomes of Congressional elections, but will also illuminate which demographic groups in the state are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups seeking to bolster support and foster more politically minded communities. 
+
+Our study will use publicly available voter, registration, and census data in order to determine the number of likely and unlikely voters across various demographic groups in the 100 counties of North Carolina. After performing data munging and harmonization, we implement a multilevel logistic regression model with random county intercepts to make statements regarding an individual's likelihood of voting. In order to assess the performance of the model, we then perform both 5-fold cross validation and out of sample validation using data from the 2012 elections. We conclude with a discussion of which demographic characteristics have a significant impact on the likelihood of voting, quantifications of these relationships, and limitations to our data and approach. 
+
+# Data Description
+
+Data for this study comes from North Carolina voter history, North Carolina voter registration information, and the census. Voting and registration data were used in conjunction with the census in order to not only understand who votes, but also who *does not*. Below we describe these various data sources as well as the munging and harmonization process used to obtain a singular, comprehensive dataset. 
+
+## Voter History and Registration Data
+
+The North Carolina voter history dataset shows how each voter in North Carolina, uniquely identified by a voter registration number, voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we designated those who voted in 2016 as “likely” voters for the 2020 elections. This decision was made due to the fact that both 2016 and 2020 are presidential election years. 
+
+The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their county of residence, unique voter registration number, race, ethnicity, gender, and age. In this dataset, race could take on one of the following categories:
+
+* Asian
+* Black or African American
+* American Indian or Alaska Native
+* Two or more races 
+* Other
+* Native Hawaiian or Pacific Islander
+* Undesignated
+* White
+
+Ethnicity was one of the following:
+
+* Hispanic or Latino
+* Not Hispanic or Not Latino
+* Undesignated
+
+And gender belonged to one of: 
+* Male
+* Female
+* Undetermined
+
+Recall that, in our study, a "likely" voter was one who voted in the 2016 election. Thus, not all individuals in the North Carolina registration dataset were necessarily “likely” voters. This is because certain individuals who were registered to vote and *did* vote within the last 10 years still may not have voted in the 2016 election. Thus, upon joining the voter and registration data by unique voter registration number, only those individuals who were both registered and voted in the 2016 election were kept. In this sense, only “likely” voters remained in the merged data frame. 
+
+After joining the two data sources by  voter registration number, certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, $age \ bin$, which belonged to one of five categories. 
+
+* 18-29
+* 30-39
+* 40-49
+* 50-64
+* 65+ 
+
+In addition, the individual race and ethnic identities were combined into a $race \ and \ ethnicity$ variable which was one of:
+
+* 
+
+
+
+
+
 # Exploratory Data Analysis
 
 ```{r Read Data}
@@ -216,7 +268,7 @@ for (i in 1:5) {
   train <- fold_df %>% filter(.folds != i)
   test <- fold_df %>% filter(.folds == i)
 
-  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin * race_ethnicity + gender + (1 | county_desc),
+  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
                      data = train,
                      family = binomial,
                      control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
@@ -252,7 +304,7 @@ cv_df <- tibble(
   AUC = paste(AUC_mean, "±", AUC_sd)
 )
 
-glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin * race_ethnicity + gender + (1 | county_desc),
+glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
                     data = fold_df,
                     family = binomial,
                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
