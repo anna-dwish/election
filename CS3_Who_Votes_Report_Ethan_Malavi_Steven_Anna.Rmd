@@ -79,9 +79,9 @@ theme_set(theme_classic())
 
 # Introduction
 
-In 2019, the Supreme Court asserted that federal courts were not allowed to rule cases on partisan gerrymandering, which allows parties that control the state legislature to draw district maps and influence election outcomes (Rucho v. Common Cause 2019) [[1]][Bibliography]. North Carolina was at the spotlight of this contested 5-4 ruling, cultivating national dialogue about the consequences of district map drawing, such as voter suppression. Our study aims to uncover demographic characteristics, such race, gender, age group, and county of residence, driving voting patterns in North Carolina. We ultimately seek to answer the following question-- *who* votes in North Carolina? Answering this will not only allow for better predictions for the outcomes of Congressional elections, but will also illuminate which demographic groups in the state are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups seeking to bolster support and foster more politically minded communities. 
+In 2019, the Supreme Court asserted that federal courts were not allowed to rule cases on partisan gerrymandering, which allows parties that control the state legislature to draw district maps and influence election outcomes (Rucho v. Common Cause 2019) [[1]][Bibliography]. North Carolina was at the spotlight of this contested 5-4 ruling, cultivating national dialogue about the consequences of district map drawing, such as voter suppression. Our study aims to uncover demographic characteristics, such as race, gender, age group, and county of residence, driving voting patterns in North Carolina. We ultimately seek to answer the following question-- *who* votes in North Carolina? Answering this will not only allow for better predictions for the outcomes of Congressional elections, but will also illuminate which demographic groups in the state are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups seeking to bolster su$pport and foster more politically minded communities. 
 
-Our study will use publicly available voter, registration, and census data in order to determine the number of likely and unlikely voters across various demographic groups in the 100 counties of North Carolina. After performing data munging and harmonization, we implement a multilevel logistic regression model with random county intercepts to make statements regarding an individual's likelihood of voting. In order to assess the performance of the model, we perform both 5-fold cross validation and out of sample validation using data from the 2012 elections. We conclude with a discussion of which demographic characteristics have a significant impact on the likelihood of voting, quantifications of these relationships, and limitations to our data and analysis.
+Our study will use publicly available voter, registration, and census data in order to determine the number of likely and unlikely voters across various demographic groups in the 100 counties of North Carolina. After performing data munging and harmonization, we implement a multilevel logistic regression model with random county intercepts to make statements regarding an individual's likelihood of voting. In order to assess the performance of the model, we perform both 5-fold cross validation and out of sample validation, using data from the 2012 elections. We conclude with a discussion of which demographic characteristics have a significant impact on the likelihood of voting, quantifications of these relationships, and limitations to our data and analysis.
 
 # Data Description
 
@@ -89,9 +89,9 @@ Data for this study utilizes NC voter history, NC voter registration information
 
 ## Voter History and Registration Data
 
-The North Carolina voter history dataset shows how each registered voter in North Carolina, uniquely identified by a voter registration number, voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we designated only those who voted in 2016 as “likely” voters for the 2020 election, and disregarded those who voted in 2018. This decision was made because both 2016 and 2020 are presidential election years, while there is typically lower turnout for midterm elections [[2]][Bibliography]. 
+The North Carolina voter history dataset shows how each registered voter, uniquely identified by a voter registration number, voted in elections over the last 10 years. As not all voters participate in all elections, we designated only those who voted in 2016 as “likely” voters for the 2020 election. This decision was made due to the similarities between the 2016 and 2020 presidential election years, such as a returning incumbent and a hyper-polarized political environment [[4]][Bibliography]. We elected to omit voter information from the 2018 midterm election as turnout for midterm elections is typically not comprable to that of the presidential [[2]][Bibliography]. 
 
-The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their county of residence, unique voter registration number, race, ethnicity, gender, and age. In this dataset, race could take on one of the following categories:
+The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their unique voter registration number, county of residence, race, ethnicity, gender, and age. In this dataset, race could take on one of the following categories:
 
 * Asian
 * Black or African American
@@ -114,7 +114,7 @@ And gender belonged to one of:
 * Female
 * Undetermined
 
-Recall that, in our study, a "likely" voter was one who voted in the 2016 election. Thus, not all individuals in the North Carolina registration dataset were necessarily “likely” voters. This is because certain individuals who were registered to vote and *did* vote within the last 10 years still may not have voted in the 2016 election. Thus, upon joining the voter and registration data by unique voter registration number, only those individuals who were both registered and voted in the 2016 election were preserved. In this sense, only “likely” voters remained in the merged data frame. 
+Recall that, in our study, a "likely" voter was one who voted in the 2016 election. Thus, not all individuals in the North Carolina registration dataset were necessarily “likely” voters. This is because certain individuals who were registered to vote and *did* vote within the last 10 years still may not have voted in the 2016 election. Thus, upon joining the voter and registration data by the unique voter registration number, only those individuals who were both registered to vote and voted in the 2016 election were preserved. In this sense, only “likely” voters remained in the merged data frame. 
 
 Next, certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, $age \ bin$, which belonged to one of five categories. 
 
@@ -124,29 +124,29 @@ Next, certain modifications were made to facilitate analysis. Firstly, age was c
 * 50-64
 * 65+ 
 
-In addition, the individual race and ethnic identities were combined into a $race \ and \ ethnicity$ variable which was one of:
+In addition, the individual race and ethnic identities were combined into a race/ethnicity variable which was one of:
 
 * Hispanic any race
 * Non Hispanic White
 * Non Hispanic Black
 * Non Hispanic Other
 * Non Hispanic Asian
-* Non Hispanic Mixed
+* Non Hispanic Multi-Racial
 * Non Hispanic American Indian or Alaska Native
 * Non Hispanic Native Hawaiian or Pacific Islander
 * Undetermined
 
-Note that all individuals of hispanic ethnicity were grouped into one category, regardless of racial identity. Once these modifications were made, the data was grouped by $county$, $race \ and \ ethnicity$, $age \ bin$, and $gender$. The size of each group, which is synonymous with the number of likely voters in that group, was included in the data frame as well. For example, one row of the grouped data frame would report the number of likely voters among 18-29 year old, hispanic women in Alamance county. This dataset will be referred to as “Voting and Registration” for the continuation of the paper.
+Note that all individuals of Hispanic ethnicity were grouped into one category, regardless of racial identity. Once these modifications were made, the data was grouped by $county$, race/ethnicity, age bin, and gender. The size of each group, which is synonymous with the number of likely voters in that group, was included in the data frame as well. For example, one row of the grouped data frame would report the number of likely voters among 18-29 year olds, Hispanic women in Alamance county. This dataset will be referred to as “Voting and Registration” for the continuation of the paper.
 
 ## Census Data
 
-The data harmonization process described above finds the number of likely voters, by demographic, in the 2020 election. However, this process does not account for the population of North Carolinans who are not likely to vote. Thus, in order to properly address the question of who does and does not vote in North Carolina, census data was utilized. This data helped to provide a better sense of the denominator in our calculations-- that is, what is the *total* size of each demographic group in each of the 100 counties in North Carolina? 
+While the data harmonization process described above finds the number of likely voters, it does not account for the population of North Carolinans who are not likely to vote. Thus, in order to properly address the question of who does and does not vote in North Carolina, census data was utilized. This data helped to provide a better sense of the denominator in our calculations-- that is, what is the *total* size of each demographic group in each of the 100 counties in North Carolina? 
 
-The census data includes, for each county, census year, and age group, the population size by various demographic identities. Examples of these groups include females, hispanic males, and non hispanic females who identify as black alone or in combination. It is clear that the groups represented in the census data range from very broad (gender) to very granular (a combination of gender, ethnicity, and race). As these granular identities account for both race and ethnicity, they were consistent with the $race \ and \ ethnicity$ variable defined in the “Voting and Registration” dataset. In contrast, age bins in the census were of size 5, which was smaller than those defined in "Voting and Registration."
+The census data includes, for each county, census year, and age group, the population size by various demographic identities. Examples of these groups include females, Hispanic males, and non-Hispanic females who identify as Black alone or in combination. It is clear that the groups represented in the census data range from very broad (gender) to very granular (a combination of gender, ethnicity, and race). As these granular identities account for both race and ethnicity, they were consistent with the race/ethnicity variable defined in the “Voting and Registration” dataset.
 
-To join "Voting and Registration" with the census data, the census data was filtered for the most recent year (2020) and for age groups that were at or greater than the 15-19 bin. For those rows where the age group of interest fell within the 15-19 bin, each population size was divided by 2.5 in order to theoretically account for only those individuals who were 18 or above (and thus eligible to vote). Then, population information was summed over the smaller age groupings to create age bins consistent with those of "Voting and Registration." For example, population counts from bins 4, 5, and 6 (which mapped to 18-19, 20-24, and 25-29, respectively) were summed together in order to represent counts for the 18-29 bin. Finally, using the census counts provided for each demographic group (by gender, age group, and race and ethnicity) within each county, a new dataframe was constructed with each row representing a county, racial and ethnic group, age bin, and gender and total group size. As can be seen, the format of this dataset was consistent with “Voting and Registration,” but with a column representing the $total$ group size rather than the size of likely voters. This dataset will be referred to as “Census”.
+To join "Voting and Registration" with the census data, the census data was filtered for the most recent year (2020) and for age groups that were at or greater than the 15-19 bin. For those rows with age bin 15-19, each subgroup size was divided by 2.5 in order to theoretically account for only those individuals who were 18 or above (and thus eligible to vote). Furthermore, as age bins in the census were of size 5 (smaller than those defined in “Voting and Registration"), population information was summed over the smaller age groupings to create consistent age bins. For example, population counts from bins 4, 5, and 6 (which map to 18-19, 20-24, and 25-29, respectively) were summed together in order to obtain counts for the 18-29 bin. Finally, using the census counts provided for each demographic group within each county, a new dataframe was constructed with each row representing a county, racial and ethnic group, age bin, and gender and total group size. As can be seen, the format of this dataset is consistent with “Voting and Registration,” but now with a column representing the $total$ group size rather than the size of likely voters. This dataset will be referred to as “Census”.
 
-The “Voting and Registration” and “Census” datasets were then merged by county, age bin, race and ethnicity, and gender. This final data frame reports, for each demographic group within each county, the number of likely voters (our numerator of interest) as well as the total size (our denominator of interest). This merging process was not perfect, as there were some inconsistencies between information provided by the "Census" and "Voting and Registration" datasets. For example, the census provided counts of only male and female populations. For this reason, those registered voters who specified a gender other than male or female were omitted in this dataset. Those with undesignated racial and ethnic identities were excluded for similar reasons. Similarly, we found that there were no instances of "Native Hawaiian or Pacific Islander" individuals who voted in 2016, necessating their removal from the dataset. The limitations of these decisions will be discussed more thoroughly in section ____. 
+The “Voting and Registration” and “Census” datasets were then merged by county, age bin, race/ethnicity, and gender. This final data frame reports, for each demographic group within each county, the number of likely voters (our numerator of interest) as well as the total size (our denominator of interest). This merging process was not perfect, as there were some inconsistencies between information provided by the "Census" and "Voting and Registration" datasets. For example, the census provided counts of only male and female populations. For this reason, those registered voters who specified a gender other than male or female were omitted in this dataset. Those with undesignated racial and ethnic identities were excluded for similar reasons. Similarly, we found that there were no instances of "Native Hawaiian or Pacific Islander" individuals who voted in 2016, necessating their removal from the dataset. The limitations of these decisions will be discussed more thoroughly in section 6 
 
 
 # Exploratory Data Analysis
@@ -184,7 +184,7 @@ who_votes_data %>%
                                                      filter(race_ethnicity == "Non-Hispanic Black") %>%
                                                      summarise(sum(sums)),
                                                    ")"),
-    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Mixed (n=",
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
                                                    who_votes_data %>%
                                                      mutate(sums = Likely + Unlikely) %>%
                                                      filter(race_ethnicity == "Non-Hispanic Mixed") %>%
@@ -217,9 +217,9 @@ who_votes_data %>%
   guides(fill=guide_legend(title="Sex"))
 ```
 
-In Figure 1, we can see the proportion of likely voters across race-ethnicity, sex, and age group identities. There appears to be profound differences in likely voter proportion among the different race-ethnicity groups. *Hispanic Any Race*, *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups generally have a much higher proportion of likely voters relative to other groups in North Carolina.
+In Figure 1, we can see the proportion of likely voters across race/ethnicity, gender, and age group identities. There appears to be profound differences in likely voter proportion among the different race-ethnicity groups. *Hispanic Any Race*, *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups generally have a much higher proportion of likely voters relative to other groups in North Carolina.
 
-In general, we see an increasing trend in the proportion of likely voters with age for *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups. This trend is actually reversed for *Non-Hispanic Mixed* groups. For *Hispanic Any Race* and *Non-Hispanic Asian* groups, we see a varying relationship that is slightly less profound. These trends point to a potential interaction effect between age and $race \ and \ ethnicity$. 
+In general, we see an increasing trend in the proportion of likely voters with age for *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups. This trend is actually reversed for *Non-Hispanic Multi-Racial* groups. For *Hispanic Any Race* and *Non-Hispanic Asian* groups, we see a varying relationship that is slightly less profound. These trends point to a potential interaction effect between age and race/ethnicity. 
 
 In general, there appears to be a higher proportion of likely voters among women compared to men. However, we see this trend level off in the two oldest age groups.
 
@@ -250,11 +250,11 @@ ggplot(data=mapdata) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5)))  
 ```
 
-In Figure 2, we see how the proportion of likely voters varies throughout North Carolina. Heterogeneity among the various counties motivates a consideration of random county intercepts in modelling the likelihood of voting. Some interesting trends can be seen in the state map. Cherokee county, which is the westernmost county in the state, has an extremely high proportion of likely voters. This county is 95% White and heavily Republican, with 75% of the vote going to Donald Trump in 2016. Watauga County, located slightly northeast of Cherokee, similarly shows a high proportion of likely voters. However, despite being similar in racial composition to Cherokee (96% White), growth of a younger voting population, brought forth by Appalachian State University, has turned Watauga into a hotly contested swing county.  
+In Figure 2a, we see how the proportion of likely voters varies throughout North Carolina. Heterogeneity among the counties motivates a consideration of random county intercepts in modelling the likelihood of voting. Some interesting trends can be seen in the state map. Cherokee county, which is the westernmost county in the state, has an extremely high proportion of likely voters. This county is 95% White and heavily Republican, with 75% of the vote going to Donald Trump in 2016. Watauga County, located slightly northeast of Cherokee, similarly shows a high proportion of likely voters. However, despite being similar in racial composition to Cherokee (96% White), growth of a younger voting population, brought forth by Appalachian State University, has turned Watauga into a hotly contested swing county (CITATIONS!!!). Figure 2b in the Appendix displays a similar heat map with likely voter counts as opposed to proportions. 
 
 # Methods
 
-To begin with our model development, we conducted exploratory data analysis to get a sense of which covariates were influential in determining likelihood to vote, along with any possible interactions. This led to our starting model: 
+We conducted exploratory data analysis to get a sense of which covariates were influential in determining likelihood to vote, along with any possible interactions. This led to our starting model: 
 
 $$ 
 \begin{aligned}
@@ -264,11 +264,11 @@ log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \alpha_{1} * I(Gende
 \end{aligned}
 $$
 
-$P_{ij}$ is the probability that individual $i$ from county $j$ will vote in the upcoming election, and $alpha_j$ represents the random intercept term for each county. For the *Age* term, we encode $a=1$ as our baseline, $65+$ year olds and then code the remaining in increasing age-bin order. For our *Race/Ethnicitiy* term, we encode $r=1$, *Hispanic Any Race*, as our baseline group. The remaining *Race/Ethnicity* identities are ordered as follows: *\{Non-Hispanic American Indian, Non-Hispanic Asian, Non-Hispanic Black, Non-Hispanic Mixed, Non-Hispanic White\}*. Finally, as there are five age bins and six race/ethnicity groups, meaning thirty possible combinations, 10 of these involve the baseline terms, leaving 20 other combinations to appear as evaluated terms in our model.
+$P_{ij}$ is the probability that individual $i$ from county $j$ will vote in the upcoming election, and $\alpha_j$ represents the random intercept term for each county. For the *Age* term, $a=1$ represents our baseline, which is $65+$ year olds. For our *Race/Ethnicitiy* term,  $r=1$, our baseline group, was *Hispanic Any Race*. Finally, there are five age bins and six race/ethnicity groups, yielding thirty possible combinations. Ten of these involve the baseline terms, leaving twenty other combinations to appear as evaluated terms in the interaction effect of our model. 
 
 We compared this model to one without an interaction between *Age* and *Race/Ethnicity*, ones with a random intercept for county and random effect slopes for the three demographic covariates, and other interaction effects. In order to compare the fits of these models, we examined accuracy, $F_1$-scores, confusion matrices, and ROC curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we performed 5-fold cross validation and conducted out-of-sample prediction with the 2012 presidential election.
 
-We performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models with frequentist methods. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$, recreated our final model, and observed similar estimates for the other covariates. The results of this model are in Table 2 in the Appendix.
+We further performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models within a frequentist framework. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates. The results of this model are in Table 9 in the Appendix.
 
 # Results and Discussion
 
@@ -371,9 +371,7 @@ ggplot(data=mapdata) +
 ```
 
 
-The results of our final model can be viewed in Table 1 in our Appendix. Figure 3 is a heatmap of the intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
-
-The results of our final model can be viewed in Table 1 in our Appendix, and Figure 3 is a heatmap of the random intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`. These evaluation metrics indicate that our model does a reasonable job of predicting who votes in North Carolina.  
+The results of our final model can be viewed in Table 2 in our Appendix. Figure 3 is a heatmap of the intercepts by county. While the intercepts appear to generally capture relative trends, they appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence that this model fits well with an average AUC of `r cv_df$AUC`. From the confusion matrix, we can see a relatively even split of false negatives and false positives, suggesting our model isn't predisposed to making either mistake more than the other. 
 
 ```{r initial model cm, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
@@ -382,9 +380,8 @@ test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
 plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 ```
 
-From the confusion matrix, we can see a relatively even split of false negatives and false positives, suggesting our model isn't predisposed to making either mistake more than the other. 
 
-Our binned residuals, however, reveal some issues for our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote, along with a fanning of a residuals as the likelihood increases. This may cause issues as groups that are less likely to vote have been more active in the past few elections [[3]][Bibliography] and is important to keep in mind. Another possible cause of this issue was the non-linear relationships between age bins and some Race/Ethnicity groups in our exploratory data analysis. This curvature is more clearly visualized in Figure 4, which is a binned residual plot resulting from the same model but without the interaction effect between Race/Ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which suggested some differences in counties with very high and very low voter turnout. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
+Our binned residuals, however, reveal some drawbacks to our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote. In addition, we see a fanning of the residuals for higher predicted probabilities. This may cause issues, as groups that are less likely to vote have been more active in the past few elections [[3]][Bibliography] and is important to keep in mind. Another possible cause of this issue is the non-linear relationship between age bins and some race/ethnicity groups from our exploratory data analysis. This curvature is more clearly visualized in Figure 5 in the Appendix, which is a binned residual plot resulting from a model without the interaction effect between race/ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which shrunk intercept estimates of counties with very high and very low voter turnout towards the mean. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
 
 
 ```{r County Random Effects Model Residual Plot,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
@@ -394,86 +391,6 @@ arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scale
                 main = "Figure 4: Random County Intercept and Age Slope Model",
                 cex.main=0.9, cex.lab=0.8)
 ```
-<<<<<<< HEAD
-
-Our binned residuals, however, reveal some issues for our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote, along with a fanning of a residuals as the likelihood increases. This may cause issues as groups that are less likely to vote have been more active in the past few elections [CITE] and is important to keep in mind. Another possible cause of this issue was the non-linear relationships between age bins and some Race/Ethnicity groups in our exploratory data analysis. This curvature is more clearly visualized in Figure 4, which is a binned residual plot resulting from the same model but without the interaction effect between Race/Ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which suggested some differences in counties with very high and very low voter turnout. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
-
-```{r}
-final.model.fixed.results$id = rownames(final.model.fixed.results)
-```
-
-
-```{r}
-final.model.fixed.results <- final.model.fixed.results %>%
-  mutate(lower_bound = Estimates - 1.96*Std.Err) %>%
-  mutate(upper_bound = Estimates + 1.96*Std.Err)
-
-```
-```{r}
-row.names(final.model.fixed.results) <- final.model.fixed.results$id
-```
-
-
-
-```{r}
-gender <- round(exp(final.model.fixed.results[11,][,1]), 1)
-```
-
-With respect to fixed effects, we see that, with all else held constant, the odds of a female voting in 2020 are `r gender` that of a male. Understanding the effects of race/ethnicity and age are not as straightfoward, as the interaction between the two terms indicates that one cannot be interpreted in isolation of the other. We will focus on an interesting group of voters, 18-29 year olds. 
-
-```{r}
-white <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic White",1] + final.model.fixed.results["race_ethnicityNon-Hispanic White",1]), 2)
-white_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic White",5] + final.model.fixed.results["race_ethnicityNon-Hispanic White",5]), 2)
-white_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic White",6] + final.model.fixed.results["race_ethnicityNon-Hispanic White",6]), 2)
-
-
-mixed <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Mixed",1] + final.model.fixed.results["race_ethnicityNon-Hispanic Mixed",1]), 2)
-mixed_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Mixed",5] + final.model.fixed.results["race_ethnicityNon-Hispanic Mixed",5]), 2)
-mixed_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Mixed",6] + final.model.fixed.results["race_ethnicityNon-Hispanic Mixed",6]), 2)
-
-
-black <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Black",1] + final.model.fixed.results["race_ethnicityNon-Hispanic Black", 1]), 2)
-black_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Black",5] + final.model.fixed.results["race_ethnicityNon-Hispanic Black", 5]), 2)
-black_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Black",6] + final.model.fixed.results["race_ethnicityNon-Hispanic Black", 6]), 2)
-
-asian <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Asian",1] + final.model.fixed.results["race_ethnicityNon-Hispanic Asian", 1]), 2)
-asian_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Asian",5] + final.model.fixed.results["race_ethnicityNon-Hispanic Asian", 5]), 2)
-asian_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Asian",6] + final.model.fixed.results["race_ethnicityNon-Hispanic Asian", 6]), 2)
-
-amind <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic American Indian",1] + final.model.fixed.results["race_ethnicityNon-Hispanic American Indian", 1]), 2)
-amind_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic American Indian",5] + final.model.fixed.results["race_ethnicityNon-Hispanic American Indian", 5]), 2)
-amind_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic American Indian",6] + final.model.fixed.results["race_ethnicityNon-Hispanic American Indian", 6]), 2)
-
-```
-
-```{r}
-Type <- c("White (Non Hispanic)", "Mixed (Non Hispanic)", "Black (Non Hispanic)", "Asian (Non Hispanic)", "American Indian (Non Hispanic)")
-multiplicative_odds <- data.frame(Type, c(white, mixed, black, asian, amind), c(white_lower, mixed_lower, black_lower, asian_lower, amind_lower), c(white_upper, mixed_upper, black_upper, asian_upper, amind_upper))
-colnames(multiplicative_odds) <- c("Race/Ethnicity", "Multiplicative Odds", "lower", "upper")
-multiplicative_odds <- multiplicative_odds %>%
-  mutate("95% Confidence Interval" = paste0("(", `lower`, ", ", upper, ")")) %>%
-  select(-c(lower, upper))
-pander(multiplicative_odds, caption = "Multiplicative odds of being a likely voter compared to Hispanic baseline (among 18-29 year olds)")
-```
-
-The table above shows, for 18-29 years old with county and gender held constant, the multiplicative odds of being a likely voter compared to the baseline of Hispanic (all races). As can be seen, for White and Black individuals, the odds of being a likely voter multiply by of `r white` and `r black` respectively. Thus, these individuals are more likely to vote than their hispanic counterparts. Conversely, for 18-29 year old Asians, American Indians, and Mixed individuals, the odds of being a likely voter multiple by factors of `r asian`, `r amind` and `r mixed` respective. Thus, these individuals are less likely to vote than their hispanic counterparts. It is important to note that these trends are specific to 18-29 year olds in North Carolina. 
-
-```{r}
-Percent_Difference %>% 
-  tibble::rownames_to_column() %>% 
-  mutate_if(is.numeric, round, digits=3) %>% 
-  mutate(Mean = X2, 
-         `95% CI` = paste0("(", X1, ", ", X3, ")")) %>% 
-  select(-(X1:X3), -rowname) %>% 
-  kableExtra::kable(booktabs = TRUE,
-                    caption = "Percent Change in Mean Survival Time, from decade increase in Birth Year", 
-                    col.names = c("Leadership Type", "Mean", "95% CI")) %>% 
-  kable_styling(latex_options = c("hold_position")) %>% 
-  kableExtra::pack_rows("Percent Difference", 1,5) %>% 
-  row_spec(0, bold = TRUE) %>% 
-  column_spec(column = c(2:3), latex_column_spec = "c") %>%   column_spec(column = c(1), width = "12em")
-```
-
 
 
 ```{r Out of sample analysis, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
@@ -502,21 +419,88 @@ plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.c
 
 Now, we will consider our model's ability to predict on voting likelihood for the 2012 presidential election. For our out of sample predictions, we achieved an `r round(election2012.acc,3)*100`% accuracy and our confusion matrix is above. These results are quite similar to our previous confusion matrix, which provides evidence that our model is capable of predicting voter trends outside of the dataset's associated election years.
 
+```{r}
+interpretation <- final.model.fixed.results
+interpretation$id = rownames(interpretation)
+```
+
+
+```{r}
+interpretation <- interpretation %>%
+  mutate(lower_bound = Estimates - 1.96*Std.Err) %>%
+  mutate(upper_bound = Estimates + 1.96*Std.Err)
+
+```
+```{r}
+row.names(interpretation) <- interpretation$id
+```
+
+
+```{r}
+gender <- round(exp(interpretation[11,][,1]), 3)
+gender_lower <- round(exp(interpretation[11,][,5]), 3)
+gender_upper <- round(exp(interpretation[11,][,6]), 3)
+```
+
+Having addressed assumptions and validated our model with both in sample and out of sample predictions, we now interpret the results. Table 2 in the Appendix shows that, with all else held constant, we are 95% confident that the odds of a female voting in 2020 are between `r gender lower` and `r gender_upper` times that of a male. Understanding the effects of race/ethnicity and age are not as straightfoward, as the interaction between the two terms indicates that one cannot be interpreted in isolation of the other. As 18-29 year olds displayed interesting trends in Figure 1, we will focus on understanding this subgroup across race/ethnic identity. 
+
+```{r}
+white <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic White",1] + interpretation["race_ethnicityNon-Hispanic White",1]), 2)
+white_lower <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic White",5] + interpretation["race_ethnicityNon-Hispanic White",5]), 2)
+white_upper <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic White",6] + interpretation["race_ethnicityNon-Hispanic White",6]), 2)
+
+
+mixed <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Mixed",1] + interpretation["race_ethnicityNon-Hispanic Mixed",1]), 2)
+mixed_lower <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Mixed",5] + interpretation["race_ethnicityNon-Hispanic Mixed",5]), 2)
+mixed_upper <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Mixed",6] + interpretation["race_ethnicityNon-Hispanic Mixed",6]), 2)
+
+
+black <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Black",1] + interpretation["race_ethnicityNon-Hispanic Black", 1]), 2)
+black_lower <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Black",5] + interpretation["race_ethnicityNon-Hispanic Black", 5]), 2)
+black_upper <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Black",6] + interpretation["race_ethnicityNon-Hispanic Black", 6]), 2)
+
+asian <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Asian",1] + interpretation["race_ethnicityNon-Hispanic Asian", 1]), 2)
+asian_lower <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Asian",5] + interpretation["race_ethnicityNon-Hispanic Asian", 5]), 2)
+asian_upper <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic Asian",6] + interpretation["race_ethnicityNon-Hispanic Asian", 6]), 2)
+
+amind <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic American Indian",1] + interpretation["race_ethnicityNon-Hispanic American Indian", 1]), 2)
+amind_lower <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic American Indian",5] + interpretation["race_ethnicityNon-Hispanic American Indian", 5]), 2)
+amind_upper <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic American Indian",6] + interpretation["race_ethnicityNon-Hispanic American Indian", 6]), 2)
+
+```
+
+```{r}
+Type <- c("White (Non Hispanic)", "Multi-Racial (Non Hispanic)", "Black (Non Hispanic)", "Asian (Non Hispanic)", "American Indian (Non Hispanic)")
+multiplicative_odds <- data.frame(Type, c(white, mixed, black, asian, amind), c(white_lower, mixed_lower, black_lower, asian_lower, amind_lower), c(white_upper, mixed_upper, black_upper, asian_upper, amind_upper))
+colnames(multiplicative_odds) <- c("Race/Ethnicity", "Multiplicative Odds", "lower", "upper")
+multiplicative_odds <- multiplicative_odds %>%
+  mutate("95% Confidence Interval" = paste0("(", `lower`, ", ", upper, ")")) %>%
+  dplyr::select(-c(lower, upper))
+pander(multiplicative_odds, caption = "Multiplicative odds of being a likely voter compared to Hispanic baseline (among 18-29 year olds)")
+```
+
+The table above shows the multiplicative odds of being a likely voter for non-Hispanic groups relative to the Hispanic (any race) group, for 18-29 year olds of the same gender and county. As can be seen, for White and Black individuals, the odds of being a likely voter multiply by `r white` and `r black` respectively relative to Hispanic (any race) individuals. Conversely, for 18-29 year old Asians, American Indians, and Multi-Racial individuals, the odds of being a likely voter multiply by factors of `r asian`, `r amind` and `r mixed` respectively relative to Hispanic (any race) individuals. Thus, these individuals are less likely to vote than their Hispanic counterparts. It is important to note that these trends are specific to 18-29 year olds in North Carolina, and do not generalize across age groups.
+
+
 # Conclusion and Limitations
 
-Our goal in this case study were to gain a stronger understanding of the demographic composition of Noth Carolina voters relative to its overall population. By combining previous voter registration and history information with the 2020 census data, we were able to create a random effects model that accounted for the relationship between county, age, sex, and race-ethnicity and voter likelihood. By verifying our resulting model with cross validation and out of sample procedures, we were able to interpret and understand the strengths and limitations of our final model.
+Our goal in this case study were to gain a stronger understanding of the demographic composition of Noth Carolina voters relative to its overall population. By combining previous voter registration and history information with the 2020 census data, we were able to create a random effects model that accounted for the relationship between county, age, gender, and race-ethnicity and voter likelihood. By verifying our resulting model with cross validation and out of sample procedures, we were able to interpret and understand the strengths and limitations of our final model. Our critical conclusions include that women generally have a greater likelihood of voting than men. Furthermore, relationship between voting likelihood and age group is dependent on race/ethnicity. Our analysis finds that White and Black 18-29 year olds are more likely to vote than their Hispanic, Asian, American Indian, and Multi-Racial counterparts. 
 
-With respect to limitations, we will begin by noting that the census solely designates individuals as "Male" and "Female," severly limiting the scope of gender identity. For this reason, we had to exclude those individuals who did not report themselves as "Male" or "Female" from our analysis. Secondly, the racial and ethnic groups from these two sources also did not align perfectly. For example, individuals from the registration dataset could only report belonging to one racial and ethnic group. Conversely, individuals on the census could check multiple racial categories. Thus, mapping these identities between the two data sources was not perfect. Similarly, the voter registration data did not include any instances of Pacific Islanders and Native Hawaiians, so these individuals were removed from our analysis. 
+With respect to limitations, we will begin by noting that the census solely designates individuals as "Male" and "Female," severely limiting the scope of gender identity. For this reason, we had to exclude those individuals who did not report themselves as "Male" or "Female" from our analysis. Secondly, the racial and ethnic groups from these two sources also did not align perfectly. For example, individuals from the registration dataset could only report belonging to one racial and ethnic group. Conversely, individuals on the census could check multiple racial categories. Thus, mapping these identities between the two data sources was not perfect. Similarly, the voter registration data did not include any instances of Pacific Islanders and Native Hawaiians, so these individuals were removed from our analysis. Future analysis will explore other demographic covariates, such as socio-economic status, as well as more comprehensive data sources. 
 
 # Appendix
 
 ## Bibliography
 
-1). Rucho v. Common Cause, No. 18-422, 588 U.S. ___ (2019)
+1). Rucho v. Common Cause, No. 18-422, 588 U.S. Supreme Court (2019)
 
 2). DeSilver, Drew. “Voter Turnout Always Drops off for Midterm Elections, but Why?” Pew Research Center, Pew Research Center, 30 May 2020, www.pewresearch.org/fact-tank/2014/07/24/voter-turnout-always-drops-off-for-midterm-elections-but-why/.
 
 3). Kennedy, Danielle Root and Liz. “Increasing Voter Participation in America.” Center for American Progress, www.americanprogress.org/issues/democracy/reports/2018/07/11/453319/increasing-voter-participation-america/.
+
+4). Jackson, Robert A. "Differential Influences on Participation in Midterm Versus Presidential Elections." The Social Science Journal, vol. 37, no. 3, 2000, p. 385. Gale General OneFile, https://link.gale.com/apps/doc/A67320157/ITOF?u=duke_perkins&sid=ITOF&xid=863ed1bd. Accessed 23 Oct. 2020.
+
+5).
 
 
 ## Model Results (Frequentist)
@@ -600,7 +584,7 @@ plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
                 xlab="Predicted Probabilities", 
                 ylab="Binned Residuals",
-                main = "Figure 4: Random County Intercept and Age Slope Model",
+                main = "Figure 5: Random County Intercept and Age Slope Model",
                 cex.main=0.9, cex.lab=0.8)
 ```
 
