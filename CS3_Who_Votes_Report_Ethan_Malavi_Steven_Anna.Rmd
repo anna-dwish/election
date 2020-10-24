@@ -2,7 +2,10 @@
 title: "Case Study 3 Interim Report: Who Votes in North Carolina?"
 author: "Ethan Shen, Malavi Ravindran, Steven Herrera Tenorio, Anna Darwish"
 geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
-output: pdf_document
+fontsize: 12pt
+output: 
+  pdf_document:
+     number_sections: true
 ---
 
 ```{r, function checking for installed packages, include=FALSE}
