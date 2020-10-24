@@ -136,7 +136,7 @@ In addition, the individual race and ethnic identities were combined into a race
 * Non Hispanic Native Hawaiian or Pacific Islander
 * Undetermined
 
-Note that all individuals of Hispanic ethnicity were grouped into one category, regardless of racial identity. Once these modifications were made, the data was grouped by county, race/ethnicity, age bin, and gender. The size of each group, which is synonymous with the number of 2016 voters in that group, was included in the data frame as well. For example, one row of the grouped data frame would report the number of 2016 voters among 18-29 year olds, Hispanic women in Alamance county. This dataset will be referred to as “Voting and Registration” for the continuation of the paper.
+Note that all individuals of Hispanic ethnicity were grouped into one category, regardless of racial identity. Once these modifications were made, the data was grouped by county, race/ethnicity, age bin, and gender. The size of each group, which is synonymous with the number of 2016 voters in that group, was included in the data frame as well. For example, one row of the grouped data frame would report the number of 2016 voters among 18-29 year old Hispanic women in Alamance county. This dataset will be referred to as “Voting and Registration” for the continuation of the paper.
 
 ## Census Data
 
