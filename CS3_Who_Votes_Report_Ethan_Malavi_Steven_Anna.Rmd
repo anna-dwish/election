@@ -531,7 +531,7 @@ merTools::plotREsim(merTools::REsim(glmer.fit.final)) %>% +
 
 ## Model Results (Bayesian)
 
-```{r, eval=F}
+```{r}
 bayesian_model <- readRDS("brm1_interactions.Rds")
 posterior_samples(bayesian_model, add_chain = T) %>% 
   dplyr::select(-lp__) %>% 
