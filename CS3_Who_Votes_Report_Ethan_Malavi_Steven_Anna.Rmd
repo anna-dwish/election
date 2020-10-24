@@ -38,10 +38,9 @@ pkgTest("dplyr")
 pkgTest("grid")
 pkgTest("maps")
 pkgTest("scales")
-pkgTest("webshot")
-pkgTest("magick")
 pkgTest("cvms")
 pkgTest("png")
+pkgTest("gridExtra")
 ```
 
 ```{r load packages, include=FALSE}
@@ -63,12 +62,11 @@ library(scales)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
-library(webshot)
-library(magick)
 library(cvms)
 library(png)
 library(knitr)
-webshot::install_phantomjs()
+library(gridExtra)
+theme_set(theme_classic())
 knitr::opts_chunk$set(echo = F)
 ```
 
@@ -178,7 +176,7 @@ In general, we see an increasing trend with age for *Non-Hispanic American India
 
 In general, there appears to be a higher proportion of likely voters among women compared to men. However, we see this trend level off in the two oldest age groups.
 
-```{r EDA p2, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+```{r EDA p2, fig.width=5.5, fig.height=2.5,fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 # http://www.peterhaschke.com/r/2013/12/05/NCmaps.html
 
 map <- map_data("county")
@@ -194,14 +192,15 @@ likely.by.county <- who_votes_data %>% dplyr::select(everything()) %>%
   
 
 mapdata <- merge(nc, likely.by.county, by = "county_desc")
-
+# fix gray background, make lines darker, find a better color than purple, make borders lighter color
 ggplot(data=mapdata) + 
-  labs(caption="Figure 2") +
-  geom_polygon(aes(x=long, y=lat, group = group, fill = Prop)) +
-  scale_fill_gradient2(high="#301934", low="#b19cd9", "% Likely Voters By County", labels = percent) +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), legend.key.width = unit(3,"line")) +
-  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
+  labs(caption="Figure 2a") +
+  geom_polygon(aes(x=long, y=lat, group = group, fill = Prop),colour = "#202020", size=.8) +
+  scale_fill_gradient2(high="#454545", low="#b1b1b1", "% Likely Voters", labels = percent) +
+  theme(legend.title = element_text(size = 10), axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.2,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), 
+    legend.key.width = unit(1.7,"line"), legend.key.height = unit(.8,"line")) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5)))  
 ```
 
 In Figure 2, we see a broad distribution of likely voter percentages. This motivates consideration of a random county intercept to account for these differences.
@@ -229,7 +228,7 @@ We performed sensitivity analysis to validate the resulting estimates for our co
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "65+")
 ```
 
-```{r cross validation, warning=FALSE, message=F}
+```{r cross validation, warning=FALSE, message=F, cache=TRUE}
 
 set.seed(5934512) # has to be this seed
 fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
@@ -302,7 +301,7 @@ final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coeffi
 ```
 
 
-```{r intercept heatmap, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+```{r intercept heatmap, fig.width=5.5, fig.height=2.5, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 
 map <- map_data("county")
 nc <- subset(map, region =="north carolina")
@@ -319,12 +318,12 @@ mapdata <- merge(nc, likely.by.county, by = "county_desc")
 
 ggplot(data=mapdata) + 
   labs(caption="Figure 3") +
-  geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts)) +
-  scale_fill_gradient2(low="#948294", mid="#543c54", high="#281934", "Intercepts By County") +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12),
-    legend.key.width =unit(3,"line")) +
-  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
+  geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts),colour = "#202020", size=.8) +
+  scale_fill_gradient2(mid="#454545", low="#a3a3a3", high="#404040", "Intercepts By County") +
+  theme(legend.title = element_text(size = 10), axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.2,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12),
+    legend.key.width =unit(1.5,"line"), legend.key.height = unit(.8,"line")) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5))) 
 ```
 
 The results of our final model can be viewed in Table 1 in our Appendix, and Figure 3 is a heatmap of the intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
@@ -387,12 +386,25 @@ With respect to limitations, we will begin by noting that the census solely desi
 
 # Appendix
 
-## Model Results
+## Likely Voter Count by Count
 
-```{r}
-pander(final.model.fixed.results, caption = "Random County Intercept Model")
+```{r  fig.width=5.5, fig.height=2.5, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+ggplot(data=mapdata) + 
+  labs(caption="Figure 2b") +
+  geom_polygon(aes(x=long, y=lat, group = group, fill = Likely),colour = "#202020", size=.8) +
+  scale_fill_gradient2(high="#454545", mid="#7f7f7f", "Count of Likely Voters By County") +
+  theme(legend.title = element_text(size = 10), axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.3,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), 
+    legend.key.width = unit(1.4,"line"), legend.key.height = unit(.8,"line")) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5)))  
 ```
 
+
+## Model Results
+
+```{r, fig.width=6}
+pander(final.model.fixed.results, caption = "Random County Intercept Model")
+```
 
 ## No Interaction Effect
 
@@ -475,7 +487,7 @@ who_votes_data_reaged$age_bin <- relevel(who_votes_data_reaged$age_bin %>% as.fa
 who_votes_data_reaged$prop = who_votes_data_reaged$Likely/(who_votes_data_reaged$Likely + who_votes_data_reaged$Unlikely)
 ```
 
-```{r age bin sensitivity analysis model results, results="hide"}
+```{r age bin sensitivity analysis model results, results="hide", warning=F,message=F}
 fold_df <- groupdata2::fold(who_votes_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   mutate(vote = ifelse(prop > 0.5, 1, 0),
          vote = ifelse(is.nan(prop), 0, vote),
