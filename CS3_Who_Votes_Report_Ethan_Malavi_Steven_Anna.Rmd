@@ -158,6 +158,45 @@ who_votes_data <- readRDS("who_votes_data_2016.Rds")
 ```{r EDA p1, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 # This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
 who_votes_data %>% 
+  mutate(sums = Likely + Unlikely) %>%
+  mutate(race_ethnicity = case_when(
+    race_ethnicity == "Hispanic Any Race" ~ paste0("Hispanic Any Race (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Hispanic Any Race") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic American Indian" ~ paste0("Non-Hispanic American Indian (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic American Indian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Asian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Black") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Mixed (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Mixed") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic White") %>%
+                                                     summarise(sum(sums)),
+                                                   ")")
+  )) %>%
   dplyr::select(race_ethnicity, age_bin, gender,Likely,Unlikely) %>%
   dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
   dplyr::summarize(Likely = sum(Likely), 
