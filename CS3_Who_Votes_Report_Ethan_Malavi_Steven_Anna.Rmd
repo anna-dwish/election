@@ -328,7 +328,7 @@ ggplot(data=mapdata) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
 ```
 
-The results of our final model can be viewed in Table 1 in our Appendix, and Figure 3 is a heatmap of the intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
+The results of our final model can be viewed in Table 1 in our Appendix. Figure 3 is a heatmap of the intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
 
 ```{r initial model cm, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
@@ -350,7 +350,84 @@ arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scale
 
 Our binned residuals, however, reveal some issues for our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote, along with a fanning of a residuals as the likelihood increases. This may cause issues as groups that are less likely to vote have been more active in the past few elections [CITE] and is important to keep in mind. Another possible cause of this issue was the non-linear relationships between age bins and some Race/Ethnicity groups in our exploratory data analysis. This curvature is more clearly visualized in Figure 4, which is a binned residual plot resulting from the same model but without the interaction effect between Race/Ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which suggested some differences in counties with very high and very low voter turnout. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
 
-With respect to fixed effects, ...
+```{r}
+final.model.fixed.results$id = rownames(final.model.fixed.results)
+```
+
+
+```{r}
+final.model.fixed.results <- final.model.fixed.results %>%
+  mutate(lower_bound = Estimates - 1.96*Std.Err) %>%
+  mutate(upper_bound = Estimates + 1.96*Std.Err)
+
+```
+```{r}
+row.names(final.model.fixed.results) <- final.model.fixed.results$id
+```
+
+
+
+```{r}
+gender <- round(exp(final.model.fixed.results[11,][,1]), 1)
+```
+
+With respect to fixed effects, we see that, with all else held constant, the odds of a female voting in 2020 are `r gender` that of a male. Understanding the effects of race/ethnicity and age are not as straightfoward, as the interaction between the two terms indicates that one cannot be interpreted in isolation of the other. We will focus on an interesting group of voters, 18-29 year olds. 
+
+```{r}
+white <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic White",1] + final.model.fixed.results["race_ethnicityNon-Hispanic White",1]), 2)
+white_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic White",5] + final.model.fixed.results["race_ethnicityNon-Hispanic White",5]), 2)
+white_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic White",6] + final.model.fixed.results["race_ethnicityNon-Hispanic White",6]), 2)
+
+
+mixed <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Mixed",1] + final.model.fixed.results["race_ethnicityNon-Hispanic Mixed",1]), 2)
+mixed_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Mixed",5] + final.model.fixed.results["race_ethnicityNon-Hispanic Mixed",5]), 2)
+mixed_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Mixed",6] + final.model.fixed.results["race_ethnicityNon-Hispanic Mixed",6]), 2)
+
+
+black <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Black",1] + final.model.fixed.results["race_ethnicityNon-Hispanic Black", 1]), 2)
+black_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Black",5] + final.model.fixed.results["race_ethnicityNon-Hispanic Black", 5]), 2)
+black_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Black",6] + final.model.fixed.results["race_ethnicityNon-Hispanic Black", 6]), 2)
+
+asian <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Asian",1] + final.model.fixed.results["race_ethnicityNon-Hispanic Asian", 1]), 2)
+asian_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Asian",5] + final.model.fixed.results["race_ethnicityNon-Hispanic Asian", 5]), 2)
+asian_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic Asian",6] + final.model.fixed.results["race_ethnicityNon-Hispanic Asian", 6]), 2)
+
+amind <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic American Indian",1] + final.model.fixed.results["race_ethnicityNon-Hispanic American Indian", 1]), 2)
+amind_lower <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic American Indian",5] + final.model.fixed.results["race_ethnicityNon-Hispanic American Indian", 5]), 2)
+amind_upper <- round(exp(final.model.fixed.results["age_bin18-29:race_ethnicityNon-Hispanic American Indian",6] + final.model.fixed.results["race_ethnicityNon-Hispanic American Indian", 6]), 2)
+
+```
+
+```{r}
+Type <- c("White (Non Hispanic)", "Mixed (Non Hispanic)", "Black (Non Hispanic)", "Asian (Non Hispanic)", "American Indian (Non Hispanic)")
+multiplicative_odds <- data.frame(Type, c(white, mixed, black, asian, amind), c(white_lower, mixed_lower, black_lower, asian_lower, amind_lower), c(white_upper, mixed_upper, black_upper, asian_upper, amind_upper))
+colnames(multiplicative_odds) <- c("Race/Ethnicity", "Multiplicative Odds", "lower", "upper")
+multiplicative_odds <- multiplicative_odds %>%
+  mutate("95% Confidence Interval" = paste0("(", `lower`, ", ", upper, ")")) %>%
+  select(-c(lower, upper))
+pander(multiplicative_odds, caption = "Multiplicative odds of being a likely voter compared to Hispanic baseline (among 18-29 year olds)")
+```
+
+The table above shows, for 18-29 years old with county and gender held constant, the multiplicative odds of being a likely voter compared to the baseline of Hispanic (all races). As can be seen, for White and Black individuals, the odds of being a likely voter multiply by of `r white` and `r black` respectively. Thus, these individuals are more likely to vote than their hispanic counterparts. Conversely, for 18-29 year old Asians, American Indians, and Mixed individuals, the odds of being a likely voter multiple by factors of `r asian`, `r amind` and `r mixed` respective. Thus, these individuals are less likely to vote than their hispanic counterparts. It is important to note that these trends are specific to 18-29 year olds in North Carolina. 
+
+```{r}
+Percent_Difference %>% 
+  tibble::rownames_to_column() %>% 
+  mutate_if(is.numeric, round, digits=3) %>% 
+  mutate(Mean = X2, 
+         `95% CI` = paste0("(", X1, ", ", X3, ")")) %>% 
+  select(-(X1:X3), -rowname) %>% 
+  kableExtra::kable(booktabs = TRUE,
+                    caption = "Percent Change in Mean Survival Time, from decade increase in Birth Year", 
+                    col.names = c("Leadership Type", "Mean", "95% CI")) %>% 
+  kable_styling(latex_options = c("hold_position")) %>% 
+  kableExtra::pack_rows("Percent Difference", 1,5) %>% 
+  row_spec(0, bold = TRUE) %>% 
+  column_spec(column = c(2:3), latex_column_spec = "c") %>%   column_spec(column = c(1), width = "12em")
+```
+
+
+
 
 In regards to the random effects for county, ...
 
