@@ -476,7 +476,7 @@ test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
 plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 ```
 
-```{r County Random Effects Model Residual Plot no intrxn,fig.height=3,fig.width=4,fig.align="center", warning=FALSE,echo=FALSE}
+```{r County Random Effects Model Residual Plot no intrxn,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
 arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
                 xlab="Predicted Probabilities", 
                 ylab="Binned Residuals",
