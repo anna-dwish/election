@@ -174,7 +174,7 @@ who_votes_data %>%
 
 In Figure 1, we can see the proportion of likely voters across race-ethnicity, sex, and age group identities. There appears to be profound differences in likely voter proportion among the different race-ethnicity groups. *Hispanic Any Race*, *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups generally have a much higher proportion of likely voters relative to other groups in North Carolina.
 
-In general, we see an increasing trend with age for *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups. This trend is actually reversed for *Non-Hispanic Mixed* groups. Finally, we see a varying relationship for is slightly less profound for *Hispanic Any Race* and *Non-Hispanic Asian* groups.
+In general, we see an increasing trend in the proportion of likely voters with age for *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups. This trend is actually reversed for *Non-Hispanic Mixed* groups. For *Hispanic Any Race* and *Non-Hispanic Asian* groups, we see a varying relationship that is slightly less profound. These trends point to a potential interaction effect between age and $race \ and \ ethnicity$. 
 
 In general, there appears to be a higher proportion of likely voters among women compared to men. However, we see this trend level off in the two oldest age groups.
 
