@@ -155,8 +155,8 @@ who_votes_data %>%
   dplyr::select(race_ethnicity, age_bin, gender,Likely,Unlikely) %>%
   dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
   dplyr::summarize(Likely = sum(Likely), 
-          Unlikely = sum(Unlikely), 
-          proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
+                   Unlikely = sum(Unlikely), 
+                   proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
   ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
   geom_bar(stat = "identity", position = "dodge") + 
   facet_wrap(~race_ethnicity, nrow = 2) + 
@@ -189,9 +189,9 @@ nc <- nc %>% dplyr::rename(county_desc=subregion)
 likely.by.county <- who_votes_data %>% dplyr::select(everything()) %>%
   dplyr::group_by(county_desc) %>% 
   dplyr::summarise(Likely=sum(Likely),
-            Unlikely=sum(Unlikely),
-            Prop=sum(Likely)/(sum(Likely) + sum(Unlikely)))
-  
+                   Unlikely=sum(Unlikely),
+                   Prop=sum(Likely)/(sum(Likely) + sum(Unlikely)))
+
 
 mapdata <- merge(nc, likely.by.county, by = "county_desc")
 
@@ -200,7 +200,7 @@ ggplot(data=mapdata) +
   geom_polygon(aes(x=long, y=lat, group = group, fill = Prop)) +
   scale_fill_gradient2(high="#301934", low="#b19cd9", "% Likely Voters By County") +
   theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), legend.key.width = unit(3,"line")) +
+        panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), legend.key.width = unit(3,"line")) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
 ```
 
@@ -234,16 +234,12 @@ who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = 
 
 set.seed(5934512) # has to be this seed
 fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  mutate(vote = ifelse(prop > 0.5, 1, 0),
-         vote = ifelse(is.nan(prop), 0, vote),
-         vote = case_when(
-           Likely == 0 & Unlikely == 0 ~ 0,
-           TRUE ~ vote
-         )) %>%
-  mutate(vote = case_when(
-    Likely == 0 & Unlikely == 0 ~ 0,
-    TRUE ~ vote
-))
+  dplyr::mutate(vote = ifelse(prop > 0.5, 1, 0),
+                vote = ifelse(is.nan(prop), 0, vote),
+                vote = dplyr::case_when(
+                  Likely == 0 & Unlikely == 0 ~ 0,
+                  TRUE ~ vote
+                )) 
 
 acc_list = c()
 f1_list = c()
@@ -252,12 +248,12 @@ AUC_list = c()
 for (i in 1:5) {
   train <- fold_df %>% filter(.folds != i)
   test <- fold_df %>% filter(.folds == i)
-
+  
   glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
                      data = train,
                      family = binomial,
                      control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-
+  
   glmer.probs <- predict(glmer.fit,  test,  type = "response")
   glmer.pred <- rep(0, nrow(test))
   glmer.pred[glmer.probs > 0.5] <- 1
@@ -290,16 +286,16 @@ cv_df <- tibble(
 )
 
 glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
-                    data = fold_df,
-                    family = binomial,
-                    control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+                         data = fold_df,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
 
 results <- data.frame(VarCorr(glmer.fit.final))
 final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
 
 final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
-                              Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
-                              P.Value=summary(glmer.fit.final)$coefficients[, 4])
+                                       Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
+                                       P.Value=summary(glmer.fit.final)$coefficients[, 4])
 ```
 
 
@@ -323,8 +319,8 @@ ggplot(data=mapdata) +
   geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts)) +
   scale_fill_gradient2(low="#948294", mid="#543c54", high="#281934", "Intercepts By County") +
   theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12),
-    legend.key.width =unit(3,"line")) +
+        panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12),
+        legend.key.width =unit(3,"line")) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
 ```
 
@@ -366,7 +362,7 @@ election2012 <- election2012 %>%
   mutate(vote = case_when(
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-))
+  ))
 election2012.probs <- predict(glmer.fit.final, election2012,  type = "response")
 election2012.pred <- rep(0, nrow(election2012))
 election2012.pred[election2012.probs > 0.5] <- 1
@@ -409,12 +405,12 @@ fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_
   mutate(vote = case_when(
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-))
+  ))
 
 glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 | county_desc),
-                    data = fold_df,
-                    family = binomial,
-                    control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+                         data = fold_df,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
 ```
 
 ```{r initial model cm no intrxn, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
@@ -444,7 +440,7 @@ election2012 <- election2012 %>%
   mutate(vote = case_when(
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-))
+  ))
 election2012.probs <- predict(glmer.fit.final, election2012,  type = "response")
 election2012.pred <- rep(0, nrow(election2012))
 election2012.pred[election2012.probs > 0.5] <- 1
@@ -462,12 +458,12 @@ plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.c
 who_votes_data_reaged <- who_votes_data
 who_votes_data_reaged$age_bin <- as.character(who_votes_data_reaged$age_bin)
 who_votes_data_reaged <- who_votes_data_reaged %>% mutate(age_bin = case_when(
-          age_bin == "18-29" ~ "18-39",
-          age_bin == "30-39" ~ "18-39",
-          age_bin == "40-49" ~ "40-64",
-          age_bin == "50-64" ~ "40-64",
-          age_bin == "65+" ~ "65+",
-          TRUE ~ age_bin))
+  age_bin == "18-29" ~ "18-39",
+  age_bin == "30-39" ~ "18-39",
+  age_bin == "40-49" ~ "40-64",
+  age_bin == "50-64" ~ "40-64",
+  age_bin == "65+" ~ "65+",
+  TRUE ~ age_bin))
 who_votes_data_reaged <- who_votes_data_reaged %>% 
   dplyr::select(everything()) %>% 
   dplyr::group_by(county_desc,age_bin,race_ethnicity,gender) %>% 
@@ -478,35 +474,31 @@ who_votes_data_reaged$prop = who_votes_data_reaged$Likely/(who_votes_data_reaged
 
 ```{r age bin sensitivity analysis model results, results="hide"}
 fold_df <- groupdata2::fold(who_votes_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  mutate(vote = ifelse(prop > 0.5, 1, 0),
-         vote = ifelse(is.nan(prop), 0, vote),
-         vote = case_when(
-           Likely == 0 & Unlikely == 0 ~ 0,
-           TRUE ~ vote
-         )) %>%
-  mutate(vote = case_when(
-    Likely == 0 & Unlikely == 0 ~ 0,
-    TRUE ~ vote
-))
+  dplyr::mutate(vote = ifelse(prop > 0.5, 1, 0),
+                  vote = ifelse(is.nan(prop), 0, vote),
+                  vote = dplyr::case_when(
+                      Likely == 0 & Unlikely == 0 ~ 0,
+                      TRUE ~ vote
+                  )) 
 
 acc_list = c()
 f1_list = c()
 AUC_list = c()
 
 glmer.fit.final.reaged <- glmer(cbind(Likely, Unlikely) ~ age_bin * race_ethnicity + gender + (1 | county_desc),
-                    data = fold_df,
-                    family = binomial,
-                    control = glmerControl(optimizer = "optimx",
-                                           calc.derivs = FALSE,
-                                           optCtrl = list(method = "nlminb",
-                                                          starttests=FALSE,
-                                                          kkt=FALSE)))
+                                data = fold_df,
+                                family = binomial,
+                                control = glmerControl(optimizer = "optimx",
+                                                       calc.derivs = FALSE,
+                                                       optCtrl = list(method = "nlminb",
+                                                                      starttests=FALSE,
+                                                                      kkt=FALSE)))
 results.reaged <- data.frame(VarCorr(glmer.fit.final.reaged))
 final.model.random.results.reaged <- data.frame("Intercept"=c(round(results.reaged[1,4],3)),"Std.Dev"=c(round(results.reaged[1,5],3)))
 
 final.model.fixed.results.reaged = data.frame(Estimates=summary(glmer.fit.final.reaged)$coefficients[, 1], 
-                              Std.Err=summary(glmer.fit.final.reaged)$coefficients[, 2], 
-                              P.Value=summary(glmer.fit.final.reaged)$coefficients[, 4])
+                                              Std.Err=summary(glmer.fit.final.reaged)$coefficients[, 2], 
+                                              P.Value=summary(glmer.fit.final.reaged)$coefficients[, 4])
 ```
 
 ```{r}
