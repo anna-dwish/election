@@ -363,7 +363,7 @@ plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 
 ## Model Diagnostics 
 
-Our binned residuals, however, reveal some drawbacks to our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote. In addition, we see a fanning of the residuals for higher predicted probabilities. This may cause issues, as groups that are less likely to vote have been more active in the past few elections [[4]][Bibliography] and is important to keep in mind. Another possible cause of this issue is the non-linear relationship between age bins and some race/ethnicity groups from our exploratory data analysis. This curvature is more clearly visualized in Figure 6 in the Appendix, which is a binned residual plot resulting from a model without the interaction effect between race/ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which shrunk intercept estimates of counties with very high and very low voter turnout towards the mean. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
+Our binned residuals, however, reveal some drawbacks to our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote. This may cause issues when extending our model to the upcoming election, as groups that are less likely to vote have been more active in the past few elections [[4]][Bibliography] and is important to keep in mind. In addition, we see a fanning of the residuals for higher predicted probabilities. Another possible cause of this issue is the non-linear relationship between age bins and some race/ethnicity groups from our exploratory data analysis. This curvature is more clearly visualized in Figure 6 in the Appendix, which is a binned residual plot resulting from a model without the interaction effect between race/ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which shrunk intercept estimates of counties with very high and very low voter turnout towards the mean. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
 
 ```{r County Random Effects Model Residual Plot,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
 arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
@@ -535,13 +535,6 @@ ggplot(data=mapdata) +
     panel.grid = element_blank(), legend.position=c(.3,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), 
     legend.key.width = unit(1.4,"line"), legend.key.height = unit(.8,"line")) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5)))  
-```
-
-
-## Model Results
-
-```{r, fig.width=6}
-pander(final.model.fixed.results, caption = "Random County Intercept Model")
 ```
 
 ## No Interaction Effect
