@@ -370,11 +370,10 @@ ggplot(data=mapdata) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5))) 
 ```
 
-<<<<<<< HEAD
+
 The results of our final model can be viewed in Table 1 in our Appendix. Figure 3 is a heatmap of the intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
-=======
+
 The results of our final model can be viewed in Table 1 in our Appendix, and Figure 3 is a heatmap of the random intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`. These evaluation metrics indicate that our model does a reasonable job of predicting who votes in North Carolina.  
->>>>>>> ce81fc965c3c51e9427b0a3d21f1aeb74f5af934
 
 ```{r initial model cm, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
@@ -476,8 +475,6 @@ Percent_Difference %>%
 ```
 
 
-
-In regards to the random effects for county, ...
 
 ```{r Out of sample analysis, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 election2012 <- readRDS("who_votes_data_2012.Rds")
