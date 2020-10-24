@@ -89,7 +89,7 @@ Data for this study utilizes NC voter history, NC voter registration information
 
 ## Voter History and Registration Data
 
-The North Carolina voter history dataset shows how each registered voter, uniquely identified by a voter registration number, voted in elections over the last 10 years. As not all voters participate in all elections, we designated only those who voted in 2016 as “likely” voters for the 2020 election. This decision was made due to the similarities between the 2016 and 2020 presidential election years, such as a returning incumbent and a hyper-polarized political environment [[4]][Bibliography]. We elected to omit voter information from the 2018 midterm election as turnout for midterm elections is typically not comprable to that of the presidential [[2]][Bibliography]. 
+The North Carolina voter history dataset shows how each registered voter, uniquely identified by a voter registration number, voted in elections over the last 10 years. As not all voters participate in all elections, we designated only those who voted in 2016 as “likely” voters for the 2020 election. This decision was made due to the similarities between the 2016 and 2020 presidential election years, such as a returning incumbent and a hyper-polarized political environment [[2]][Bibliography]. We elected to omit voter information from the 2018 midterm election as turnout for midterm elections is typically not comprable to that of the presidential [[3]][Bibliography]. 
 
 The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their unique voter registration number, county of residence, race, ethnicity, gender, and age. In this dataset, race could take on one of the following categories:
 
@@ -250,7 +250,7 @@ ggplot(data=mapdata) +
   guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5)))  
 ```
 
-In Figure 2a, we see how the proportion of likely voters varies throughout North Carolina. Heterogeneity among the counties motivates a consideration of random county intercepts in modelling the likelihood of voting. Some interesting trends can be seen in the state map. Cherokee county, which is the westernmost county in the state, has an extremely high proportion of likely voters. This county is 95% White and heavily Republican, with 75% of the vote going to Donald Trump in 2016. Watauga County, located slightly northeast of Cherokee, similarly shows a high proportion of likely voters. However, despite being similar in racial composition to Cherokee (96% White), growth of a younger voting population, brought forth by Appalachian State University, has turned Watauga into a hotly contested swing county (CITATIONS!!!). Figure 2b in the Appendix displays a similar heat map with likely voter counts as opposed to proportions. 
+In Figure 2a, we see how the proportion of likely voters varies throughout North Carolina. Heterogeneity among the counties motivates a consideration of random county intercepts in modelling the likelihood of voting. Some interesting trends can be seen in the state map. Cherokee county, which is the westernmost county in the state, has an extremely high proportion of likely voters. This county is 95% White and heavily Republican, with 75% of the vote going to Donald Trump in 2016. Watauga County, located slightly northeast of Cherokee, similarly shows a high proportion of likely voters. However, despite being similar in racial composition to Cherokee (96% White), growth of a younger voting population, brought forth by Appalachian State University, has turned Watauga into a hotly contested swing county [[5]][Bibliography]. Figure 2b in the Appendix displays a similar heat map with likely voter counts as opposed to proportions. 
 
 # Methods
 
@@ -270,7 +270,7 @@ We compared this model to one without an interaction between *Age* and *Race/Eth
 
 We further performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models within a frequentist framework. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates. The results of this model are in Table 9 in the Appendix.
 
-# Results and Discussion
+# Results
 
 ```{r Relevel age bins}
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "65+")
@@ -380,8 +380,9 @@ test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
 plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 ```
 
+## Model Diagnostics 
 
-Our binned residuals, however, reveal some drawbacks to our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote. In addition, we see a fanning of the residuals for higher predicted probabilities. This may cause issues, as groups that are less likely to vote have been more active in the past few elections [[3]][Bibliography] and is important to keep in mind. Another possible cause of this issue is the non-linear relationship between age bins and some race/ethnicity groups from our exploratory data analysis. This curvature is more clearly visualized in Figure 5 in the Appendix, which is a binned residual plot resulting from a model without the interaction effect between race/ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which shrunk intercept estimates of counties with very high and very low voter turnout towards the mean. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
+Our binned residuals, however, reveal some drawbacks to our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote. In addition, we see a fanning of the residuals for higher predicted probabilities. This may cause issues, as groups that are less likely to vote have been more active in the past few elections [[4]][Bibliography] and is important to keep in mind. Another possible cause of this issue is the non-linear relationship between age bins and some race/ethnicity groups from our exploratory data analysis. This curvature is more clearly visualized in Figure 5 in the Appendix, which is a binned residual plot resulting from a model without the interaction effect between race/ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which shrunk intercept estimates of counties with very high and very low voter turnout towards the mean. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
 
 
 ```{r County Random Effects Model Residual Plot,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
@@ -392,6 +393,9 @@ arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scale
                 cex.main=0.9, cex.lab=0.8)
 ```
 
+# Discussion 
+
+## Prediction on 2012 Election 
 
 ```{r Out of sample analysis, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 election2012 <- readRDS("who_votes_data_2012.Rds")
@@ -417,7 +421,7 @@ plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.c
 
 ```
 
-Now, we will consider our model's ability to predict on voting likelihood for the 2012 presidential election. For our out of sample predictions, we achieved an `r round(election2012.acc,3)*100`% accuracy and our confusion matrix is above. These results are quite similar to our previous confusion matrix, which provides evidence that our model is capable of predicting voter trends outside of the dataset's associated election years.
+We now consider our model's ability to predict on voting likelihood for the 2012 presidential election. For our out of sample predictions, we achieved an `r round(election2012.acc,3)*100`% accuracy and our confusion matrix is above. These results are quite similar to our previous confusion matrix, which provides evidence that our model is capable of predicting voter trends outside of the dataset's associated election years.
 
 ```{r}
 interpretation <- final.model.fixed.results
@@ -442,7 +446,9 @@ gender_lower <- round(exp(interpretation[11,][,5]), 3)
 gender_upper <- round(exp(interpretation[11,][,6]), 3)
 ```
 
-Having addressed assumptions and validated our model with both in sample and out of sample predictions, we now interpret the results. Table 2 in the Appendix shows that, with all else held constant, we are 95% confident that the odds of a female voting in 2020 are between `r gender lower` and `r gender_upper` times that of a male. Understanding the effects of race/ethnicity and age are not as straightfoward, as the interaction between the two terms indicates that one cannot be interpreted in isolation of the other. As 18-29 year olds displayed interesting trends in Figure 1, we will focus on understanding this subgroup across race/ethnic identity. 
+## Interpretation
+
+Having addressed assumptions and validated our model with both in sample and out of sample predictions, we now interpret the results. Table 2 in the Appendix shows that, with all else held constant, we are 95% confident that the odds of a female voting in 2020 are between `r gender_lower` and `r gender_upper` times that of a male. Understanding the effects of race/ethnicity and age are not as straightfoward, as the interaction between the two terms indicates that one cannot be interpreted in isolation of the other. As 18-29 year olds displayed interesting trends in Figure 1, we will focus on understanding this subgroup across race/ethnic identity. 
 
 ```{r}
 white <- round(exp(interpretation["age_bin18-29:race_ethnicityNon-Hispanic White",1] + interpretation["race_ethnicityNon-Hispanic White",1]), 2)
@@ -494,13 +500,13 @@ With respect to limitations, we will begin by noting that the census solely desi
 
 1). Rucho v. Common Cause, No. 18-422, 588 U.S. Supreme Court (2019)
 
-2). DeSilver, Drew. “Voter Turnout Always Drops off for Midterm Elections, but Why?” Pew Research Center, Pew Research Center, 30 May 2020, www.pewresearch.org/fact-tank/2014/07/24/voter-turnout-always-drops-off-for-midterm-elections-but-why/.
+2). Jackson, Robert A. "Differential Influences on Participation in Midterm Versus Presidential Elections." The Social Science Journal, vol. 37, no. 3, 2000, p. 385. Gale General OneFile, https://link.gale.com/apps/doc/A67320157/ITOF?u=duke_perkins&sid=ITOF&xid=863ed1bd. Accessed 23 Oct. 2020.
 
-3). Kennedy, Danielle Root and Liz. “Increasing Voter Participation in America.” Center for American Progress, www.americanprogress.org/issues/democracy/reports/2018/07/11/453319/increasing-voter-participation-america/.
+3). DeSilver, Drew. “Voter Turnout Always Drops off for Midterm Elections, but Why?” Pew Research Center, Pew Research Center, 30 May 2020, www.pewresearch.org/fact-tank/2014/07/24/voter-turnout-always-drops-off-for-midterm-elections-but-why/.
 
-4). Jackson, Robert A. "Differential Influences on Participation in Midterm Versus Presidential Elections." The Social Science Journal, vol. 37, no. 3, 2000, p. 385. Gale General OneFile, https://link.gale.com/apps/doc/A67320157/ITOF?u=duke_perkins&sid=ITOF&xid=863ed1bd. Accessed 23 Oct. 2020.
+4). Kennedy, Danielle Root and Liz. “Increasing Voter Participation in America.” Center for American Progress, www.americanprogress.org/issues/democracy/reports/2018/07/11/453319/increasing-voter-participation-america/.
 
-5).
+5). Anne, CW. “A Swing County in a Swing State.” Watauga County, USA, 26 July 2018, wataugacountyusa.wordpress.com/2018/07/26/a-swing-county-in-a-swing-state/.
 
 
 ## Model Results (Frequentist)
