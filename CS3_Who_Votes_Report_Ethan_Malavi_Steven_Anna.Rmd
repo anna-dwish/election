@@ -2,7 +2,10 @@
 title: "Case Study 3 Interim Report: Who Votes in North Carolina?"
 author: "Ethan Shen, Malavi Ravindran, Steven Herrera Tenorio, Anna Darwish"
 geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
-output: pdf_document
+fontsize: 12pt
+output: 
+  pdf_document:
+     number_sections: true
 ---
 
 ```{r, function checking for installed packages, include=FALSE}
@@ -38,10 +41,10 @@ pkgTest("dplyr")
 pkgTest("grid")
 pkgTest("maps")
 pkgTest("scales")
-pkgTest("webshot")
-pkgTest("magick")
 pkgTest("cvms")
 pkgTest("png")
+pkgTest("brms")
+pkgTest("gridExtra")
 ```
 
 ```{r load packages, include=FALSE}
@@ -63,28 +66,30 @@ library(scales)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
-library(webshot)
-library(magick)
 library(cvms)
 library(png)
 library(knitr)
-webshot::install_phantomjs()
-knitr::opts_chunk$set(echo = F)
+library(brms)
+knitr::opts_chunk$set(echo = F,
+                      message = F,
+                      warning = F)
+library(gridExtra)
+theme_set(theme_classic())
 ```
 
 # Introduction
 
-In 2019, the Supreme Court asserted that federal courts were not allowed to rule cases on partisan gerrymandering, which allows parties that control the state legislature to draw district maps and influence election outcomes (see Rucho v. Common Cause 2019). North Carolina was at the spotlight of this contested 5-4 ruling, cultivating national dialogue about the consequences of district map drawing, such as voter suppression. Our study aims to uncover demographic characteristics, such race, gender, age group, and county of residence, driving voting patterns in North Carolina. We ultimately seek to answer the following question-- *who* votes in North Carolina? Answering this will not only allow for better predictions for the outcomes of Congressional elections, but will also illuminate which demographic groups in the state are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups seeking to bolster support and foster more politically minded communities. 
+In 2019, the Supreme Court asserted that federal courts were not allowed to rule cases on partisan gerrymandering, which allows parties that control the state legislature to draw district maps and influence election outcomes (Rucho v. Common Cause 2019) [[1]][Bibliography]. North Carolina was at the spotlight of this contested 5-4 ruling, cultivating national dialogue about the consequences of district map drawing, such as voter suppression. Our study aims to uncover demographic characteristics, such race, gender, age group, and county of residence, driving voting patterns in North Carolina. We ultimately seek to answer the following question-- *who* votes in North Carolina? Answering this will not only allow for better predictions for the outcomes of Congressional elections, but will also illuminate which demographic groups in the state are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups seeking to bolster support and foster more politically minded communities. 
 
-Our study will use publicly available voter, registration, and census data in order to determine the number of likely and unlikely voters across various demographic groups in the 100 counties of North Carolina. After performing data munging and harmonization, we implement a multilevel logistic regression model with random county intercepts to make statements regarding an individual's likelihood of voting. In order to assess the performance of the model, we perform both 5-fold cross validation and out of sample validation using data from the 2012 elections. We conclude with a discussion of which demographic characteristics have a significant impact on the likelihood of voting, quantifications of these relationships, and limitations to our data and analysis 
+Our study will use publicly available voter, registration, and census data in order to determine the number of likely and unlikely voters across various demographic groups in the 100 counties of North Carolina. After performing data munging and harmonization, we implement a multilevel logistic regression model with random county intercepts to make statements regarding an individual's likelihood of voting. In order to assess the performance of the model, we perform both 5-fold cross validation and out of sample validation using data from the 2012 elections. We conclude with a discussion of which demographic characteristics have a significant impact on the likelihood of voting, quantifications of these relationships, and limitations to our data and analysis.
 
 # Data Description
 
-Data for this study comes from North Carolina voter history, North Carolina voter registration information, and the census. Voting and registration data were used in conjunction with the census in order to not only understand who votes, but also who *does not*. Below we describe these various data sources as well as the munging and harmonization process used to obtain a singular, comprehensive dataset. 
+Data for this study utilizes NC voter history, NC voter registration information, and the census. Voting and registration data were used in conjunction with the census in order to not only understand who votes, but also who *does not*. Below we describe these various data sources as well as the munging and harmonization process used to obtain a singular, comprehensive dataset. 
 
 ## Voter History and Registration Data
 
-The North Carolina voter history dataset shows how each registered voter in North Carolina, uniquely identified by a voter registration number, voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we designated those who voted in 2016 as “likely” voters for the 2020 election, and disregarded those who voted in 2018. This decision was made because both 2016 and 2020 are presidential election years, and there is generally lower turnout for midterm elections (literature review). 
+The North Carolina voter history dataset shows how each registered voter in North Carolina, uniquely identified by a voter registration number, voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we designated only those who voted in 2016 as “likely” voters for the 2020 election, and disregarded those who voted in 2018. This decision was made because both 2016 and 2020 are presidential election years, while there is typically lower turnout for midterm elections [[2]][Bibliography]. 
 
 The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their county of residence, unique voter registration number, race, ethnicity, gender, and age. In this dataset, race could take on one of the following categories:
 
@@ -104,6 +109,7 @@ Ethnicity was one of the following:
 * Undesignated
 
 And gender belonged to one of: 
+
 * Male
 * Female
 * Undetermined
@@ -152,11 +158,50 @@ who_votes_data <- readRDS("who_votes_data_2016.Rds")
 ```{r EDA p1, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 # This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
 who_votes_data %>% 
+  mutate(sums = Likely + Unlikely) %>%
+  mutate(race_ethnicity = case_when(
+    race_ethnicity == "Hispanic Any Race" ~ paste0("Hispanic Any Race (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Hispanic Any Race") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic American Indian" ~ paste0("Non-Hispanic American Indian (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic American Indian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Asian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Black") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Mixed (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Mixed") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic White") %>%
+                                                     summarise(sum(sums)),
+                                                   ")")
+  )) %>%
   dplyr::select(race_ethnicity, age_bin, gender,Likely,Unlikely) %>%
   dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
   dplyr::summarize(Likely = sum(Likely), 
-          Unlikely = sum(Unlikely), 
-          proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
+                   Unlikely = sum(Unlikely), 
+                   proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
   ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
   geom_bar(stat = "identity", position = "dodge") + 
   facet_wrap(~race_ethnicity, nrow = 2) + 
@@ -178,7 +223,7 @@ In general, we see an increasing trend in the proportion of likely voters with a
 
 In general, there appears to be a higher proportion of likely voters among women compared to men. However, we see this trend level off in the two oldest age groups.
 
-```{r EDA p2, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+```{r EDA p2, fig.width=5.5, fig.height=2.5,fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 # http://www.peterhaschke.com/r/2013/12/05/NCmaps.html
 
 map <- map_data("county")
@@ -189,19 +234,20 @@ nc <- nc %>% dplyr::rename(county_desc=subregion)
 likely.by.county <- who_votes_data %>% dplyr::select(everything()) %>%
   dplyr::group_by(county_desc) %>% 
   dplyr::summarise(Likely=sum(Likely),
-            Unlikely=sum(Unlikely),
-            Prop=sum(Likely)/(sum(Likely) + sum(Unlikely)))
-  
+                   Unlikely=sum(Unlikely),
+                   Prop=sum(Likely)/(sum(Likely) + sum(Unlikely)))
+
 
 mapdata <- merge(nc, likely.by.county, by = "county_desc")
-
+# fix gray background, make lines darker, find a better color than purple, make borders lighter color
 ggplot(data=mapdata) + 
-  labs(caption="Figure 2") +
-  geom_polygon(aes(x=long, y=lat, group = group, fill = Prop)) +
-  scale_fill_gradient2(high="#301934", low="#b19cd9", "% Likely Voters By County") +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), legend.key.width = unit(3,"line")) +
-  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
+  labs(caption="Figure 2a") +
+  geom_polygon(aes(x=long, y=lat, group = group, fill = Prop),colour = "#202020", size=.8) +
+  scale_fill_gradient2(high="#454545", low="#b1b1b1", "% Likely Voters", labels = percent) +
+  theme(legend.title = element_text(size = 10), axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.2,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), 
+    legend.key.width = unit(1.7,"line"), legend.key.height = unit(.8,"line")) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5)))  
 ```
 
 In Figure 2, we see how the proportion of likely voters varies throughout North Carolina. Heterogeneity among the various counties motivates a consideration of random county intercepts in modelling the likelihood of voting. Some interesting trends can be seen in the state map. Cherokee county, which is the westernmost county in the state, has an extremely high proportion of likely voters. This county is 95% White and heavily Republican, with 75% of the vote going to Donald Trump in 2016. Watauga County, located slightly northeast of Cherokee, similarly shows a high proportion of likely voters. However, despite being similar in racial composition to Cherokee (96% White), growth of a younger voting population, brought forth by Appalachian State University, has turned Watauga into a hotly contested swing county.  
@@ -230,20 +276,16 @@ We performed sensitivity analysis to validate the resulting estimates for our co
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "65+")
 ```
 
-```{r cross validation, warning=FALSE, message=F}
+```{r cross validation, warning=FALSE, message=F, cache=TRUE}
 
 set.seed(5934512) # has to be this seed
 fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  mutate(vote = ifelse(prop > 0.5, 1, 0),
-         vote = ifelse(is.nan(prop), 0, vote),
-         vote = case_when(
-           Likely == 0 & Unlikely == 0 ~ 0,
-           TRUE ~ vote
-         )) %>%
-  mutate(vote = case_when(
-    Likely == 0 & Unlikely == 0 ~ 0,
-    TRUE ~ vote
-))
+  dplyr::mutate(vote = ifelse(prop > 0.5, 1, 0),
+                vote = ifelse(is.nan(prop), 0, vote),
+                vote = dplyr::case_when(
+                  Likely == 0 & Unlikely == 0 ~ 0,
+                  TRUE ~ vote
+                )) 
 
 acc_list = c()
 f1_list = c()
@@ -252,12 +294,12 @@ AUC_list = c()
 for (i in 1:5) {
   train <- fold_df %>% filter(.folds != i)
   test <- fold_df %>% filter(.folds == i)
-
+  
   glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
                      data = train,
                      family = binomial,
                      control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-
+  
   glmer.probs <- predict(glmer.fit,  test,  type = "response")
   glmer.pred <- rep(0, nrow(test))
   glmer.pred[glmer.probs > 0.5] <- 1
@@ -290,20 +332,20 @@ cv_df <- tibble(
 )
 
 glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
-                    data = fold_df,
-                    family = binomial,
-                    control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+                         data = fold_df,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
 
 results <- data.frame(VarCorr(glmer.fit.final))
 final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
 
 final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
-                              Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
-                              P.Value=summary(glmer.fit.final)$coefficients[, 4])
+                                       Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
+                                       P.Value=summary(glmer.fit.final)$coefficients[, 4])
 ```
 
 
-```{r intercept heatmap, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+```{r intercept heatmap, fig.width=5.5, fig.height=2.5, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 
 map <- map_data("county")
 nc <- subset(map, region =="north carolina")
@@ -320,17 +362,21 @@ mapdata <- merge(nc, likely.by.county, by = "county_desc")
 
 ggplot(data=mapdata) + 
   labs(caption="Figure 3") +
-  geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts)) +
-  scale_fill_gradient2(low="#948294", mid="#543c54", high="#281934", "Intercepts By County") +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.15), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12),
-    legend.key.width =unit(3,"line")) +
-  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal")) 
+  geom_polygon(aes(x=long, y=lat, group = group, fill = intercepts),colour = "#202020", size=.8) +
+  scale_fill_gradient2(mid="#454545", low="#a3a3a3", high="#404040", "Random Intercepts By County") +
+  theme(legend.title = element_text(size = 10), axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.2,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12),
+    legend.key.width =unit(1.5,"line"), legend.key.height = unit(.8,"line")) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5))) 
 ```
 
+<<<<<<< HEAD
 The results of our final model can be viewed in Table 1 in our Appendix. Figure 3 is a heatmap of the intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`.
+=======
+The results of our final model can be viewed in Table 1 in our Appendix, and Figure 3 is a heatmap of the random intercepts by county. While the intercepts appear to generally capture relative trends, these intercepts appear to be more homogeneous than the true percent of likely voters. This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence this model fits well with an average AUC of `r cv_df$AUC`. These evaluation metrics indicate that our model does a reasonable job of predicting who votes in North Carolina.  
+>>>>>>> ce81fc965c3c51e9427b0a3d21f1aeb74f5af934
 
-```{r initial model cm, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+```{r initial model cm, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
 test.glmer.preds <- ifelse(test.glmer.probs <= 0.5, "Unlikely", "Likely")
 test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
@@ -339,14 +385,17 @@ plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 
 From the confusion matrix, we can see a relatively even split of false negatives and false positives, suggesting our model isn't predisposed to making either mistake more than the other. 
 
-```{r County Random Effects Model Residual Plot,fig.height=3,fig.width=4,fig.align="center", warning=FALSE,echo=FALSE}
+Our binned residuals, however, reveal some issues for our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote, along with a fanning of a residuals as the likelihood increases. This may cause issues as groups that are less likely to vote have been more active in the past few elections [[3]][Bibliography] and is important to keep in mind. Another possible cause of this issue was the non-linear relationships between age bins and some Race/Ethnicity groups in our exploratory data analysis. This curvature is more clearly visualized in Figure 4, which is a binned residual plot resulting from the same model but without the interaction effect between Race/Ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which suggested some differences in counties with very high and very low voter turnout. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
+
+
+```{r County Random Effects Model Residual Plot,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
 arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
                 xlab="Predicted Probabilities", 
                 ylab="Binned Residuals",
                 main = "Figure 4: Random County Intercept and Age Slope Model",
                 cex.main=0.9, cex.lab=0.8)
-# validation_set[which(test.glmer.probs > .6 &  test.glmer.probs < .7), ]
 ```
+<<<<<<< HEAD
 
 Our binned residuals, however, reveal some issues for our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote, along with a fanning of a residuals as the likelihood increases. This may cause issues as groups that are less likely to vote have been more active in the past few elections [CITE] and is important to keep in mind. Another possible cause of this issue was the non-linear relationships between age bins and some Race/Ethnicity groups in our exploratory data analysis. This curvature is more clearly visualized in Figure 4, which is a binned residual plot resulting from the same model but without the interaction effect between Race/Ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which suggested some differences in counties with very high and very low voter turnout. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
 
@@ -428,7 +477,6 @@ Percent_Difference %>%
 
 
 
-
 In regards to the random effects for county, ...
 
 ```{r Out of sample analysis, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
@@ -443,7 +491,7 @@ election2012 <- election2012 %>%
   mutate(vote = case_when(
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-))
+  ))
 election2012.probs <- predict(glmer.fit.final, election2012,  type = "response")
 election2012.pred <- rep(0, nrow(election2012))
 election2012.pred[election2012.probs > 0.5] <- 1
@@ -465,12 +513,62 @@ With respect to limitations, we will begin by noting that the census solely desi
 
 # Appendix
 
-## Model Results
+## Bibliography
+
+1). Rucho v. Common Cause, No. 18-422, 588 U.S. ___ (2019)
+
+2). DeSilver, Drew. “Voter Turnout Always Drops off for Midterm Elections, but Why?” Pew Research Center, Pew Research Center, 30 May 2020, www.pewresearch.org/fact-tank/2014/07/24/voter-turnout-always-drops-off-for-midterm-elections-but-why/.
+
+3). Kennedy, Danielle Root and Liz. “Increasing Voter Participation in America.” Center for American Progress, www.americanprogress.org/issues/democracy/reports/2018/07/11/453319/increasing-voter-participation-america/.
+
+
+## Model Results (Frequentist)
 
 ```{r}
-pander(final.model.fixed.results, caption = "Random County Intercept Model")
+pander(final.model.fixed.results, caption = "Frequentist  Random County Intercept Model")
 ```
 
+## Model Results (Bayesian)
+
+```{r}
+bayesian_model <- readRDS("brm1_interactions.Rds")
+posterior_samples(bayesian_model, add_chain = T) %>% 
+  dplyr::select(-lp__) %>% 
+  gather(key, value, -chain, -iter) %>% 
+  dplyr::select(-iter, -chain) %>% 
+  mutate(key = as.factor(key)) %>% 
+  filter(substr(key, 1,1) == "b") %>% 
+  ungroup() %>% 
+  mutate(key = str_remove_all(key, "b_")) %>% 
+  dplyr::group_by(key) %>% 
+  dplyr::summarise(Estimate = mean(value),
+                   `Std.Err` = sd(value),
+  ) %>% 
+  dplyr::mutate(" " = key) %>% 
+  dplyr::select(" ", Estimate, `Std.Err`) %>% 
+  mutate_if(is.double, round, 4) %>% 
+  pander(caption = "Bayesian Random County Intercept Model")
+```
+
+## Likely Voter Count by Count
+
+```{r  fig.width=5.5, fig.height=2.5, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+ggplot(data=mapdata) + 
+  labs(caption="Figure 2b") +
+  geom_polygon(aes(x=long, y=lat, group = group, fill = Likely),colour = "#202020", size=.8) +
+  scale_fill_gradient2(high="#454545", mid="#7f7f7f", "Count of Likely Voters By County") +
+  theme(legend.title = element_text(size = 10), axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
+    panel.grid = element_blank(), legend.position=c(.3,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), 
+    legend.key.width = unit(1.4,"line"), legend.key.height = unit(.8,"line")) +
+  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5)))  
+```
+
+
+## Model Results
+
+```{r, fig.width=6}
+pander(final.model.fixed.results, caption = "Random County Intercept Model")
+```
 
 ## No Interaction Effect
 
@@ -486,12 +584,12 @@ fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_
   mutate(vote = case_when(
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-))
+  ))
 
 glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 | county_desc),
-                    data = fold_df,
-                    family = binomial,
-                    control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+                         data = fold_df,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
 ```
 
 ```{r initial model cm no intrxn, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
@@ -501,7 +599,7 @@ test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
 plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 ```
 
-```{r County Random Effects Model Residual Plot no intrxn,fig.height=3,fig.width=4,fig.align="center", warning=FALSE,echo=FALSE}
+```{r County Random Effects Model Residual Plot no intrxn,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
 arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
                 xlab="Predicted Probabilities", 
                 ylab="Binned Residuals",
@@ -521,7 +619,7 @@ election2012 <- election2012 %>%
   mutate(vote = case_when(
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
-))
+  ))
 election2012.probs <- predict(glmer.fit.final, election2012,  type = "response")
 election2012.pred <- rep(0, nrow(election2012))
 election2012.pred[election2012.probs > 0.5] <- 1
@@ -539,12 +637,12 @@ plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.c
 who_votes_data_reaged <- who_votes_data
 who_votes_data_reaged$age_bin <- as.character(who_votes_data_reaged$age_bin)
 who_votes_data_reaged <- who_votes_data_reaged %>% mutate(age_bin = case_when(
-          age_bin == "18-29" ~ "18-39",
-          age_bin == "30-39" ~ "18-39",
-          age_bin == "40-49" ~ "40-64",
-          age_bin == "50-64" ~ "40-64",
-          age_bin == "65+" ~ "65+",
-          TRUE ~ age_bin))
+  age_bin == "18-29" ~ "18-39",
+  age_bin == "30-39" ~ "18-39",
+  age_bin == "40-49" ~ "40-64",
+  age_bin == "50-64" ~ "40-64",
+  age_bin == "65+" ~ "65+",
+  TRUE ~ age_bin))
 who_votes_data_reaged <- who_votes_data_reaged %>% 
   dplyr::select(everything()) %>% 
   dplyr::group_by(county_desc,age_bin,race_ethnicity,gender) %>% 
@@ -553,37 +651,33 @@ who_votes_data_reaged$age_bin <- relevel(who_votes_data_reaged$age_bin %>% as.fa
 who_votes_data_reaged$prop = who_votes_data_reaged$Likely/(who_votes_data_reaged$Likely + who_votes_data_reaged$Unlikely)
 ```
 
-```{r age bin sensitivity analysis model results, results="hide"}
+```{r age bin sensitivity analysis model results, results="hide", warning=F,message=F}
 fold_df <- groupdata2::fold(who_votes_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  mutate(vote = ifelse(prop > 0.5, 1, 0),
-         vote = ifelse(is.nan(prop), 0, vote),
-         vote = case_when(
-           Likely == 0 & Unlikely == 0 ~ 0,
-           TRUE ~ vote
-         )) %>%
-  mutate(vote = case_when(
-    Likely == 0 & Unlikely == 0 ~ 0,
-    TRUE ~ vote
-))
+  dplyr::mutate(vote = ifelse(prop > 0.5, 1, 0),
+                vote = ifelse(is.nan(prop), 0, vote),
+                vote = dplyr::case_when(
+                  Likely == 0 & Unlikely == 0 ~ 0,
+                  TRUE ~ vote
+                )) 
 
 acc_list = c()
 f1_list = c()
 AUC_list = c()
 
 glmer.fit.final.reaged <- glmer(cbind(Likely, Unlikely) ~ age_bin * race_ethnicity + gender + (1 | county_desc),
-                    data = fold_df,
-                    family = binomial,
-                    control = glmerControl(optimizer = "optimx",
-                                           calc.derivs = FALSE,
-                                           optCtrl = list(method = "nlminb",
-                                                          starttests=FALSE,
-                                                          kkt=FALSE)))
+                                data = fold_df,
+                                family = binomial,
+                                control = glmerControl(optimizer = "optimx",
+                                                       calc.derivs = FALSE,
+                                                       optCtrl = list(method = "nlminb",
+                                                                      starttests=FALSE,
+                                                                      kkt=FALSE)))
 results.reaged <- data.frame(VarCorr(glmer.fit.final.reaged))
 final.model.random.results.reaged <- data.frame("Intercept"=c(round(results.reaged[1,4],3)),"Std.Dev"=c(round(results.reaged[1,5],3)))
 
 final.model.fixed.results.reaged = data.frame(Estimates=summary(glmer.fit.final.reaged)$coefficients[, 1], 
-                              Std.Err=summary(glmer.fit.final.reaged)$coefficients[, 2], 
-                              P.Value=summary(glmer.fit.final.reaged)$coefficients[, 4])
+                                              Std.Err=summary(glmer.fit.final.reaged)$coefficients[, 2], 
+                                              P.Value=summary(glmer.fit.final.reaged)$coefficients[, 4])
 ```
 
 ```{r}
