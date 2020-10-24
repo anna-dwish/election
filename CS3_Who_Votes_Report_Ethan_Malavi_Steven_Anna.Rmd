@@ -70,7 +70,6 @@ library(cvms)
 library(png)
 library(knitr)
 library(brms)
-webshot::install_phantomjs()
 knitr::opts_chunk$set(echo = F,
                       message = F,
                       warning = F)
