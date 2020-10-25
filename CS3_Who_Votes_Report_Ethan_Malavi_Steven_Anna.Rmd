@@ -22,6 +22,7 @@ pkgTest <- function(x)
 
 ```{r package test, include=FALSE}
 # Installing packages
+pkgTest("arm")
 pkgTest("knitr")
 pkgTest("tidyverse")
 pkgTest("optimx")
@@ -45,6 +46,7 @@ pkgTest("cvms")
 pkgTest("png")
 pkgTest("brms")
 pkgTest("gridExtra")
+pkgTest("merTools")
 ```
 
 ```{r load packages, include=FALSE}
