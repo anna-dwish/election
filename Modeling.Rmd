@@ -5,6 +5,11 @@ date: "10/13/2020"
 output: pdf_document
 ---
 
+Potential Changes:
+- add in h( ) vector for vote share by each state
+- focus on only swing states?
+- Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin
+
 ```{r, function checking for installed packages, include=FALSE}
 # Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
 pkgTest <- function(x)
@@ -33,11 +38,12 @@ library(R2jags)
 library(tidyverse)
 ```
 
+
 ```{r Read in Data}
 president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
-  mutate(pct = biden / (biden + trump) *100) %>% 
   filter(population %in% c("lv","rv")) %>% 
-  mutate(state = ifelse(state == "--","US",state))
+  mutate(state = ifelse(state == "--","US",state)) %>%
+  mutate(pct = biden / (biden + trump) *100) 
 
 #colnames(president_polls)
 
@@ -50,14 +56,27 @@ president_polls <- president_polls %>%
 
 president_polls <- president_polls[president_polls$start.date >= "2020-07-01",]
 
-# president_polls <- president_polls[president_polls$state == "US",]
-# president_polls <- president_polls[president_polls$fte_grade <= "C-",]
-# mean(president_polls$biden)
-# sd(president_polls$biden)
-# mean(president_polls$trump)
-# sd(president_polls$trump)
-# nrow(president_polls)
+president_polls <- president_polls %>%
+  filter(state %in% c("US", "AR", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH"))
+
+#swing states are: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, North Carolina, Ohio, Pennsylvania, Texas, Wisconsin, Minnesota, Nevada, New Hampshire
+#these were determined from the following map and external sources: https://www.270towin.com/. 
+#should we get rid of "US"? The popular vote doesn't really matter anyways. 
 ```
+
+
+```{r}
+#which states are not represented at all in polling data? none are swing, so we're good
+state_abbreviations <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                                 "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                                 "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                                 "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                                 "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+
+ustates <- c(unique(president_polls$state))
+State_Abbrev[!(State_Abbrev %in% ustates)]
+```
+
 
 ```{r data_list,eval=TRUE}
 states <- president_polls$state %>% unique
@@ -67,12 +86,39 @@ t <- president_polls$days_to_election + 1
 N_polls <- y %>% length
 N_states <- states %>% length
 N_days <- t %>% max
-#jags_data <- list(y=y,t=t,r=r,N_polls=N_polls,N_states=N_states,N_days=N_days)
+
 ```
+
+```{r}
+vote_share_2016 <- data.frame(president_polls$state, number = r)
+vote_share_2016 <- unique(vote_share_2016) %>%
+  mutate(clinton_percent = case_when(
+    president_polls.state == "NC" ~ 47/(47 + 51),
+    president_polls.state == "MI" ~ 47/(47 + 48),
+    president_polls.state == "NH" ~ 48/(48 + 47),
+    president_polls.state == "NV" ~ 48/(48 + 46),
+    president_polls.state == "PA" ~ 48/(48 + 49),
+    president_polls.state == "WI" ~ 47/(47 + 48),
+    president_polls.state == "TX" ~ 43/(43 + 53),
+    president_polls.state == "OH" ~ 44/(44 + 52),
+    president_polls.state == "MN" ~ 47/(47 + 45),
+    president_polls.state == "GA" ~ 46/(46 + 51),
+    president_polls.state == "FL" ~ 48/(48 + 49),
+    president_polls.state == "CO" ~ 47/(47 + 44),
+    president_polls.state == "IA" ~ 42/(42 + 52),
+    president_polls.state == "ME" ~ 48/(48 + 45),
+    president_polls.state == "US" ~ 48/(48 + 46),
+
+  )) %>%
+  mutate(clinton_percent = 100*clinton_percent)
+h <- vote_share_2016$clinton_percent
+
+```
+
 
 ```{r Stored and Out Variables in Models}
 ## The following code stores the list of variables we wish to store in the model Rdata files from the RJAGS code
-jags_data <- list("y","t", "r", "N_polls", "N_states", "N_days")
+jags_data <- list("y","t", "r", "N_polls", "N_states", "N_days", "h")
 out_parameters = c("beta","sigma2_beta","p","sigma2_y")
 ```
 
@@ -140,8 +186,11 @@ priors <- "
   sigma2_0 = 1/sigma2_0_inv
   sigma2_0_inv ~ dgamma(.5,.5)
   "
-generate_model(priors,"original_model.Rdata",10000)
+generate_model(priors,"original_model.Rdata",100)
 ```
+
+
+
 
 ```{r model,eval = TRUE}
 model <- function(){
@@ -155,14 +204,14 @@ model <- function(){
     }
   }
   
-  #EXERCISE: add hierarhciacl prior for sigma2_beta and sigma2_y, i.e. sigma2_beta[j] all come from a common distribution 
+
   for(j in 1:N_states){
     sigma2_y[j] = 1/sigma2_y_inv[j]
     sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
     
     sigma2_beta[j] = 1/sigma2_beta_inv[j]
     sigma2_beta_inv[j] ~ dgamma(nu_beta,nu_beta*tau_beta) 
-    beta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+    beta[j,1] ~ dnorm(h[j],pow(sigma2_0,-1))
   }
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
@@ -170,7 +219,6 @@ model <- function(){
   nu_beta ~ dunif(0,100)
   tau_beta ~ dunif(0,100)
   
-  mu0 ~ dnorm(50,pow(7.5,-2))
   sigma2_0 = 1/sigma2_0_inv
   sigma2_0_inv ~ dgamma(.5,.5)
 }
@@ -179,9 +227,45 @@ model <- function(){
 ```{r}
 jags_sims <- jags(data = jags_data,model.file = model,parameters.to.save = c("beta","sigma2_beta",
                                                                              "p","sigma2_y"),
-                  n.iter = 10000)
+                  n.iter = 100)
 #jags_sims %>% saveRDS("jags_sims.Rds")
+```
 
+
+```{r}
+#returns number of electoral votes biden wins for each iteration of the sampler
+#we need to add to this the votes that he is guaranteed from other states
+prediction_per_simulation <- function(i){
+  elec_sims <- jags_sims$BUGSoutput$sims.list$beta[i,,1]
+  vote_share_by_state <- data.frame(states, elec_sims)
+
+  electoral_data <- read.csv("Electoral_College.csv") %>%
+    filter(Year == 2020)
+
+  electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                                 "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                                 "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                                 "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                                 "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+  results <- merge(vote_share_by_state, electoral_data, by = "states") %>%
+    dplyr::select(-c(Year)) 
+  return(results)
+  biden_wins <- results %>%
+    filter(elec_sims > 50) 
+  biden_electoral_votes <- sum(biden_wins$Votes)
+  
+  #add in the number of guaranteed votes from other states!
+  
+  return(biden_electoral_votes)
+  
+}
+
+```
+
+
+
+
+```{r}
 poll_plot_data <- tibble(y=jags_data$y,t=jags_data$t %>% as.integer(),state = states[jags_data$r])
 beta_plot_data <- lapply(1:N_states,function(st){
   sims <- jags_sims$BUGSoutput$sims.list$beta[,st,]
@@ -236,7 +320,10 @@ electoral_data %>% filter(State_Abbrev %in% remaining_states)
 definitely_democratic <- c(3,20,4)
 
 final_results <- (elec_sims_matrix %*% electoral_votes + sum(definitely_democratic))
+```
 
+
+```{r}
 summary(final_results)
 hist(final_results)
 mean(final_results >= 270)
