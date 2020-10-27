@@ -35,17 +35,6 @@ library(R2jags)
 library(tidyverse)
 ```
 
-# Read in data 
-
-```{r}
-president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
-  filter(population %in% c("lv","rv")) %>% 
-  mutate(state = ifelse(state == "--","US",state)) %>%
-  mutate(pct = biden / (biden + trump) *100) 
-head(president_polls)
-```
-
-
 ```{r Read in Data}
 #Filter to see if any non democratic or republican candidates are polling high
 
@@ -64,20 +53,11 @@ senate_polls %>%
 
 #filter out AR because there is a 0% chance a democrat wins here
 #filter out IL because there is a 100% chance a democrat wins here
-#remember to add back in one senator for IL because that's sort of a given
+#remember to add back in one senator for IL because that's sort of a given!
 ```
 
 ```{r}
-senate_polls %>%
-  filter(cycle == "2020") %>%
-  filter(population %in% c("lv","rv")) %>% 
-  filter(office_type == "U.S. Senate") %>%
-  filter(candidate_party)
-```
-
-
-```{r}
-senate_polls_grouped <- senate_polls %>%
+senate_polls_cleaned <- senate_polls %>%
   filter(cycle == "2020") %>%
   filter(population %in% c("lv","rv")) %>% 
   filter(office_type == "U.S. Senate") %>%
@@ -90,55 +70,35 @@ senate_polls_grouped <- senate_polls %>%
   )) %>%
   
   #get rid of arkansas because there is no chance that a democrat will win here 
-  filter(state %notin% c("AK", "IL")) %>%
+  #get rid of illionis because basically guarantted a democrat wins
+  filter(state %notin% c("Arkansas", "Illinois")) %>%
   filter(candidate_party %in% c("DEM", "REP")) %>%
+  filter(poll_id != 58956 & question_id != 100828) %>%
+  filter(poll_id != 67060 & question_id != 125304) #get rid of weird polls
+
+```
+
+
+```{r}
+democratic_candidates <- senate_polls_cleaned %>%
+  filter(candidate_party == "DEM") %>%
   group_by(question_id, poll_id, state, race_id, pollster) %>%
-  summarize(total = sum(pct)) 
-
+  summarize(total_dems_pct = sum(pct)) 
+democratic_candidates 
 ```
 
 ```{r}
-senate_polls %>%
-  filter(cycle == "2020") %>%
-  filter(population %in% c("lv","rv")) %>% 
-  filter(office_type == "U.S. Senate") %>%
-  
-  #add separate elections for georgia and arizona special
-  mutate(state = case_when(
-    state == "Georgia" & seat_name == "Class III" ~ "Georgia*",
-    state == "Arizona" & seat_name == "Class III" ~ "Arizona*",
-    TRUE ~ as.character(state)
-  )) %>%
-  
-  #get rid of arkansas because there is no chance that a democrat will win here 
-  filter(state %notin% c("AK", "IL")) %>%
-  filter(candidate_party %in% c("DEM", "REP")) 
+republican_candidates <- senate_polls_cleaned %>%
+  filter(candidate_party == "REP") %>%
+  group_by(question_id, poll_id, state, race_id, pollster) %>%
+  summarize(total_rep_pct = sum(pct)) 
+republican_candidates
 ```
 
 ```{r}
-senate_polls_dem <- senate_polls %>%
-  filter(cycle == "2020") %>%
-  filter(population %in% c("lv","rv")) %>% 
-  filter(office_type == "U.S. Senate") %>%
-  
-  #add separate elections for georgia and arizona special
-  mutate(state = case_when(
-    state == "Georgia" & seat_name == "Class III" ~ "Georgia*",
-    state == "Arizona" & seat_name == "Class III" ~ "Arizona*",
-    TRUE ~ as.character(state)
-  )) %>%
-  
-  #get rid of arkansas because there is no chance that a democrat will win here 
-  filter(state %notin% c("AK", "IL")) %>%
-  filter(candidate_party %in% c("DEM","REP")) %>%
-  select(question_id, poll_id, state, race_id, pollster, pct) 
-
-senate_polls_dem <- unique(senate_polls_dem)
-  
-```
-
-```{r}
-combined <- merge(senate_polls_dem, senate_polls_grouped, by = c("question_id", "poll_id", "race_id", "state", "start_date", "end_date", "election_date"))
-unique(combined)
+senate_data <- merge(democratic_candidates, republican_candidates, by = c("state", "question_id", "poll_id", "race_id", "pollster"))
+senate_data <- senate_data %>%
+  mutate(pct_dem = 100*total_dems_pct/(total_dems_pct + total_rep_pct))
+senate_data
 ```
 
