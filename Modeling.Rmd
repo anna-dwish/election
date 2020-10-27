@@ -91,7 +91,6 @@ state_abbreviations <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
 ```
 
 
-
 ```{r data_list,eval=TRUE}
 states <- president_polls$state %>% unique
 y <- president_polls$pct
@@ -123,7 +122,7 @@ vote_share_2016 <- unique(vote_share_2016) %>%
     president_polls.state == "IA" ~ 42/(42 + 52),
     president_polls.state == "ME" ~ 48/(48 + 45),
     president_polls.state == "AZ" ~ 45/(48 + 45)
-    
+
   )) %>%
   mutate(clinton_percent = 100*clinton_percent)
 h <- vote_share_2016$clinton_percent
@@ -150,7 +149,6 @@ model <- function(){
       beta[i,j] ~ dnorm(beta[i,j-1],pow(sigma2_beta[i],-1))
     }
   }
-  
   
   for(j in 1:N_states){
     sigma2_y[j] = 1/sigma2_y_inv[j]
@@ -198,13 +196,11 @@ model2 <- function(){
   
   Phi ~ dwish(I_states,N_states+1) 
   Sigma = inverse(Phi)
-  
   #hierarchical component
-  
   for(j in 1:N_states){
     sigma2_y[j] = 1/sigma2_y_inv[j]
     sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
-    
+      
     theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-1))
     #theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
   }
@@ -228,6 +224,7 @@ model2 <- function(){
 jags_sims_mv <- jags(data = jags_data2,model.file = model2,parameters.to.save = c("theta","Sigma",
                                                                                   "p","sigma2_y"),
                      n.iter = 10000)
+                                                                               
 ```
 
 
@@ -245,6 +242,8 @@ electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
                            "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
                            "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
 
+    filter(Year == 2020)
+  
 #returns number of electoral votes biden wins for each iteration of the sampler
 #we need to add to this the votes that he is guaranteed from other states
 ```
@@ -254,7 +253,7 @@ electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
 prediction_per_simulation <- function(i){
   elec_sims <- jags_sims_mv$BUGSoutput$sims.list$theta[i,,1]
   vote_share_by_state <- data.frame(states, elec_sims)
-  
+
   
   results <- merge(vote_share_by_state, electoral_data, by = "states") %>%
     dplyr::select(-c(Year)) 
@@ -276,6 +275,7 @@ for (i in 1:n_iter){
 
 hist(final_results)
 mean(final_results >= 270)
+
 
 ```
 
@@ -408,8 +408,13 @@ definitely_democratic <- c(3,20,4)
 
 final_results <- (elec_sims_matrix %*% electoral_votes + sum(definitely_democratic))
 ```
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 413dee80dc27aa2a18b5fed3dc2fec7630b30948
 ```{r}
 summary(final_results)
 hist(final_results)
