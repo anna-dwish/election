@@ -57,8 +57,8 @@ president_polls <- president_polls %>%
          election_date = "2020-11-03" %>% as.Date(),
          days_to_election = election_date - end.date)
 
-
 president_polls <- president_polls[president_polls$start.date >= "2020-07-01",]
+
 
 president_polls <- president_polls %>%
   filter(state %in% c("AZ", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH"))
@@ -68,6 +68,7 @@ president_polls <- president_polls %>%
 #these were determined from the following map and external sources: https://www.270towin.com/. 
 #should we get rid of "US"? The popular vote doesn't really matter anyways. 
 ```
+
 
 ```{r}
 swing <- c("AZ", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
@@ -90,14 +91,15 @@ votes_going_to_biden
 ```{r}
 #which states are not represented at all in polling data? none are swing, so we're good
 state_abbreviations <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
-                                 "DE","FL","GA","HI","ID","IL","IN","IA","KS",
-                                 "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
-                                 "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
-                                 "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+                         "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                         "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                         "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                         "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
 
 ```
 
 # parameters for jags
+
 
 ```{r data_list,eval=TRUE}
 states <- president_polls$state %>% unique
@@ -160,7 +162,6 @@ model <- function(){
     }
   }
   
-
   for(j in 1:N_states){
     sigma2_y[j] = 1/sigma2_y_inv[j]
     sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
@@ -251,9 +252,7 @@ model2 <- function(){
   
   Phi ~ dwish(I_states,N_states+1) 
   Sigma = inverse(Phi)
-
   #hierarchical component
-
   for(j in 1:N_states){
     sigma2_y[j] = 1/sigma2_y_inv[j]
     sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
@@ -273,14 +272,28 @@ model2 <- function(){
 
 ```{r}
 jags_sims_mv <- jags(data = jags_data2,model.file = model2,parameters.to.save = c("theta","Sigma",
-                                                                                "p","sigma2_y"),
+                                                                        "p","sigma2_y"),
                   n.iter = 5000)
+                                         
 ```
 
 
 ```{r}
 n_iter <- dim(jags_sims_mv$BUGSoutput$sims.list$theta[,,1])
 
+electoral_data <- read.csv("Electoral_College.csv") %>%
+  filter(Year == 2020)
+
+electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                           "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                           "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                           "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                           "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+
+    filter(Year == 2020)
+  
+#returns number of electoral votes biden wins for each iteration of the sampler
+#we need to add to this the votes that he is guaranteed from other states
 ```
 
 
@@ -322,7 +335,9 @@ sims %>% colMeans()
 ```
 
 
+
 # older stuff 
+
 
 ```{r Generate Model Text}
 #RJAGs allows users to input either the text of the model they hope to create (where information such as likelihood, priors, and predictive information instructions are necessary) or input an R function. To minimize code duplication, the following method concatenates the likelihood information, prior specification, and predictive information. Anyone who wishes to build off of these results can input the priors (see sections Model 1a - Model 6b for various examples).
@@ -449,11 +464,6 @@ definitely_democratic <- c(3,20,4)
 
 final_results <- (elec_sims_matrix %*% electoral_votes + 200)
 ```
-
-```{r}
-dim(elec_sims)
-```
-
 
 ```{r}
 summary(final_results)
@@ -640,9 +650,9 @@ merTools::plotREsim(merTools::REsim(m2)) %>% +
         axis.ticks.x = element_blank(),
         strip.text.x = element_blank(),
         strip.text.y = element_blank(),
-        panel.background = element_rect(fill='transparent', color=NA),   # apparently all ignored for reasons unknown
+        panel.background = element_rect(fill='transparent', color=NA),   # apparently all ignored for reasons unknown
         plot.background = element_rect(fill='transparent', color=NA),
-        strip.background =  element_rect(fill='transparent', color=NA))
+        strip.background =  element_rect(fill='transparent', color=NA))
 ```
 
 
@@ -671,4 +681,3 @@ sjPlot::tab_model(m2,
                   show.re.var= TRUE,
                   dv.labels= "plz can i get a waffle", p.style = "numeric_stars")
 ```
-
