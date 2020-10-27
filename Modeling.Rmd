@@ -5,10 +5,13 @@ date: "10/13/2020"
 output: pdf_document
 ---
 
-Potential Changes:
-- add in h( ) vector for vote share by each state
-- focus on only swing states?
-- Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin
+Tried so far:
+- priors all at 50 (Graham's) => 100% biden
+- priors at vote share for Clinton => 40% biden
+- priors for 50 for brown states and vote share for others => 100% biden
+- priors where all light blue states on map were given an additional half percentage point => 60% biden
+- priors where all light blue states on map were given an additional half percentage AND all light red (just Texas) lost half a percentage => 45% biden
+- priors where states that have flipped from red to blue in the last four years were given additional half percentage (these states all flipped blue) => 53% (I thik we can justify this well)
 
 ```{r, function checking for installed packages, include=FALSE}
 # Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
@@ -38,6 +41,7 @@ library(R2jags)
 library(tidyverse)
 ```
 
+# Read in data 
 
 ```{r Read in Data}
 president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
@@ -54,10 +58,10 @@ president_polls <- president_polls %>%
          days_to_election = election_date - end.date)
 
 
-president_polls <- president_polls[president_polls$start.date >= "2020-08-01",]
+president_polls <- president_polls[president_polls$start.date >= "2020-07-01",]
 
 president_polls <- president_polls %>%
-  filter(state %in% c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH"))
+  filter(state %in% c("AZ", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH"))
 
 #got rid of US: why? covariance matrix will be hard to estimate
 #swing states are: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, North Carolina, Ohio, Pennsylvania, Texas, Wisconsin, Minnesota, Nevada, New Hampshire
@@ -66,14 +70,17 @@ president_polls <- president_polls %>%
 ```
 
 ```{r}
-swing <- c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
+swing <- c("AZ", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
 State_Abbrev[!(State_Abbrev %in% swing)]
 ```
 
+
+# guaranteed biden votes 
+
 ```{r}
 #going to biden:
-biden <- c(55, 7, 3, 3, 4, 20, 10, 11, 14, 5, 29, 7, 4, 3, 13, 12)
-dem_states <- c("CA", "CT", "DC", "DE", "HI", "IL", "MD", "MA", "NJ", "NM", "NY", "OR", "RI", "VT", "VA", "WA")
+biden <- c(55, 7, 3, 3, 4, 20, 10, 11, 14, 5, 29, 7, 4, 3, 13, 12, 9)
+dem_states <- c("CA", "CT", "DC", "DE", "HI", "IL", "MD", "MA", "NJ", "NM", "NY", "OR", "RI", "VT", "VA", "WA", "CO")
 votes_going_to_biden <- sum(biden)
 votes_going_to_biden
 ```
@@ -90,7 +97,7 @@ state_abbreviations <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
 
 ```
 
-
+# parameters for jags
 
 ```{r data_list,eval=TRUE}
 states <- president_polls$state %>% unique
@@ -105,24 +112,26 @@ I_states <- diag(N_states)
 
 
 ```{r}
+#try swing states with 50 percent, everything else with vote share jittered by a certain amount?
+
 vote_share_2016 <- data.frame(president_polls$state, number = r)
 vote_share_2016 <- unique(vote_share_2016) %>%
   mutate(clinton_percent = case_when(
     president_polls.state == "NC" ~ 47/(47 + 51),
-    president_polls.state == "MI" ~ 47/(47 + 48),
-    president_polls.state == "NH" ~ 48/(48 + 47),
-    president_polls.state == "NV" ~ 48/(48 + 46),
-    president_polls.state == "PA" ~ 48/(48 + 49),
-    president_polls.state == "WI" ~ 47/(47 + 48),
-    president_polls.state == "TX" ~ 43/(43 + 53),
+    president_polls.state == "MI" ~ 47/(47 + 48) + 0.005,
+    president_polls.state == "NH" ~ 48/(48 + 47) + 0.005,
+    president_polls.state == "NV" ~ 48/(48 + 46) + 0.005,
+    president_polls.state == "PA" ~ 48/(48 + 49) + 0.005,
+    president_polls.state == "WI" ~ 47/(47 + 48) + 0.005,
+    president_polls.state == "TX" ~ 43/(43 + 53) , #-  0.005,
     president_polls.state == "OH" ~ 44/(44 + 52),
-    president_polls.state == "MN" ~ 47/(47 + 45),
+    president_polls.state == "MN" ~ 47/(47 + 45) + 0.005,
     president_polls.state == "GA" ~ 46/(46 + 51),
     president_polls.state == "FL" ~ 48/(48 + 49),
-    president_polls.state == "CO" ~ 47/(47 + 44),
+    #president_polls.state == "CO" ~ 47/(47 + 44),
     president_polls.state == "IA" ~ 42/(42 + 52),
     president_polls.state == "ME" ~ 48/(48 + 45),
-    president_polls.state == "AZ" ~ 45/(48 + 45)
+    president_polls.state == "AZ" ~ 45/(48 + 45) + 0.005
 
   )) %>%
   mutate(clinton_percent = 100*clinton_percent)
@@ -131,7 +140,7 @@ h <- vote_share_2016$clinton_percent
 ```
 
 
-
+# without estimating covariance 
 
 ```{r Stored and Out Variables in Models}
 ## The following code stores the list of variables we wish to store in the model Rdata files from the RJAGS code
@@ -174,65 +183,8 @@ model <- function(){
 ```{r}
 jags_sims <- jags(data = jags_data,model.file = model,parameters.to.save = c("beta","sigma2_beta",
                                                                              "p","sigma2_y"),
-                  n.iter = 100)
-#jags_sims %>% saveRDS("jags_sims.Rds")
-```
-
-Now with estimating correlation structure.
-
-```{r}
-jags_data2 <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
-#jags_data2 <- list("y","t", "r", "N_polls", "N_states", "N_days", "I_states")
-```
-
-
-```{r model,eval = TRUE}
-model2 <- function(){
-  for(k in 1:N_polls){
-    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
-    p[k] = theta[r[k],t[k]] 
-  }
-  for(j in 2:N_days){
-    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
-  }
-  
-  Phi ~ dwish(I_states,N_states+1) 
-  Sigma = inverse(Phi)
-
-  #hierarchical component
-
-  for(j in 1:N_states){
-    sigma2_y[j] = 1/sigma2_y_inv[j]
-    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
-      
-    theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-1))
-    #theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
-  }
-  nu_y ~ dunif(0,100)
-  tau_y ~ dunif(0,100)
-  
-  nu_beta ~ dunif(0,100)
-  tau_beta ~ dunif(0,100)
-  
-  #mu0 ~ dnorm(50,pow(7.5,-2))
-  sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(0.5, 0.5)
-}
-```
-
-
-
-
-```{r}
-#jags_data$I_states <- diag(N_states)
-jags_sims_mv <- jags(data = jags_data2,model.file = model2,parameters.to.save = c("theta","Sigma",
-                                                                                "p","sigma2_y"),
-                  n.iter = 10000)
-```
-
-
-```{r}
-n_iter <- dim(jags_sims_mv$BUGSoutput$sims.list$theta[,,1])
+                  n.iter = 5000)
+n_iter <- dim(jags_sims$BUGSoutput$sims.list$beta[,,1])
 ```
 
 ```{r}
@@ -252,7 +204,7 @@ electoral_data <- read.csv("Electoral_College.csv") %>%
 
 ```{r}
 prediction_per_simulation <- function(i){
-  elec_sims <- jags_sims_mv$BUGSoutput$sims.list$theta[i,,1]
+  elec_sims <- jags_sims$BUGSoutput$sims.list$beta[i,,1]
   vote_share_by_state <- data.frame(states, elec_sims)
 
   
@@ -280,8 +232,97 @@ mean(final_results >= 270)
 
 ```
 
+# with estimating covariance 
 
----------------------OLD-----------------------------
+```{r}
+jags_data2 <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
+#jags_data2 <- list("y","t", "r", "N_polls", "N_states", "N_days", "I_states")
+```
+
+```{r model,eval = TRUE}
+model2 <- function(){
+  for(k in 1:N_polls){
+    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
+    p[k] = theta[r[k],t[k]] 
+  }
+  for(j in 2:N_days){
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+  }
+  
+  Phi ~ dwish(I_states,N_states+1) 
+  Sigma = inverse(Phi)
+
+  #hierarchical component
+
+  for(j in 1:N_states){
+    sigma2_y[j] = 1/sigma2_y_inv[j]
+    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+      
+    theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-1))
+    #theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+  }
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  
+  mu0 ~ dnorm(50,pow(7.5,-2))
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(.5, .5)
+}
+```
+
+```{r}
+jags_sims_mv <- jags(data = jags_data2,model.file = model2,parameters.to.save = c("theta","Sigma",
+                                                                                "p","sigma2_y"),
+                  n.iter = 5000)
+```
+
+
+```{r}
+n_iter <- dim(jags_sims_mv$BUGSoutput$sims.list$theta[,,1])
+
+```
+
+
+
+```{r}
+prediction_per_simulation2 <- function(i){
+  elec_sims <- jags_sims_mv$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states, elec_sims)
+
+  
+  results <- merge(vote_share_by_state, electoral_data, by = "states") %>%
+    dplyr::select(-c(Year)) 
+  biden_wins <- results %>%
+    filter(elec_sims > 50) 
+  biden_electoral_votes <- sum(biden_wins$Votes)
+  
+  #add in the number of guaranteed votes from other states!
+  biden_votes = votes_going_to_biden + biden_electoral_votes
+  return(biden_votes)
+  
+}
+
+final_results <- c()
+
+for (i in 1:n_iter){
+  final_results[i] = prediction_per_simulation2(i)
+}
+
+hist(final_results)
+mean(final_results > 270)
+mean(final_results)
+
+```
+
+```{r}
+sims <- jags_sims_mv$BUGSoutput$sims.list$theta[,,1]
+colnames(sims) <- states
+sims %>% colMeans()
+```
+
+
+# older stuff 
 
 ```{r Generate Model Text}
 #RJAGs allows users to input either the text of the model they hope to create (where information such as likelihood, priors, and predictive information instructions are necessary) or input an R function. To minimize code duplication, the following method concatenates the likelihood information, prior specification, and predictive information. Anyone who wishes to build off of these results can input the priors (see sections Model 1a - Model 6b for various examples).
@@ -383,7 +424,7 @@ for (s in colnames(elec_sims)) {
   elec_sims[,colName] <- as.numeric(elec_sims[,colName])
 }
 
-elec_sims <- elec_sims %>% select(-c("US","US_Winner")) 
+#elec_sims <- elec_sims %>% select(-c("US","US_Winner")) 
 electoral_data <- read.csv("Electoral_College.csv")
 electoral_data <- electoral_data %>% filter(Year == 2020)
 electoral_data$State_Abbrev <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
@@ -406,7 +447,11 @@ remaining_states <- setdiff(electoral_data$State_Abbrev,colnames(elec_sims))
 electoral_data %>% filter(State_Abbrev %in% remaining_states)
 definitely_democratic <- c(3,20,4)
 
-final_results <- (elec_sims_matrix %*% electoral_votes + sum(definitely_democratic))
+final_results <- (elec_sims_matrix %*% electoral_votes + 200)
+```
+
+```{r}
+dim(elec_sims)
 ```
 
 
