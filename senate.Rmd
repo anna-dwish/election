@@ -1,0 +1,144 @@
+---
+title: "Senate Races"
+output: html_document
+---
+
+Overview:
+- 33 seats up; 12 dem, 23 republican
+- currently there are 47 dems (counting independents) and 53 republicans 
+- this means that, other than the 33 seats up, there are 35 democrats and 30 republicans in the senate
+- to flip, democrats need to get up to 51. They need to win their 12 seats plus 4 of the republican seats!
+
+```{r, function checking for installed packages, include=FALSE}
+# Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,repos = "http://cran.r-project.org", dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+```
+
+```{r package test, include=FALSE}
+# Installing packages 
+# Additionally, if you are struggling to download RJags, please visit the following link for help. It can also help to try to download the package locally or in RStudio Cloud: https://sites.google.com/a/utexas.edu/edm-principalstratification/downloading-installing-r-jags-rstudio
+pkgTest("ggplot2")
+pkgTest("R2jags")
+pkgTest("tidyverse")
+```
+
+```{r load packages, include=FALSE, results="hide"}
+library(ggplot2)
+library(R2jags)
+library(tidyverse)
+```
+
+# Read in data 
+
+```{r}
+president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
+  filter(population %in% c("lv","rv")) %>% 
+  mutate(state = ifelse(state == "--","US",state)) %>%
+  mutate(pct = biden / (biden + trump) *100) 
+head(president_polls)
+```
+
+
+```{r Read in Data}
+#Filter to see if any non democratic or republican candidates are polling high
+
+`%notin%` <- Negate(`%in%`)
+senate_polls <- read_csv("senate_polls.csv")
+senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(candidate_party %notin% c("DEM", "REP")) %>%
+  arrange(desc(pct)) %>%
+  select(poll_id, state, candidate_name, candidate_party, pct)
+
+#TOP THREE: DUNBAR, HARRINGTON, WILSON
+#Dunbar (AK) is a democrat, but running as an independent against republican and democratic candidates- but as of more recent polls he isn't relevant
+#Harrington (AR) is liberatrian running against a republican
+#Wilson (IL) is an independent running against a democrat- he can be counted as a democrat 
+
+#filter out AR because there is a 0% chance a democrat wins here
+#filter out IL because there is a 100% chance a democrat wins here
+#remember to add back in one senator for IL because that's sort of a given
+```
+
+```{r}
+senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(population %in% c("lv","rv")) %>% 
+  filter(office_type == "U.S. Senate") %>%
+  filter(candidate_party)
+```
+
+
+```{r}
+senate_polls_grouped <- senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(population %in% c("lv","rv")) %>% 
+  filter(office_type == "U.S. Senate") %>%
+  
+  #add separate elections for georgia and arizona special
+  mutate(state = case_when(
+    state == "Georgia" & seat_name == "Class III" ~ "Georgia*",
+    state == "Arizona" & seat_name == "Class III" ~ "Arizona*",
+    TRUE ~ as.character(state)
+  )) %>%
+  
+  #get rid of arkansas because there is no chance that a democrat will win here 
+  filter(state %notin% c("AK", "IL")) %>%
+  filter(candidate_party %in% c("DEM", "REP")) %>%
+  group_by(question_id, poll_id, state, race_id, pollster) %>%
+  summarize(total = sum(pct)) 
+
+```
+
+```{r}
+senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(population %in% c("lv","rv")) %>% 
+  filter(office_type == "U.S. Senate") %>%
+  
+  #add separate elections for georgia and arizona special
+  mutate(state = case_when(
+    state == "Georgia" & seat_name == "Class III" ~ "Georgia*",
+    state == "Arizona" & seat_name == "Class III" ~ "Arizona*",
+    TRUE ~ as.character(state)
+  )) %>%
+  
+  #get rid of arkansas because there is no chance that a democrat will win here 
+  filter(state %notin% c("AK", "IL")) %>%
+  filter(candidate_party %in% c("DEM", "REP")) 
+```
+
+```{r}
+senate_polls_dem <- senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(population %in% c("lv","rv")) %>% 
+  filter(office_type == "U.S. Senate") %>%
+  
+  #add separate elections for georgia and arizona special
+  mutate(state = case_when(
+    state == "Georgia" & seat_name == "Class III" ~ "Georgia*",
+    state == "Arizona" & seat_name == "Class III" ~ "Arizona*",
+    TRUE ~ as.character(state)
+  )) %>%
+  
+  #get rid of arkansas because there is no chance that a democrat will win here 
+  filter(state %notin% c("AK", "IL")) %>%
+  filter(candidate_party %in% c("DEM","REP")) %>%
+  select(question_id, poll_id, state, race_id, pollster, pct) 
+
+senate_polls_dem <- unique(senate_polls_dem)
+  
+```
+
+```{r}
+combined <- merge(senate_polls_dem, senate_polls_grouped, by = c("question_id", "poll_id", "race_id", "state", "start_date", "end_date", "election_date"))
+unique(combined)
+```
+
