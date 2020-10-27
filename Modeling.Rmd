@@ -54,16 +54,30 @@ president_polls <- president_polls %>%
          days_to_election = election_date - end.date)
 
 
-president_polls <- president_polls[president_polls$start.date >= "2020-07-01",]
+president_polls <- president_polls[president_polls$start.date >= "2020-08-01",]
 
 president_polls <- president_polls %>%
-  filter(state %in% c("AR", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH"))
+  filter(state %in% c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH"))
 
 #got rid of US: why? covariance matrix will be hard to estimate
 #swing states are: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, North Carolina, Ohio, Pennsylvania, Texas, Wisconsin, Minnesota, Nevada, New Hampshire
 #these were determined from the following map and external sources: https://www.270towin.com/. 
 #should we get rid of "US"? The popular vote doesn't really matter anyways. 
 ```
+
+```{r}
+swing <- c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
+State_Abbrev[!(State_Abbrev %in% swing)]
+```
+
+```{r}
+#going to biden:
+biden <- c(55, 7, 3, 3, 4, 20, 10, 11, 14, 5, 29, 7, 4, 3, 13, 12)
+dem_states <- c("CA", "CT", "DC", "DE", "HI", "IL", "MD", "MA", "NJ", "NM", "NY", "OR", "RI", "VT", "VA", "WA")
+votes_going_to_biden <- sum(biden)
+votes_going_to_biden
+```
+
 
 
 ```{r}
@@ -74,9 +88,8 @@ state_abbreviations <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
                                  "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
                                  "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
 
-ustates <- c(unique(president_polls$state))
-State_Abbrev[!(State_Abbrev %in% ustates)]
 ```
+
 
 
 ```{r data_list,eval=TRUE}
@@ -109,7 +122,7 @@ vote_share_2016 <- unique(vote_share_2016) %>%
     president_polls.state == "CO" ~ 47/(47 + 44),
     president_polls.state == "IA" ~ 42/(42 + 52),
     president_polls.state == "ME" ~ 48/(48 + 45),
-    #president_polls.state == "US" ~ 48/(48 + 46),
+    president_polls.state == "AZ" ~ 45/(48 + 45)
 
   )) %>%
   mutate(clinton_percent = 100*clinton_percent)
@@ -118,9 +131,11 @@ h <- vote_share_2016$clinton_percent
 ```
 
 
+
+
 ```{r Stored and Out Variables in Models}
 ## The following code stores the list of variables we wish to store in the model Rdata files from the RJAGS code
-jags_data <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
+jags_data <- list("y","t", "r", "N_polls", "N_states", "N_days", "h")
 out_parameters = c("beta","sigma2_beta","p","sigma2_y")
 ```
 
@@ -163,37 +178,13 @@ jags_sims <- jags(data = jags_data,model.file = model,parameters.to.save = c("be
 #jags_sims %>% saveRDS("jags_sims.Rds")
 ```
 
+Now with estimating correlation structure.
+
 ```{r}
-#returns number of electoral votes biden wins for each iteration of the sampler
-#we need to add to this the votes that he is guaranteed from other states
-prediction_per_simulation <- function(i){
-  elec_sims <- jags_sims$BUGSoutput$sims.list$beta[i,,1]
-  vote_share_by_state <- data.frame(states, elec_sims)
-
-  electoral_data <- read.csv("Electoral_College.csv") %>%
-    filter(Year == 2020)
-
-  electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
-                                 "DE","FL","GA","HI","ID","IL","IN","IA","KS",
-                                 "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
-                                 "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
-                                 "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
-  results <- merge(vote_share_by_state, electoral_data, by = "states") %>%
-    dplyr::select(-c(Year)) 
-  return(results)
-  biden_wins <- results %>%
-    filter(elec_sims > 50) 
-  biden_electoral_votes <- sum(biden_wins$Votes)
-  
-  #add in the number of guaranteed votes from other states!
-  
-  return(biden_electoral_votes)
-  
-}
-
+jags_data2 <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
+#jags_data2 <- list("y","t", "r", "N_polls", "N_states", "N_days", "I_states")
 ```
 
-Now with estimating correlation structure 
 
 ```{r model,eval = TRUE}
 model2 <- function(){
@@ -214,7 +205,8 @@ model2 <- function(){
     sigma2_y[j] = 1/sigma2_y_inv[j]
     sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
       
-    theta[j,1] ~ dnorm(h[j],pow(sigma2_0,-1))
+    theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-1))
+    #theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
   }
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
@@ -222,17 +214,72 @@ model2 <- function(){
   nu_beta ~ dunif(0,100)
   tau_beta ~ dunif(0,100)
   
+  #mu0 ~ dnorm(50,pow(7.5,-2))
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(.5,.5)
+  sigma2_0_inv ~ dgamma(0.5, 0.5)
 }
 ```
 
+
+
+
 ```{r}
 #jags_data$I_states <- diag(N_states)
-jags_sims_mv <- jags(data = jags_data,model.file = model2,parameters.to.save = c("theta","Sigma",
+jags_sims_mv <- jags(data = jags_data2,model.file = model2,parameters.to.save = c("theta","Sigma",
                                                                                 "p","sigma2_y"),
-                  n.iter = 100)
+                  n.iter = 10000)
 ```
+
+
+```{r}
+n_iter <- dim(jags_sims_mv$BUGSoutput$sims.list$theta[,,1])
+```
+
+```{r}
+electoral_data <- read.csv("Electoral_College.csv") %>%
+    filter(Year == 2020)
+
+  electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                                 "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                                 "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                                 "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                                 "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+  
+#returns number of electoral votes biden wins for each iteration of the sampler
+#we need to add to this the votes that he is guaranteed from other states
+```
+
+
+```{r}
+prediction_per_simulation <- function(i){
+  elec_sims <- jags_sims_mv$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states, elec_sims)
+
+  
+  results <- merge(vote_share_by_state, electoral_data, by = "states") %>%
+    dplyr::select(-c(Year)) 
+  biden_wins <- results %>%
+    filter(elec_sims > 50) 
+  biden_electoral_votes <- sum(biden_wins$Votes)
+  
+  #add in the number of guaranteed votes from other states!
+  biden_votes = votes_going_to_biden + biden_electoral_votes
+  return(biden_votes)
+  
+}
+
+final_results <- c()
+
+for (i in 1:n_iter){
+  final_results[i] = prediction_per_simulation(i)
+}
+
+hist(final_results)
+mean(final_results >= 270)
+
+
+```
+
 
 ---------------------OLD-----------------------------
 
