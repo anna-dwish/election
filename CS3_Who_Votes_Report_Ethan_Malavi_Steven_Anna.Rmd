@@ -146,7 +146,10 @@ The “Voting and Registration” and “Census” datasets were then merged by 
 # Exploratory Data Analysis
 
 ```{r Read Data}
-who_votes_data <- readRDS("who_votes_data_2016.Rds")
+# who_votes_data <- readRDS("who_votes_data_2016.Rds")
+who_votes_data <- read_csv("grouped_voter_data_2016.csv")
+who_votes_data <- who_votes_data %>% filter(!is.na(gender))
+who_votes_data <- who_votes_data %>% filter(race_ethnicity != "Non-Hispanic Other")
 ```
 
 ```{r EDA p1, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
@@ -211,6 +214,92 @@ who_votes_data %>%
   guides(fill=guide_legend(title="Sex"))
 ```
 
+```{r EDA party, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
+who_votes_data %>% 
+  mutate(sums = Likely + Unlikely) %>%
+  mutate(race_ethnicity = case_when(
+    race_ethnicity == "Hispanic Any Race" ~ paste0("Hispanic Any Race (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Hispanic Any Race") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic American Indian" ~ paste0("Non-Hispanic American Indian (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic American Indian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Asian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Black") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Mixed") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
+                                                   who_votes_data %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic White") %>%
+                                                     summarise(sum(sums)),
+                                                   ")")
+  )) %>%
+  dplyr::select(race_ethnicity, age_bin, party_cd,Likely,Unlikely) %>%
+  dplyr::group_by(race_ethnicity, age_bin, party_cd) %>% 
+  dplyr::summarize(Likely = sum(Likely), 
+                   Unlikely = sum(Unlikely), 
+                   proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
+  ggplot(aes(x = age_bin, y = proportion, fill = party_cd)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  facet_wrap(~race_ethnicity, nrow = 2) + 
+  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
+            position = position_dodge(width = 1),  
+            colour="Black", 
+            size = 2.2) + 
+  labs(x = expression("Age Group"), 
+       y= ("Proportion of Likely Voters"), 
+       title = "Likely Voters Across Age Groups, Race/Ethnicity, and Party Affiliation", 
+       caption="Figure 2") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill=guide_legend(title="Party"))
+```
+
+```{r EDA gender, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
+who_votes_data %>% 
+  mutate(sums = Likely + Unlikely) %>%
+  dplyr::select(gender, age_bin, party_cd,Likely,Unlikely) %>%
+  dplyr::group_by(gender, age_bin, party_cd) %>% 
+  dplyr::summarize(Likely = sum(Likely), 
+                   Unlikely = sum(Unlikely), 
+                   proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
+  ggplot(aes(x = age_bin, y = proportion, fill = party_cd)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  facet_wrap(~gender, nrow = 1) + 
+  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
+            position = position_dodge(width = 1),  
+            colour="Black", 
+            size = 2.2) + 
+  labs(x = expression("Age Group"), 
+       y= ("Proportion of Likely Voters"), 
+       title = "Likely Voters Across Age Groups, Gender, and Party Affiliation", 
+       caption="Figure 2") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill=guide_legend(title="Party"))
+```
+
 In Figure 1, we can see the proportion of 2016 voters across race/ethnicity, gender, and age group identities. There appears to be profound differences in 2016 voter proportion among the different race-ethnicity groups. *Hispanic Any Race*, *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups generally have a much higher proportion of 2016 voters relative to other groups in North Carolina.
 
 In general, we see an increasing trend in the proportion of 2016 voters with age for *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups. Surprisingly, this trend is reversed for *Non-Hispanic Multi-Racial* groups. For *Hispanic Any Race* and *Non-Hispanic Asian* groups, we see a varying relationship that is slightly less profound. These trends point to a potential interaction effect between age and race/ethnicity. 
@@ -248,7 +337,7 @@ We conducted exploratory data analysis to get a sense of which covariates were i
 
 $$ 
 \begin{aligned}
-log(\frac{P_{ij}(Likely)}{1-P_{ij}(Likely)}) = \alpha_{j} + \alpha_{1} * I(Gender_{ij}=Male &) + \sum_{a = 2}^5\alpha_{2a}*I(Age_{ij}=a) + \  \\
+log(\frac{P_{ij}}{1-P_{ij}}) = \alpha_{j} + \alpha_{1} * I(Gender_{ij}=Male &) + \sum_{a = 2}^5\alpha_{2a}*I(Age_{ij}=a) + \  \\
 \sum_{r = 2}^{6}\alpha_{3r}*I(Race/Ethnicity_{ij}=r) +\sum_{a = 2}^5\sum_{r = 2}^{6}\gamma_{ar}*I (&Age_{ij} = a)*I(Race/Ethnicity_{ij}=r)& (1)  \\
 \alpha_j \sim N(\alpha_0,\tau^2)
 \end{aligned}
@@ -256,9 +345,9 @@ $$
 
 $P_{ij}$ is the probability that individual $i$ from county $j$ voted in the 2016 election, and $\alpha_j$ represents the random intercept term for county $j$. For the *Age* term, $a=1$ represents our baseline, which is $65+$ year olds. For our *Race/Ethnicitiy* term,  $r=1$, our baseline group, was *Hispanic Any Race*. Finally, there are five age bins and six race/ethnicity groups, yielding thirty possible combinations. Ten of these involve the baseline terms, leaving twenty other combinations to appear as evaluated terms in the interaction effect of our model. 
 
-We compared this model to one without an interaction between *Age* and *Race/Ethnicity*, ones with a random intercept for county and random effect slopes for the three demographic covariates, and other interaction effects. In order to compare the fits of these models, we examined accuracy, $F_1$-scores, confusion matrices, and ROC curves, along with binned residual plots to confirm that the underlying assumptions of each of these models were met. To compare the performance of these models, we performed 5-fold cross validation and conducted out-of-sample prediction with the 2012 elections. Our performance on the 2012 elections will help quantify how well our model can perform on presidential election years outside of the dataset's election.
+We compared this model to one without an interaction between *Age* and *Race/Ethnicity*, one with a random intercept for county and random effect slope for each of the three demographic covariates, and to models with pairwise interactions between each demographic covariate (in addition to the one between *Age* and *Race/Ethnicity*). In order to compare the fits of these models, we used estimated $F1-scores$ from 5-fold cross-validations, $ROC$ curves, and $F1-scores$ on the out of sample predictions on 2012 elections. Our performance on the 2012 elections will help quantify how well our model can perform on presidential election years outside of the dataset's election. Additionally, once we had our final model from these comparisons, we further examined its binned residual plots to better understand the drawbacks of our final model.
 
-We further performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models within a frequentist framework. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. The results of this model are in Table 3 in the Appendix. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates. The results of this model are in Table 9 in the Appendix.
+We performed sensitivity analysis to validate the resulting estimates for our coefficients with a Bayesian approach, as there can be issues with convergence when developing random effect models within a frequentist framework. Given the size of the dataset, we relied on relatively flat priors, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. The results of this model are in Table 3 in the Appendix. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates. The results of this model are in Table 9 in the Appendix.
 
 # Results
 
@@ -266,64 +355,93 @@ We further performed sensitivity analysis to validate the resulting estimates fo
 who_votes_data$age_bin <- relevel(who_votes_data$age_bin %>% as.factor(), ref = "65+")
 ```
 
-```{r cross validation, warning=FALSE, message=F}
-set.seed(5934512) # has to be this seed
+```{r cross validation, warning=FALSE, message=F, cache=TRUE}
+set.seed(5934512)
 fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  dplyr::mutate(vote = ifelse(prop > 0.5, 1, 0),
-                vote = ifelse(is.nan(prop), 0, vote),
+  dplyr::mutate(vote = ifelse(Likely/(Likely+Unlikely) > 0.5, 1, 0),
+                vote = ifelse(is.nan(Likely/(Likely+Unlikely)), 0, vote),
                 vote = dplyr::case_when(
                   Likely == 0 & Unlikely == 0 ~ 0,
                   TRUE ~ vote
-                )) 
-acc_list = c()
-f1_list = c()
-AUC_list = c()
-for (i in 1:5) {
-  train <- fold_df %>% filter(.folds != i)
-  test <- fold_df %>% filter(.folds == i)
-  
-  glmer.fit <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
-                     data = train,
-                     family = binomial,
-                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-  
-  glmer.probs <- predict(glmer.fit,  test,  type = "response")
-  glmer.pred <- rep(0, nrow(test))
-  glmer.pred[glmer.probs > 0.5] <- 1
-  
-  
-  acc_list[i] <-  mean(glmer.pred == test$vote)
-  
-  f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
-  
-  # AUC
-  AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
-}
+                ))
+
 round_perc = function(x) {
   if (is.double(x)) {
     round(x*100, digits = 2)
   }
 }
-acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
-acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc()
-f1_mean = f1_list %>% mean(na.rm=T)  %>% round_perc()
-f1_sd = f1_list %>% sd(na.rm=T)  %>% round_perc()
-AUC_mean = AUC_list %>% mean(na.rm=T)  %>% round_perc()
-AUC_sd = AUC_list %>% sd(na.rm=T)  %>% round_perc()
-cv_df <- tibble(
-  Accuracy = paste0(acc_mean, "% ± ", acc_sd, "%"),
-  F1 = paste(f1_mean, "±", f1_sd),
-  AUC = paste(AUC_mean, "±", AUC_sd)
-)
-glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + age_bin * race_ethnicity + (1 | county_desc),
-                         data = fold_df,
+
+create_model <- function(model_formula, election_data, perform_cv=TRUE){
+  model_results = list()
+  results_idx = 1
+  
+  # STEP 1: CROSS VALIDATION
+  if (perform_cv){
+    acc_list = c()
+    f1_list = c()
+    AUC_list = c()
+    for (i in 1:5) {
+      train <- election_data %>% filter(.folds != i)
+      test <- election_data %>% filter(.folds == i)
+  
+      glmer.fit <- glmer(model_formula,
+                     data = train,
+                     family = binomial,
+                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  
+      glmer.probs <- predict(glmer.fit,  test,  type = "response")
+      glmer.pred <- rep(0, nrow(test))
+      glmer.pred[glmer.probs > 0.5] <- 1
+  
+      acc_list[i] <-  mean(glmer.pred == test$vote)
+      f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
+      AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
+    }
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
+    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc()
+    f1_mean = f1_list %>% mean(na.rm=T)  %>% round_perc()
+    f1_sd = f1_list %>% sd(na.rm=T)  %>% round_perc()
+    AUC_mean = AUC_list %>% mean(na.rm=T)  %>% round_perc()
+    AUC_sd = AUC_list %>% sd(na.rm=T)  %>% round_perc()
+    
+    cv_df <- tibble(
+      Accuracy = paste0(acc_mean, "% ± ", acc_sd, "%"),
+      F1 = paste(f1_mean, "±", f1_sd),
+      AUC = paste(AUC_mean, "±", AUC_sd))
+    
+    model_results[[results_idx]] = cv_df
+    results_idx = results_idx + 1
+  }
+  
+  # STEP 2: FIT FULL MODEL WITH ALL DATA
+  glmer.fit.final <- glmer(model_formula,
+                         data = election_data,
                          family = binomial,
                          control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-results <- data.frame(VarCorr(glmer.fit.final))
-final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
-final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
+  model_results[[results_idx]] = glmer.fit.final
+  results_idx = results_idx + 1
+  
+  # results <- data.frame(VarCorr(glmer.fit.final))
+  # final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
+  
+  # STEP 3: CREATE FORMATTED DATAFRAME WITH MODEL RESULTS
+  final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
                                        Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
                                        P.Value=summary(glmer.fit.final)$coefficients[, 4])
+  model_results[[results_idx]] = final.model.fixed.results
+  return(model_results)
+}
+
+model.random.county.intercept.interaction.age.race.text <- "cbind(Likely,Unlikely) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|county_desc)"
+
+
+model.ri.county.intrxn.age.race.formula <- formula(model.random.county.intercept.interaction.age.race.text)
+model.ri.county.intrxn.age.race.results <- create_model(model.ri.county.intrxn.age.race.formula, fold_df)
+
+cv_df <- model.ri.county.intrxn.age.race.results[[1]]
+glmer.fit.final <- model.ri.county.intrxn.age.race.results[[2]]
+final.model.fixed.results <- model.ri.county.intrxn.age.race.results[[3]]
 ```
 
 
@@ -350,10 +468,21 @@ ggplot(data=mapdata) +
 The results of our final model can be viewed in Table 2 in our Appendix. Figure 3 is a heatmap of the intercepts by county, and Figure 5 in the Appendix plots the estimated county intercepts and their intervals. While the intercepts appear to generally capture relative trends, they appear to be more homogeneous than the true percent of likely voters (Figure 2a). This is likely a consequence of our assumption that they stem from the same distribution. The average accuracy and average F1-score on our test sets were `r cv_df$Accuracy` and `r cv_df$F1` respectively. Our ROC curve also provides evidence that this model fits well with an average AUC of `r cv_df$AUC`. From the confusion matrix, we can see a relatively even split of false negatives and false positives, suggesting our model isn't predisposed to making either mistake more than the other. 
 
 ```{r initial model cm, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
-test.glmer.preds <- ifelse(test.glmer.probs <= 0.5, "Unlikely", "Likely")
-test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
-plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
+# Returns list(accuracy, F1-score, plot of confusion matrix)
+cv_plot <- function(mod, election_data){
+  fit_results = list()
+  test.glmer.probs <- predict(mod, election_data,type="response")
+  test.glmer.preds <- ifelse(test.glmer.probs <= 0.5, "Unlikely", "Likely")
+  test.actual.cm <- ifelse(election_data$vote == 0, "Unlikely", "Likely")
+  
+  fit_results[[1]] = mean(test.glmer.preds == test.actual.cm)
+  fit_results[[2]] = (caret::confusionMatrix(test.glmer.preds %>% as.factor(), test.actual.cm %>% as.factor()))$byClass["F1"]
+  fit_results[[3]] = plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
+  fit_results[[4]] = test.glmer.probs
+  return(fit_results)
+}
+final.insample.results <- cv_plot(glmer.fit.final, fold_df)
+cv_plot(glmer.fit.final, fold_df)[[3]]
 ```
 
 ## Model Diagnostics 
@@ -361,7 +490,7 @@ plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
 Our binned residuals, however, reveal some drawbacks to our model. We appear to be consistently underestimating the likelihood of voting for groups that are less likely to vote. This may cause issues when extending our model to the upcoming election, as some groups that are less likely to vote became more active in 2018 [[4]][Bibliography]. In addition, we see a fanning of the residuals for higher predicted probabilities. A possible cause of this issue is the non-linear relationship between age bins and some race/ethnicity groups, which we saw in our exploratory data analysis. This curvature is more clearly visualized in Figure 6 in the Appendix, which is a binned residual plot resulting from a model without the interaction effect between race/ethnicity and age. Another issue to consider are the slight differences in the heatmaps, which shrunk intercept estimates of counties with very high and very low voter turnout towards the mean. While we considered several transformations to better capture the nuances of this relationship, we experienced convergence issues and inflated standard errors.
 
 ```{r County Random Effects Model Residual Plot,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
-arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
+arm::binnedplot(x=cv_plot(glmer.fit.final, fold_df)[[4]],y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
                 xlab="Predicted Probabilities", 
                 ylab="Binned Residuals",
                 main = "Figure 4: Random County Intercept and Age Slope Model",
@@ -373,10 +502,13 @@ arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scale
 ## Prediction on 2012 Election 
 
 ```{r Out of sample analysis, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-election2012 <- readRDS("who_votes_data_2012.Rds")
+election2012 <- read.csv("grouped_voter_data_2012.csv")
+election2012 <- election2012 %>% filter(gender != " ")
+election2012 <- election2012 %>% filter(!is.na(gender))
+election2012 <- election2012 %>% filter(race_ethnicity != "Non-Hispanic Other")
 election2012 <- election2012 %>%
-  mutate(vote = ifelse(prop > 0.5, 1, 0),
-         vote = ifelse(is.nan(prop), 0, vote),
+  mutate(vote = ifelse(Likely/(Likely+Unlikely) > 0.5, 1, 0),
+         vote = ifelse(is.nan(Likely/(Likely+Unlikely)), 0, vote),
          vote = case_when(
            Likely == 0 & Unlikely == 0 ~ 0,
            TRUE ~ vote
@@ -385,13 +517,9 @@ election2012 <- election2012 %>%
     Likely == 0 & Unlikely == 0 ~ 0,
     TRUE ~ vote
   ))
-election2012.probs <- predict(glmer.fit.final, election2012,  type = "response")
-election2012.pred <- rep(0, nrow(election2012))
-election2012.pred[election2012.probs > 0.5] <- 1
-election2012.acc <- mean(election2012$vote == election2012.pred)
-election2012.pred.cm <- ifelse(election2012.pred == 0, "Unlikely", "Likely")
-election2012.vote.cm <- ifelse(election2012$vote == 0, "Unlikely", "Likely")
-plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.cm))
+election2012.results <- cv_plot(glmer.fit.final, election2012)
+election2012.acc <- election2012.results[[1]]
+election2012.results[[3]]
 ```
 
 We now consider our model's ability to predict on voting likelihood for the 2012 elections. For our out of sample predictions, we achieved an `r round(election2012.acc,3)*100`% accuracy and our confusion matrix is above. These results are quite similar to our previous confusion matrix, which provides evidence of consistency in performance for an election outside of the dataset. This suggests that this model will perform reasonably well for 2020 elections. 
@@ -535,65 +663,287 @@ ggplot(data=mapdata) +
 
 ## No Interaction Effect
 
-```{r cross validation no intrxn, results='hide',message=F}
-set.seed(5934512) # has to be this seed
-fold_df <- groupdata2::fold(who_votes_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  mutate(vote = ifelse(prop > 0.5, 1, 0),
-         vote = ifelse(is.nan(prop), 0, vote),
-         vote = case_when(
-           Likely == 0 & Unlikely == 0 ~ 0,
-           TRUE ~ vote
-         )) %>%
-  mutate(vote = case_when(
-    Likely == 0 & Unlikely == 0 ~ 0,
-    TRUE ~ vote
-  ))
-glmer.fit.final <- glmer(cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + (1 | county_desc),
-                         data = fold_df,
-                         family = binomial,
-                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+```{r cross validation no intrxn, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all', cache=TRUE}
+model.random.intercept.no.interaction.text <- "cbind(Likely,Unlikely) ~ age_bin + race_ethnicity + party_cd + gender + (1 |county_desc)"
+model.ri.county.no.intrxn.formula <- formula(model.random.intercept.no.interaction.text)
+model.ri.county.no.intrxn.results <- create_model(model.ri.county.no.intrxn.formula, fold_df, perform_cv = FALSE)
+model.ri.county.no.intrxn.cm <- cv_plot(model.ri.county.no.intrxn.results[[1]], fold_df)
+model.ri.county.no.intrxn.cm[[3]]
 ```
 
-```{r initial model cm no intrxn, fig.width=3,fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-test.glmer.probs <- predict(glmer.fit.final,fold_df,type="response")
-test.glmer.preds <- ifelse(test.glmer.probs <= 0.5, "Unlikely", "Likely")
-test.actual.cm <- ifelse(fold_df$vote == 0, "Unlikely", "Likely")
-plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
+```{r oos no intrxn, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+oos.no.intrxn <- cv_plot(model.ri.county.no.intrxn.results[[1]], election2012)
+cv_plot(model.ri.county.no.intrxn.results[[1]], election2012)[[3]]
 ```
 
 ```{r County Random Effects Model Residual Plot no intrxn,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
-arm::binnedplot(x=test.glmer.probs,y=residuals(glmer.fit.final, "pearson", scaled = TRUE),
+arm::binnedplot(x=model.ri.county.no.intrxn.cm[[4]],y=residuals(model.ri.county.no.intrxn.results[[1]], "pearson", scaled = TRUE),
                 xlab="Predicted Probabilities", 
                 ylab="Binned Residuals",
                 main = "Figure 6: Random County Intercept, No Interaction",
                 cex.main=0.9, cex.lab=0.8)
 ```
 
-```{r Out of sample analysis no intrxn, fig.width=3, fig.width=3,fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-election2012 <- readRDS("who_votes_data_2012.Rds")
-election2012 <- election2012 %>%
-  mutate(vote = ifelse(prop > 0.5, 1, 0),
-         vote = ifelse(is.nan(prop), 0, vote),
-         vote = case_when(
-           Likely == 0 & Unlikely == 0 ~ 0,
-           TRUE ~ vote
-         )) %>%
-  mutate(vote = case_when(
-    Likely == 0 & Unlikely == 0 ~ 0,
-    TRUE ~ vote
-  ))
-election2012.probs <- predict(glmer.fit.final, election2012,  type = "response")
-election2012.pred <- rep(0, nrow(election2012))
-election2012.pred[election2012.probs > 0.5] <- 1
-election2012.acc <- mean(election2012$vote == election2012.pred)
-election2012.pred.cm <- ifelse(election2012.pred == 0, "Unlikely", "Likely")
-election2012.vote.cm <- ifelse(election2012$vote == 0, "Unlikely", "Likely")
-plot_confusion_matrix(confusion_matrix(election2012.pred.cm ,election2012.vote.cm))
+## Random Slope Models
+
+## Random Age Slope No Interaction
+
+```{r random age slope no interaction, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
+model.random.slope.age.no.intrxn.text <- "cbind(Likely,Unlikely) ~ age_bin + race_ethnicity + party_cd + gender + (1 + age_bin|county_desc)"
+model.rs.age.no.intrxn.formula <- formula(model.random.slope.age.no.intrxn.text)
+model.rs.age.no.intrxn.results <- create_model(model.rs.age.no.intrxn.formula, fold_df, perform_cv = FALSE)
+model.rs.age.no.intrxn.cm <- cv_plot(model.rs.age.no.intrxn.results[[1]], fold_df)
+model.rs.age.no.intrxn.cm[[3]]
 ```
+
+```{r oos random age slope no interaction, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.rs.age.no.intrxn.oos.cm <- cv_plot(model.rs.age.no.intrxn.results[[1]], election2012)
+cv_plot(model.rs.age.no.intrxn.results[[1]], election2012)[[3]]
+```
+
+
+### Random Age Slope
+
+```{r random age slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
+model.random.slope.age.intrxn.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + gender + party_cd + (1 + age_bin|county_desc)"
+model.rs.age.intrxn.formula <- formula(model.random.slope.age.intrxn.text)
+model.rs.age.intrxn.results <- create_model(model.rs.age.intrxn.formula, fold_df, perform_cv = FALSE)
+model.rs.age.intrxn.cm <- cv_plot(model.rs.age.intrxn.results[[1]], fold_df)
+model.rs.age.intrxn.cm[[3]]
+```
+
+```{r oos random age slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.rs.age.intrxn.oos.cm <- cv_plot(model.rs.age.intrxn.results[[1]], election2012)
+cv_plot(model.rs.age.intrxn.results[[1]], election2012)[[3]]
+```
+
+```{r oos random age slope pander table}
+pander(model.rs.age.intrxn.results[[2]], caption="Random County Intercept and Age Slope Results")
+```
+
+```{r random age slope residual plot,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
+arm::binnedplot(x=model.rs.age.intrxn.cm[[4]],y=residuals(model.rs.age.intrxn.results[[1]], "pearson", scaled = TRUE),
+                xlab="Predicted Probabilities", 
+                ylab="Binned Residuals",
+                main = "Figure 7: Random County Intercept and Age Slope, Age and RaceEthnicity Interaction",
+                cex.main=0.9, cex.lab=0.8)
+```
+
+```{r fig.width=8, fig.height=6}
+merTools::plotREsim(merTools::REsim(model.rs.age.intrxn.results[[1]])) %>% +
+  labs(x='County', y='Value', title='Interval Estimates of Random Effects by County') +
+  geom_hline(aes(yintercept=0), color='orange', alpha=.5) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        strip.text.x = element_blank(),
+        strip.text.y = element_blank(),
+        panel.background = element_rect(fill='transparent', color=NA),
+        plot.background = element_rect(fill='transparent', color=NA),
+        strip.background =element_rect(fill='transparent', color=NA))
+```
+
+### Random Race/Ethnicity Slope
+
+```{r random race ethnicity slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all', cache=TRUE}
+model.random.slope.race.ethnicity.intrxn.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + gender + (1 + race_ethnicity|county_desc)"
+model.rs.race.ethnicity.intrxn.formula <- formula(model.random.slope.race.ethnicity.intrxn.text)
+model.rs.race.ethnicity.intrxn.results <- create_model(model.rs.race.ethnicity.intrxn.formula, fold_df, perform_cv = FALSE)
+model.rs.race.ethnicity.intrxn.cm <- cv_plot(model.rs.race.ethnicity.intrxn.results[[1]], fold_df)
+model.rs.race.ethnicity.intrxn.cm[[3]]
+```
+
+```{r oos random race ethnicity slope,fig.height=3, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.rs.race.ethnicity.intrxn.oos.cm <- cv_plot(model.rs.race.ethnicity.intrxn.results[[1]], election2012)
+cv_plot(model.rs.race.ethnicity.intrxn.results[[1]], election2012)[[3]]
+```
+
+### Random Gender Slope
+
+```{r random gender slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
+model.random.slope.gender.intrxn.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + gender + (1 + gender|county_desc)"
+model.rs.gender.intrxn.formula <- formula(model.random.slope.gender.intrxn.text)
+model.rs.gender.intrxn.results <- create_model(model.rs.gender.intrxn.formula, fold_df, perform_cv = FALSE)
+model.rs.gender.intrxn.cm <- cv_plot(model.rs.gender.intrxn.results[[1]], fold_df)
+model.rs.gender.intrxn.cm[[3]]
+```
+
+```{r oos random gender slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.rs.gender.intrxn.oos.cm <- cv_plot(model.rs.gender.intrxn.results[[1]], election2012)
+cv_plot(model.rs.gender.intrxn.results[[1]], election2012)[[3]]
+```
+
+## Other Interactions
+
+### Age * Gender 
+
+```{r intrxn age gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
+model.intrxn.age.gender.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + age_bin * gender + (1 | county_desc)"
+model.intrxn.age.gender.formula <- formula(model.intrxn.age.gender.text)
+model.intrxn.age.gender.results <- create_model(model.intrxn.age.gender.formula, fold_df, perform_cv = FALSE)
+model.intrxn.age.gender.cm <- cv_plot(model.intrxn.age.gender.results[[1]], fold_df)
+model.intrxn.age.gender.cm[[3]]
+```
+
+```{r oos intrxn age gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.intrxn.age.gender.oos.cm <- cv_plot(model.intrxn.age.gender.results[[1]], election2012)
+cv_plot(model.intrxn.age.gender.results[[1]], election2012)[[3]]
+```
+
+### Race_Ethnicity + Gender
+
+```{r intrxn race gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
+model.intrxn.re.gender.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + race_ethnicity * gender + (1 | county_desc)"
+model.intrxn.re.gender.formula <- formula(model.intrxn.re.gender.text)
+model.intrxn.re.gender.results <- create_model(model.intrxn.re.gender.formula, fold_df, perform_cv = FALSE)
+model.intrxn.re.gender.intrxn.cm <- cv_plot(model.intrxn.re.gender.results[[1]], fold_df)
+model.intrxn.re.gender.intrxn.cm[[3]]
+```
+
+```{r oos intrxn race gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.rs.re.gender.intrxn.oos.cm <- cv_plot(model.rs.gender.intrxn.results[[1]], election2012)
+cv_plot(model.rs.gender.intrxn.results[[1]], election2012)[[3]]
+```
+
+### Race_Ethnicity * Party Without Race_Ethnicity * Age_Bin
+
+```{r intrxn race party only, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
+model.intrxn.re.party.only.text <- "cbind(Likely,Unlikely) ~ gender + age_bin + race_ethnicity * party_cd + (1 | county_desc)"
+model.intrxn.re.party.only.formula <- formula(model.intrxn.re.party.only.text)
+model.intrxn.re.party.only.results <- create_model(model.intrxn.re.party.only.formula, fold_df, perform_cv = FALSE)
+model.intrxn.re.party.only.cm <- cv_plot(model.intrxn.re.party.only.results[[1]], fold_df)
+model.intrxn.re.party.only.cm[[3]]
+```
+
+```{r oos intrxn race party only, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.intrxn.re.party.only.oos.cm <- cv_plot(model.intrxn.re.party.only.results[[1]], election2012)
+cv_plot(model.intrxn.re.party.only.results[[1]], election2012)[[3]]
+```
+
+
+### Race_Ethnicity * Party 
+
+```{r intrxn race party, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
+model.intrxn.re.party.text <- "cbind(Likely,Unlikely) ~ gender + age_bin * race_ethnicity + race_ethnicity * party_cd + (1 | county_desc)"
+model.intrxn.re.party.formula <- formula(model.intrxn.re.party.text)
+model.intrxn.re.party.results <- create_model(model.intrxn.re.party.formula, fold_df, perform_cv = FALSE)
+model.intrxn.re.party.cm <- cv_plot(model.intrxn.re.party.results[[1]], fold_df)
+model.intrxn.re.party.cm[[3]]
+```
+
+```{r oos intrxn race party, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+model.intrxn.re.party.oos.cm <- cv_plot(model.intrxn.re.party.results[[1]], election2012)
+cv_plot(model.intrxn.re.party.results[[1]], election2012)[[3]]
+```
+
+## Model Comparison Table
+
+```{r model comparison table}
+model_label <- function(model_text){
+  return(substr(model_text,26,nchar(model_text)))
+}
+
+model_comparisons <- data.frame(Formula=c(model_label(model.random.county.intercept.interaction.age.race.text),
+                     model_label(model.random.intercept.no.interaction.text),
+                     model_label(model.random.slope.age.no.intrxn.text),
+                     model_label(model.random.slope.age.intrxn.text),
+                     model_label(model.random.slope.race.ethnicity.intrxn.text),
+                     model_label(model.random.slope.gender.intrxn.text),
+                     model_label(model.intrxn.age.gender.text),
+                     model_label(model.intrxn.re.gender.text),
+                     model_label(model.intrxn.re.party.only.text),
+                     model_label(model.intrxn.re.party.text)),
+           In.Sample.F1.Score=c(final.insample.results[[2]],
+                                model.ri.county.no.intrxn.cm[[2]],
+                                model.rs.age.no.intrxn.cm[[2]],
+                                model.rs.age.intrxn.cm[[2]],
+                                model.rs.race.ethnicity.intrxn.cm[[2]],
+                                model.rs.gender.intrxn.cm[[2]],
+                                model.intrxn.age.gender.cm[[2]],
+                                model.intrxn.re.gender.intrxn.cm[[2]],
+                                model.intrxn.re.party.only.cm[[2]],
+                                model.intrxn.re.party.cm[[2]]),
+           Out.Sample.F1.Score=c(election2012.results[[2]],
+                                 oos.no.intrxn[[2]],
+                                 model.rs.age.no.intrxn.oos.cm[[2]],
+                                 model.rs.age.intrxn.oos.cm[[2]],
+                                 model.rs.race.ethnicity.intrxn.oos.cm[[2]],
+                                 model.rs.gender.intrxn.oos.cm[[2]],
+                                 model.intrxn.age.gender.oos.cm[[2]],
+                                 model.rs.re.gender.intrxn.oos.cm[[2]],
+                                 model.intrxn.re.party.only.oos.cm[[2]],
+                                 model.intrxn.re.party.oos.cm[[2]]))
+pander(model_comparisons, caption="Model Performances In Sample, 2016, and Out Sample, 2012, Elections")
+```
+
+## 2012 Data
+
+```{r EDA 2012, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
+election2012 %>% 
+  mutate(sums = Likely + Unlikely) %>%
+  mutate(race_ethnicity = case_when(
+    race_ethnicity == "Hispanic Any Race" ~ paste0("Hispanic Any Race (n=",
+                                                   election2012 %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Hispanic Any Race") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic American Indian" ~ paste0("Non-Hispanic American Indian (n=",
+                                                   election2012 %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic American Indian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
+                                                   election2012 %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Asian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
+                                                   election2012 %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Black") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
+                                                   election2012 %>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Mixed") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
+                                                   election2012%>%
+                                                     mutate(sums = Likely + Unlikely) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic White") %>%
+                                                     summarise(sum(sums)),
+                                                   ")")
+  )) %>%
+  dplyr::select(race_ethnicity, age_bin, gender,Likely,Unlikely) %>%
+  dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
+  dplyr::summarize(Likely = sum(Likely), 
+                   Unlikely = sum(Unlikely), 
+                   proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
+  ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  facet_wrap(~race_ethnicity, nrow = 2) + 
+  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
+            position = position_dodge(width = 1),  
+            colour="Black", 
+            size = 2.2) + 
+  labs(x = expression("Age Group"), 
+       y= ("Proportion of Likely Voters"), 
+       title = "Likely Voters Across Age Groups, Race/Ethnicity, and Sex in 2012", 
+       caption="Figure 10") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill=guide_legend(title="Sex"))
+```
+
+This shows how a generally higher percentage of women went to the polls in 2012, likely because of Trump's divisive and derogatory rhetoric towards women, along with the stigma against Hillary Clinton. Struggling to predict Unlikely voters well because a lot of people didn't show up to the polls in 2016.
 
 ## Age Bin Sensitivity
 
-```{r age bin sensitivity df, warning=F,message=F,echo=FALSE,results='hide'}
+```{r age bin sensitivity df, warning=F,message=F,echo=FALSE,results='hide',eval=F}
 who_votes_data_reaged <- who_votes_data
 who_votes_data_reaged$age_bin <- as.character(who_votes_data_reaged$age_bin)
 who_votes_data_reaged <- who_votes_data_reaged %>% mutate(age_bin = case_when(
@@ -611,10 +961,10 @@ who_votes_data_reaged$age_bin <- relevel(who_votes_data_reaged$age_bin %>% as.fa
 who_votes_data_reaged$prop = who_votes_data_reaged$Likely/(who_votes_data_reaged$Likely + who_votes_data_reaged$Unlikely)
 ```
 
-```{r age bin sensitivity analysis model results, results="hide", warning=F,message=F}
+```{r age bin sensitivity analysis model results, results="hide", warning=F,message=F, cache=TRUE,eval=F}
 fold_df <- groupdata2::fold(who_votes_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  dplyr::mutate(vote = ifelse(prop > 0.5, 1, 0),
-                vote = ifelse(is.nan(prop), 0, vote),
+  dplyr::mutate(vote = ifelse(Likely/(Unlikely+Likely) > 0.5, 1, 0),
+                vote = ifelse(is.nan(Likely/(Unlikely+Likely)s), 0, vote),
                 vote = dplyr::case_when(
                   Likely == 0 & Unlikely == 0 ~ 0,
                   TRUE ~ vote
@@ -637,7 +987,7 @@ final.model.fixed.results.reaged = data.frame(Estimates=summary(glmer.fit.final.
                                               P.Value=summary(glmer.fit.final.reaged)$coefficients[, 4])
 ```
 
-```{r}
+```{r,eval=F}
 pander(final.model.fixed.results.reaged, caption = "Age Bin Sensitivity Analysis Model")
 ```
 
