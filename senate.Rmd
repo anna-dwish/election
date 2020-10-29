@@ -1,0 +1,104 @@
+---
+title: "Senate Races"
+output: html_document
+---
+
+Overview:
+- 33 seats up; 12 dem, 23 republican
+- currently there are 47 dems (counting independents) and 53 republicans 
+- this means that, other than the 33 seats up, there are 35 democrats and 30 republicans in the senate
+- to flip, democrats need to get up to 51. They need to win their 12 seats plus 4 of the republican seats!
+
+```{r, function checking for installed packages, include=FALSE}
+# Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,repos = "http://cran.r-project.org", dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+```
+
+```{r package test, include=FALSE}
+# Installing packages 
+# Additionally, if you are struggling to download RJags, please visit the following link for help. It can also help to try to download the package locally or in RStudio Cloud: https://sites.google.com/a/utexas.edu/edm-principalstratification/downloading-installing-r-jags-rstudio
+pkgTest("ggplot2")
+pkgTest("R2jags")
+pkgTest("tidyverse")
+```
+
+```{r load packages, include=FALSE, results="hide"}
+library(ggplot2)
+library(R2jags)
+library(tidyverse)
+```
+
+```{r Read in Data}
+#Filter to see if any non democratic or republican candidates are polling high
+
+`%notin%` <- Negate(`%in%`)
+senate_polls <- read_csv("senate_polls.csv")
+senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(candidate_party %notin% c("DEM", "REP")) %>%
+  arrange(desc(pct)) %>%
+  select(poll_id, state, candidate_name, candidate_party, pct)
+
+#TOP THREE: DUNBAR, HARRINGTON, WILSON
+#Dunbar (AK) is a democrat, but running as an independent against republican and democratic candidates- but as of more recent polls he isn't relevant
+#Harrington (AR) is liberatrian running against a republican
+#Wilson (IL) is an independent running against a democrat- he can be counted as a democrat 
+
+#filter out AR because there is a 0% chance a democrat wins here
+#filter out IL because there is a 100% chance a democrat wins here
+#remember to add back in one senator for IL because that's sort of a given!
+```
+
+```{r}
+senate_polls_cleaned <- senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(population %in% c("lv","rv")) %>% 
+  filter(office_type == "U.S. Senate") %>%
+  
+  #add separate elections for georgia and arizona special
+  mutate(state = case_when(
+    state == "Georgia" & seat_name == "Class III" ~ "Georgia*",
+    state == "Arizona" & seat_name == "Class III" ~ "Arizona*",
+    TRUE ~ as.character(state)
+  )) %>%
+  
+  #get rid of arkansas because there is no chance that a democrat will win here 
+  #get rid of illionis because basically guarantted a democrat wins
+  filter(state %notin% c("Arkansas", "Illinois")) %>%
+  filter(candidate_party %in% c("DEM", "REP")) %>%
+  filter(poll_id != 58956 & question_id != 100828) %>%
+  filter(poll_id != 67060 & question_id != 125304) #get rid of weird polls
+
+```
+
+
+```{r}
+democratic_candidates <- senate_polls_cleaned %>%
+  filter(candidate_party == "DEM") %>%
+  group_by(question_id, poll_id, state, race_id, pollster) %>%
+  summarize(total_dems_pct = sum(pct)) 
+democratic_candidates 
+```
+
+```{r}
+republican_candidates <- senate_polls_cleaned %>%
+  filter(candidate_party == "REP") %>%
+  group_by(question_id, poll_id, state, race_id, pollster) %>%
+  summarize(total_rep_pct = sum(pct)) 
+republican_candidates
+```
+
+```{r}
+senate_data <- merge(democratic_candidates, republican_candidates, by = c("state", "question_id", "poll_id", "race_id", "pollster"))
+senate_data <- senate_data %>%
+  mutate(pct_dem = 100*total_dems_pct/(total_dems_pct + total_rep_pct))
+senate_data
+```
+
