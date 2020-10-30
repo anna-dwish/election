@@ -1,0 +1,419 @@
+---
+title: "Case Study 3: Election Predictions"
+author: "Ethan Shen, Malavi Ravindran, Steven Herrera Tenorio, Anna Darwish"
+geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
+fontsize: 12pt
+output: 
+  pdf_document:
+     number_sections: true
+---
+
+```{r, function checking for installed packages, include=FALSE}
+# Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,repos = "http://cran.r-project.org", dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+```
+
+```{r package test, include=FALSE}
+# Installing packages 
+# Additionally, if you are struggling to download RJags, please visit the following link for help. It can also help to try to download the package locally or in RStudio Cloud: https://sites.google.com/a/utexas.edu/edm-principalstratification/downloading-installing-r-jags-rstudio
+pkgTest("ggplot2")
+pkgTest("lubridate")
+pkgTest("R2jags")
+pkgTest("tidyverse")
+pkgTest("coda")
+```
+
+```{r load packages, include=FALSE, results="hide"}
+library(ggplot2)
+library(lubridate)
+library(R2jags)
+library(tidyverse)
+library(coda)
+```
+
+## Presidential Election
+
+```{r Read in Presidential Polls Data}
+president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
+  filter(population %in% c("lv","rv")) %>% 
+  mutate(state = ifelse(state == "--","US",state)) %>%
+  mutate(pct = biden / (biden + trump) *100) 
+
+#colnames(president_polls)
+
+president_polls <- president_polls %>% 
+  mutate(start.date = mdy(start.date),
+         end.date = mdy(end.date),
+         election_date = "2020-11-03" %>% as.Date(),
+         days_to_election = election_date - end.date)
+
+president_polls <- president_polls[president_polls$start.date >= "2020-06-01",]
+
+president_polls <- president_polls %>%
+  filter(state %in% c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH"))
+
+#got rid of US: why? covariance matrix will be hard to estimate
+#swing states are: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, North Carolina, Ohio, Pennsylvania, Texas, Wisconsin, Minnesota, Nevada, New Hampshire
+#these were determined from the following map and external sources: https://www.270towin.com/. 
+#should we get rid of "US"? The popular vote doesn't really matter anyways. 
+```
+
+```{r include=FALSE}
+#which states are not represented at all in polling data? none are swing, so we're good
+State_Abbrev <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                  "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                  "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                  "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                  "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+
+```
+
+```{r include=FALSE}
+swing <- c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
+State_Abbrev[!(State_Abbrev %in% swing)]
+```
+
+```{r}
+#going to biden:
+biden <- c(55, 7, 3, 3, 4, 20, 10, 11, 14, 5, 29, 7, 4, 3, 13, 12)
+dem_states <- c("CA", "CT", "DC", "DE", "HI", "IL", "MD", "MA", "NJ", "NM", "NY", "OR", "RI", "VT", "VA", "WA")
+votes_going_to_biden <- sum(biden)
+votes_going_to_biden
+```
+
+```{r data_list}
+states <- president_polls$state %>% unique
+y <- president_polls$pct
+r <- match(president_polls$state,states)
+t <- president_polls$days_to_election + 1 
+N_polls <- y %>% length
+N_states <- states %>% length
+N_days <- t %>% max
+I_states <- diag(N_states)
+```
+
+```{r}
+vote_share_2016 <- data.frame(president_polls$state, number = r)
+vote_share_2016 <- unique(vote_share_2016) %>%
+  mutate(clinton_percent = case_when(
+    president_polls.state == "NC" ~ 47/(47 + 51),
+    president_polls.state == "MI" ~ 47/(47 + 48),
+    president_polls.state == "NH" ~ 48/(48 + 47),
+    president_polls.state == "NV" ~ 48/(48 + 46),
+    president_polls.state == "PA" ~ 48/(48 + 49),
+    president_polls.state == "WI" ~ 47/(47 + 48),
+    president_polls.state == "TX" ~ 43/(43 + 53),
+    president_polls.state == "OH" ~ 44/(44 + 52),
+    president_polls.state == "MN" ~ 47/(47 + 45),
+    president_polls.state == "GA" ~ 46/(46 + 51),
+    president_polls.state == "FL" ~ 48/(48 + 49),
+    president_polls.state == "CO" ~ 47/(47 + 44),
+    president_polls.state == "IA" ~ 42/(42 + 52),
+    president_polls.state == "ME" ~ 48/(48 + 45),
+    president_polls.state == "AZ" ~ 45/(48 + 45)
+    
+  )) %>%
+  mutate(clinton_percent = 100*clinton_percent)
+h <- vote_share_2016$clinton_percent
+```
+
+```{r}
+generate_presidential_model_text = function(hierarchical_priors) {
+  model_file <- tempfile()
+  likelihood_base_priors = "
+  for(k in 1:N_polls){
+    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
+    p[k] = theta[r[k],t[k]] 
+  }
+  for(j in 2:N_days){
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+  }
+  
+  Phi ~ dwish(I_states,N_states+1) 
+  Sigma = inverse(Phi)
+  
+  #hierarchical component
+  for(j in 1:N_states){
+    sigma2_y[j] = 1/sigma2_y_inv[j]
+    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+    
+    theta[j,1] ~ dnorm(h[j], sigma2_0)
+  }
+  "
+  
+  model_text <- paste("model{ ", likelihood_base_priors, hierarchical_priors,"}")
+  writeLines(model_text,con=model_file)
+  return(model_file)
+}
+```
+
+
+```{r}
+# final model 
+gamma_2_0.5_prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  nu_beta ~ dunif(0,100)
+  tau_beta ~ dunif(0,100)
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(2, 0.5)
+  "
+
+model_file <- generate_presidential_model_text(gamma_2_0.5_prior)
+if (file.exists("gamma_2_0.5.Rds")) {
+  presidential_model_gamma_2_0.5_prior <- readRDS("gamma_2_0.5.Rds")
+} else {
+  presidential_model_gamma_2_0.5_prior <- jags(data = list("y","t", "r", "N_polls", 
+                                                           "N_states", "N_days", "h", "I_states"),  
+                                               parameters.to.save = c("theta", "Sigma", 
+                                                                    "p","sigma2_y", "sigma2_0"),
+                                               n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                               model.file = model_file)
+  
+  saveRDS(presidential_model_gamma_2_0.5_prior, file = "gamma_2_0.5.Rds")
+}
+```
+
+```{r}
+iterations = presidential_model_gamma_2_0.5_prior$BUGSoutput$n.keep * presidential_model_gamma_2_0.5_prior$BUGSoutput$n.chains 
+
+electoral_data <- read.csv("Electoral_College.csv") %>%
+  filter(Year == 2020)
+
+electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                           "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                           "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                           "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                           "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+
+#returns number of electoral votes biden wins for each iteration of the sampler
+#we need to add to this the votes that he is guaranteed from other states
+
+prediction_per_simulation <- function(model_output, i){
+  elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states, elec_sims)
+  
+  
+  results <- merge(vote_share_by_state, electoral_data, by = "states") %>%
+    dplyr::select(-c(Year)) 
+  biden_wins <- results %>%
+    filter(elec_sims > 50) 
+  biden_electoral_votes <- sum(biden_wins$Votes)
+  
+  #add in the number of guaranteed votes from other states!
+  biden_votes = votes_going_to_biden + biden_electoral_votes
+  return(biden_votes)
+  
+}
+```
+
+```{r}
+final_results <- c()
+
+for (i in 1:iterations){
+  final_results[i] = prediction_per_simulation(presidential_model_gamma_2_0.5_prior, i)
+}
+
+hist(final_results)
+mean(final_results >= 270)
+
+theta_1_1_mean <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,1,1] %>% mean()
+ggplot() + 
+  geom_density(aes(x = presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+  geom_vline(xintercept = theta_1_1_mean)
+
+tidybayes::gather_draws(presidential_model_gamma_2_0.5_prior %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>% 
+  filter(i == 1 & j == 1) %>% 
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+  geom_line(alpha = 0.6) +  
+  facet_grid(param~., scales = "free_y")
+```
+
+```{r}
+gamma_4_1_prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  nu_beta ~ dunif(0,100)
+  tau_beta ~ dunif(0,100)
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(4, 1)
+  "
+
+model_file <- generate_presidential_model_text(gamma_4_1_prior)
+if (file.exists("gamma_4_1.Rds")) {
+  presidential_model_gamma_4_1_prior <- readRDS("gamma_4_1.Rds")
+} else {
+  presidential_model_gamma_4_1_prior <- jags(data = list("y","t", "r", "N_polls", 
+                                                         "N_states", "N_days", "h", "I_states"),  
+                                             parameters.to.save = c("theta", "Sigma", 
+                                                                    "p","sigma2_y", "sigma2_0"),
+                                             n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                             model.file = model_file)
+  
+  saveRDS(presidential_model_gamma_4_1_prior, file = "gamma_4_1.Rds")
+}
+```
+
+```{r}
+final_results <- c()
+
+for (i in 1:iterations){
+  final_results[i] = prediction_per_simulation(presidential_model_gamma_4_1_prior, i)
+}
+
+hist(final_results)
+mean(final_results >= 270)
+
+ggplot() + 
+  geom_density(aes(x = presidential_model_gamma_4_1_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+  geom_vline(xintercept = theta_1_1_mean)
+
+tidybayes::gather_draws(presidential_model_gamma_4_1_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
+  filter(i == 1 & j == 1) %>% 
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+  geom_line(alpha = 0.6) +  
+  facet_grid(param~., scales = "free_y")
+
+```
+
+```{r}
+exp_0.25_prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  nu_beta ~ dunif(0,100)
+  tau_beta ~ dunif(0,100)
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dexp(0.25)
+  "
+
+model_file <- generate_presidential_model_text(exp_0.25_prior)
+if (file.exists("exp_0_25.Rds")) {
+  presidential_model_exp_0.25_prior <- readRDS("exp_0_25.Rds")
+} else {
+  presidential_model_exp_0.25_prior <- jags(data = list("y","t", "r", "N_polls", 
+                                                        "N_states", "N_days", "h", "I_states"),  
+                                            parameters.to.save = c("theta", "Sigma", 
+                                                                    "p","sigma2_y", "sigma2_0"),
+                                            n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                            model.file = model_file)
+  
+  saveRDS(presidential_model_exp_0.25_prior, file = "exp_0_25.Rds")
+}
+```
+
+```{r}
+final_results <- c()
+
+for (i in 1:iterations){
+  final_results[i] = prediction_per_simulation(presidential_model_exp_0.25_prior, i)
+}
+
+hist(final_results)
+mean(final_results >= 270)
+
+
+ggplot() + 
+  geom_density(aes(x = presidential_model_exp_0.25_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+  geom_vline(xintercept = theta_1_1_mean)
+
+tidybayes::gather_draws(presidential_model_exp_0.25_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
+  filter(i == 1 & j == 1) %>% 
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+  geom_line(alpha = 0.6) +  
+  facet_grid(param~., scales = "free_y")
+
+```
+
+```{r}
+gamma_1_0.25_prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  nu_beta ~ dunif(0,100)
+  tau_beta ~ dunif(0,100)
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(1, 0.25)
+  "
+
+model_file <- generate_presidential_model_text(gamma_1_0.25_prior)
+if (file.exists("gamma_1_025.Rds")) {
+  presidential_model_gamma_1_0.25_prior <- readRDS("gamma_1_025.Rds")
+} else {
+  presidential_model_gamma_1_0.25_prior <- jags(data = list("y","t", "r", "N_polls", 
+                                                            "N_states", "N_days", "h", "I_states"),  
+                                                parameters.to.save = c("theta", "Sigma", 
+                                                                    "p","sigma2_y", "sigma2_0"),
+                                                n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                                model.file = model_file)
+  
+  saveRDS(presidential_model_gamma_1_0.25_prior, file = "gamma_1_025.Rds")
+}
+```
+
+```{r}
+final_results <- c()
+
+for (i in 1:iterations){
+  final_results[i] = prediction_per_simulation(presidential_model_gamma_1_0.25_prior, i)
+}
+
+hist(final_results)
+mean(final_results >= 270)
+
+
+ggplot() + 
+  geom_density(aes(x = presidential_model_gamma_1_0.25_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+  geom_vline(xintercept = theta_1_1_mean)
+
+tidybayes::gather_draws(presidential_model_gamma_1_0.25_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
+  filter(i == 1 & j == 1) %>% 
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+  geom_line(alpha = 0.6) +  
+  facet_grid(param~., scales = "free_y")
+```
+
+```{r}
+sen_analysis_priors_names <- c("gamma_2_0.5",
+                               "gamma_4_1",
+                               "gamma_1_025",
+                               "exp_0_25")   
+sen_analysis_priors <- list(presidential_model_gamma_2_0.5_prior,
+                            presidential_model_gamma_4_1_prior,
+                            presidential_model_exp_0.25_prior,
+                            presidential_model_gamma_1_0.25_prior)     
+
+sen_tbl_list <- list()
+for (i in 1:4) {
+  sen_tbl_list[[i]] <- tidybayes::gather_draws(sen_analysis_priors[[i]] %>% coda::as.mcmc(), theta[i, j]) %>% 
+    filter(i == 1 & j == 1)
+}
+
+do.call(bind_rows, sen_tbl_list) %>% 
+  dplyr::mutate(model = rep(sen_analysis_priors_names, each=2000),
+                model = factor(model,
+                               levels = sen_analysis_priors_names)) %>% 
+  #mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot() + 
+  geom_density(aes(x = .value)) + 
+  geom_vline(xintercept = theta_1_1_mean) +  
+  facet_wrap(model~., scales = "free_y")
+```
+
