@@ -1,0 +1,324 @@
+---
+title: "Which party wins in each NC district?"
+output: html_document
+---
+
+https://www.pewresearch.org/politics/2020/10/21/large-shares-of-voters-plan-to-vote-a-straight-party-ticket-for-president-senate-and-house/ => resource to justify using the presidential predictions for congressional elections!
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(readr)
+library(groupdata2)
+library(lme4)
+```
+
+
+```{r setup, include=FALSE}
+last_day_to_register <- as.Date("11/08/2016", format= "%m/%d/%Y")
+# last_day_to_register <- as.Date("11/06/2012", format= "%m/%d/%Y")
+nc_registered_voters <- readr::read_rds("ncvoter_Statewide_small_2016.rds")  # nc registered voters
+
+nc_registered_voters <- nc_registered_voters %>% 
+  filter(voter_status_reason_desc != "DECEASED") %>% 
+  mutate(voter_reg_num = as.integer(substr(voter_reg_num,6,12)))
+
+nc_registered_voters$registr_dt <- as.character(nc_registered_voters$registr_dt)
+nc_registered_voters$registr_dt<- as.Date(nc_registered_voters$registr_dt, format= "%m/%d/%Y")
+nc_registered_voters <- subset(nc_registered_voters, registr_dt <= last_day_to_register)
+```
+
+
+```{r setup, include=FALSE}
+nc_voters <- read.csv("ncvhis_Statewide_small_2016.csv") # voters in year
+
+voter_data <- inner_join(nc_registered_voters,nc_voters %>% filter(voted_party_desc != ""),by=c("voter_reg_num", "county_id", "county_desc"))
+```
+
+
+```{r setup, include=FALSE}
+voter_data <- voter_data %>% 
+  mutate(
+         age_bin = case_when(
+           birth_age <= 29 ~ "18-29",
+           birth_age >= 30 & birth_age <= 39 ~ "30-39",
+           birth_age >= 40 & birth_age <= 49 ~ "40-49",
+           birth_age >= 50 & birth_age <= 64 ~ "50-64",
+           birth_age >= 65 ~ "65+"
+         ),
+         race_ethnicity = case_when(
+           ethnic_code == "HL" ~ "Hispanic Any Race",
+           ethnic_code == "NL" & race_code == "W" ~ "Non-Hispanic White",
+           ethnic_code == "NL" & race_code == "B" ~ "Non-Hispanic Black",
+           ethnic_code == "NL" & race_code == "O" ~ "Non-Hispanic Other",
+           ethnic_code == "NL" & race_code == "A" ~ "Non-Hispanic Asian",
+           ethnic_code == "NL" & race_code == "M" ~ "Non-Hispanic Mixed",
+           ethnic_code == "NL" & race_code == "I" ~ "Non-Hispanic American Indian",
+           ethnic_code == "NL" & race_code == "P" ~ "Non-Hispanic Pacific Islander",
+           ethnic_code == "NL" & race_code == "U" ~ "Undetermined",
+           TRUE ~ "Undetermined"
+         ),
+         voted_party_desc = case_when(
+           voted_party_desc == "DEMOCRATIC" ~ "DEMOCRATIC",
+           voted_party_desc == "REPUBLICAN" ~ "REPUBLICAN",
+           voted_party_desc== "UNAFFILIATED" ~ "UNAFFILIATED",
+           voted_party_desc %in% c("LIBERTARIAN", "GREEN", "CONSTITUTION") ~ "THIRD PARTY",
+           TRUE ~ as.character(voted_party_desc)
+         )
+         
+  )
+
+grouped_voter_data <- voter_data %>%
+  dplyr::group_by(county_desc, cong_dist_abbrv, race_ethnicity, party_cd,
+                  age_bin, gender_code) %>%
+  dplyr::summarize(Democrat = sum(voted_party_cd=="DEM"),
+                   Republican = sum(voted_party_cd=="REP"),
+                   total = n())
+
+grouped_voter_data <- grouped_voter_data  %>% dplyr::rename(gender = gender_code)
+grouped_voter_data <- grouped_voter_data %>% filter(party_cd != "CST")
+grouped_voter_data <- grouped_voter_data %>% filter(party_cd != "GRE")
+grouped_voter_data <- grouped_voter_data %>% filter(party_cd != "LIB")
+
+grouped_voter_data <- grouped_voter_data %>% filter(gender != "U")
+grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Undetermined")
+grouped_voter_data <- grouped_voter_data %>% filter(!is.na(gender))
+grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Non-Hispanic Other")
+grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Non-Hispanic Pacific Islander")
+```
+
+
+```{r setup, include=FALSE}
+district1 <- c("VANCE", "WARREN", "HALIFAX", "NORTHAMPTON", "HERTFORD", "GATES", "NASH", "EDGECOMBE", "MARTIN", "BERTIE", "WASHINGTON", "WILSON", "WAYNE", "GREENE", "PITT")
+district2 <- c("WAKE")
+district3 <-c("CURRITUCK", "CAMDEN", "PASQUOTANK", "PERQUIMANS", "CHOWAN", "DARE", "TYRRELL", "HYDE", "BEAUFORT", "PAMLICO", "CARTERET", "CRAVEN", "PITT", "LENOIR", "JONES", "ONSLOW", "DUPLIN")
+length(district3)
+district4 <-c("GRANVILLE", "ORANGE", "WAKE", "DURHAM", "FRANKLIN", "CHATHAM")
+district5 <-c("WATAUGA", "ASHE", "ALLEGHANY", "WILKES", "ALEXANDER", "CALDWELL", "BURKE", "CLEVELAND", "GASTON", "RUTHERFORD")
+district6 <-c("FORSYTH","GUILFORD")
+district7 <-c("JOHNSTON", "SAMPSON", "BRUNSWICK", "PENDER", "NEW HANOVER","COLUMBUS", "BLADEN", "HARNETT")
+district8 <-c("CABARRUS", "STANLY", "MONTGOMERY", "MOORE", "LEE", "CUMBERLAND", "HARNETT")
+district9 <-c("MECKLENBURG", "UNION", "ANSON", "RICHMOND", "SCOTLAND", "MOORE", "HOKE", "ROBESON")
+district10 <-c("SURRY", "STOKES", "ROCKINGHAM", "FORSYTH", "YADKIN", "IREDELL", "CATAWBA", "LINCOLN")
+district11 <-c("CHEROKEE", "CLAY", "GRAHAM", "SWAIN", "MACON", "JACKSON", "HAYWOOD", "TRANSYLVANIA", "HENDERSON", "BUNCOMBE", "MADISON", "YANCEY", "MITCHELL", "AVERY", "MCDOWELL", "RUTHERFORD", "POLK")
+district12 <-c("MECKLENBURG")
+district13 <-c("CASWELL", "PERSON", "ALAMANCE", "CHATHAM", "LEE", "RANDOLPH", "DAVIDSON", "DAVIE", "ROWAN")
+
+multiple <- c("RUTHERFORD", "FORSYTH", "MECKLENBURG", "MOORE", "CHATHAM", "LEE", "WAKE", "HARNETT", "PITT")
+
+grouped_voter_data <- grouped_voter_data %>% mutate(cong_dist_abbrv = case_when(
+    !(county_desc %in% multiple) & county_desc %in% district1 ~ as.integer(1),
+    !(county_desc %in% multiple) & county_desc %in% district2 ~ as.integer(2),
+    !(county_desc %in% multiple) & county_desc %in% district3 ~ as.integer(3),
+    !(county_desc %in% multiple) & county_desc %in% district4 ~ as.integer(4),
+    !(county_desc %in% multiple) & county_desc %in% district5 ~ as.integer(5),
+    !(county_desc %in% multiple) & county_desc %in% district6 ~ as.integer(6),
+    !(county_desc %in% multiple) & county_desc %in% district7 ~ as.integer(7),
+    !(county_desc %in% multiple) & county_desc %in% district8 ~ as.integer(8),
+    !(county_desc %in% multiple) & county_desc %in% district9 ~ as.integer(9),
+    !(county_desc %in% multiple) & county_desc %in% district10 ~ as.integer(10),
+    !(county_desc %in% multiple) & county_desc %in% district11 ~ as.integer(11),
+    !(county_desc %in% multiple) & county_desc %in% district12 ~ as.integer(12),
+    !(county_desc %in% multiple) & county_desc %in% district13 ~ as.integer(13),
+    TRUE ~ cong_dist_abbrv
+  ))
+
+t <- grouped_voter_data
+grouped_voter_data <- t
+for (m in multiple){
+  for (a in unique(grouped_voter_data$age_bin)){
+    for (r in unique(grouped_voter_data$race_ethnicity)){
+      for (p in unique(grouped_voter_data$party_cd)){
+        for (g in unique(grouped_voter_data$gender))
+          {
+            curr = grouped_voter_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & is.na(cong_dist_abbrv))
+            if (nrow(curr) == 0){
+              next
+            }
+            curr.dist = grouped_voter_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & !is.na(cong_dist_abbrv))
+            if (nrow(curr.dist) == 0){
+              next
+            }
+            number.dem.from.na <- curr[,7]
+            number.rep.from.na <-curr[,8]
+            
+            all.dem <- number.dem.from.na$Democrat
+            add.to.first.dem <- as.integer(all.dem/2)
+            
+            all.rep <- number.rep.from.na$Republican
+            add.to.first.rep <- as.integer(all.rep/2)
+            
+            first.county <- min(unique(curr.dist$cong_dist_abbrv))
+            print(first.county)
+            second.county <- max(unique(curr.dist$cong_dist_abbrv))
+            
+            grouped_voter_data <- grouped_voter_data  %>% 
+              mutate(Democrat= case_when(
+                county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == first.county ~ Democrat + add.to.first.dem,
+                county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == second.county ~ Democrat + all.dem - add.to.first.dem,
+                TRUE ~ Democrat
+              ),
+                    Republican=case_when(
+                county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == first.county ~ Republican + add.to.first.rep,
+                county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == second.county ~ Republican + all.rep - add.to.first.rep,
+                TRUE ~ Republican
+              ))
+            
+            
+        }
+
+    
+      }
+
+    }
+
+  }
+  print(m)
+  print(nrow(grouped_voter_data))
+
+}
+
+grouped_voter_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv))
+
+grouped_voter_data %>% write_csv("grouped_voter_only_data_2016.csv")
+voter_data %>% filter(is.na(cong_dist_abbrv))
+```
+
+
+```{r}
+grouped_voter_data
+```
+
+```{r}
+#??? why can't it split into folds
+fold_df <- groupdata2::fold(grouped_voter_data, k = 2, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) 
+```
+
+
+```{r}
+smp_size <- floor(0.75 * nrow(grouped_voter_data))
+
+## set the seed to make your partition reproducible
+set.seed(123)
+train_ind <- sample
+(seq_len(nrow(grouped_voter_data)), size = smp_size)
+
+train <- grouped_voter_data[train_ind, ]
+test <- grouped_voter_data[-train_ind, ]
+```
+
+
+```{r}
+glmer.fit.congressional <- glmer(cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|county_desc) + (1|cong_dist_abbrv),
+                         data = train,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+```
+
+```{r}
+test <- test %>%
+  mutate(vote = ifelse(Democrat/(Democrat+Republican) > 0.5, 1, 0),
+                vote = ifelse(is.nan(Democrat/(Democrat+Republican)), 0, vote),
+                vote = dplyr::case_when(
+                  Democrat == 0 & Republican == 0 ~ 0,
+                  TRUE ~ vote
+                ))
+
+```
+
+```{r}
+glmer.probs <- predict(glmer.fit.congressional,  test,  type = "response")
+glmer.pred <- rep(0, nrow(test))
+glmer.pred[glmer.probs > 0.5] <- 1
+  
+acc <-  mean(glmer.pred == test$vote)
+f1 <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
+```
+
+
+```{r cross validation, warning=FALSE, message=F, cache=TRUE}
+set.seed(5934512)
+fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
+  dplyr::mutate(vote = ifelse(Democrat/(Democrat+Republican) > 0.5, 1, 0),
+                vote = ifelse(is.nan(Democrat/(Democrat+Republican)), 0, vote),
+                vote = dplyr::case_when(
+                  Democrat == 0 & Republican == 0 ~ 0,
+                  TRUE ~ vote
+                ))
+
+round_perc = function(x) {
+  if (is.double(x)) {
+    round(x*100, digits = 2)
+  }
+}
+
+create_model <- function(model_formula, grouped_voter_data, perform_cv=TRUE){
+  model_results = list()
+  results_idx = 1
+  
+  # STEP 1: CROSS VALIDATION
+  if (perform_cv){
+    acc_list = c()
+    f1_list = c()
+    AUC_list = c()
+    for (i in 1:5) {
+      train <- grouped_voter_data %>% filter(.folds != i)
+      test <- grouped_voter_data %>% filter(.folds == i)
+  
+      glmer.fit <- glmer(model_formula,
+                     data = train,
+                     family = binomial,
+                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  
+      glmer.probs <- predict(glmer.fit,  test,  type = "response")
+      glmer.pred <- rep(0, nrow(test))
+      glmer.pred[glmer.probs > 0.5] <- 1
+  
+      acc_list[i] <-  mean(glmer.pred == test$vote)
+      f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
+      AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
+    }
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
+    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc()
+    f1_mean = f1_list %>% mean(na.rm=T)  %>% round_perc()
+    f1_sd = f1_list %>% sd(na.rm=T)  %>% round_perc()
+    AUC_mean = AUC_list %>% mean(na.rm=T)  %>% round_perc()
+    AUC_sd = AUC_list %>% sd(na.rm=T)  %>% round_perc()
+    
+    cv_df <- tibble(
+      Accuracy = paste0(acc_mean, "% ± ", acc_sd, "%"),
+      F1 = paste(f1_mean, "±", f1_sd),
+      AUC = paste(AUC_mean, "±", AUC_sd))
+    
+    model_results[[results_idx]] = cv_df
+    results_idx = results_idx + 1
+  }
+  
+  # STEP 2: FIT FULL MODEL WITH ALL DATA
+  glmer.fit.final <- glmer(model_formula,
+                         data = grouped_voter_data,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  model_results[[results_idx]] = glmer.fit.final
+  results_idx = results_idx + 1
+  
+  # results <- data.frame(VarCorr(glmer.fit.final))
+  # final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
+  
+  # STEP 3: CREATE FORMATTED DATAFRAME WITH MODEL RESULTS
+  final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
+                                       Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
+                                       P.Value=summary(glmer.fit.final)$coefficients[, 4])
+  model_results[[results_idx]] = final.model.fixed.results
+  return(model_results)
+}
+```
+
+
+```{r cross validation, warning=FALSE, message=F, cache=TRUE}
+model.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|county_desc) + (1|cong_dist_abbrv)"
+create_model(model.text, grouped_voter_data)
+```
