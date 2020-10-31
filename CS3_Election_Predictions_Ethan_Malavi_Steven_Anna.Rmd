@@ -140,11 +140,11 @@ generate_presidential_model_text = function(hierarchical_priors) {
   Sigma = inverse(Phi)
   
   #hierarchical component
-  for(j in 1:N_states){
-    sigma2_y[j] = 1/sigma2_y_inv[j]
-    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+  for(i in 1:N_states){
+    sigma2_y[i] = 1/sigma2_y_inv[i]
+    sigma2_y_inv[i] ~ dgamma(nu_y,nu_y*tau_y) 
     
-    theta[j,1] ~ dnorm(h[j], sigma2_0)
+    theta[i,1] ~ dnorm(h[i], sigma2_0)
   }
   "
   
@@ -227,6 +227,7 @@ hist(final_results)
 mean(final_results >= 270)
 
 theta_1_1_mean <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,1,1] %>% mean()
+
 ggplot() + 
   geom_density(aes(x = presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,1,1])) + 
   geom_vline(xintercept = theta_1_1_mean)
@@ -391,10 +392,10 @@ tidybayes::gather_draws(presidential_model_gamma_1_0.25_prior %>% coda::as.mcmc(
 ```
 
 ```{r}
-sen_analysis_priors_names <- c("gamma_2_0.5",
-                               "gamma_4_1",
-                               "gamma_1_025",
-                               "exp_0_25")   
+sen_analysis_priors_names <- c("Ga(2, 0.5))",
+                               "Ga(4, 1)",
+                               "Ga(1, 0.25)",
+                               "Exp(1/4)")   
 sen_analysis_priors <- list(presidential_model_gamma_2_0.5_prior,
                             presidential_model_gamma_4_1_prior,
                             presidential_model_exp_0.25_prior,
@@ -405,15 +406,18 @@ for (i in 1:4) {
   sen_tbl_list[[i]] <- tidybayes::gather_draws(sen_analysis_priors[[i]] %>% coda::as.mcmc(), theta[i, j]) %>% 
     filter(i == 1 & j == 1)
 }
-
 do.call(bind_rows, sen_tbl_list) %>% 
   dplyr::mutate(model = rep(sen_analysis_priors_names, each=2000),
                 model = factor(model,
-                               levels = sen_analysis_priors_names)) %>% 
+                               levels = sen_analysis_priors_names,
+                               labels = c(expression(paste(sigma[0]^2, " ~ Ga(2, 0.5)")),
+                                          expression(paste(sigma[0]^2, " ~ Ga(4, 1)")),
+                                          expression(paste(sigma[0]^2, " ~ Ga(1, 0.25)")),
+                                          expression(paste(sigma[0]^2, " ~ Exp(0.25)"))))) %>% 
   #mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
   ggplot() + 
   geom_density(aes(x = .value)) + 
   geom_vline(xintercept = theta_1_1_mean) +  
-  facet_wrap(model~., scales = "free_y")
+  facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
 ```
 
