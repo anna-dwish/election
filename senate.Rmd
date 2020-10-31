@@ -7,7 +7,71 @@ Overview:
 - 33 seats up; 12 dem, 23 republican
 - currently there are 47 dems (counting independents) and 53 republicans 
 - this means that, other than the 33 seats up, there are 35 democrats and 30 republicans in the senate
-- to flip, democrats need to get up to 51. They need to win their 12 seats plus 4 of the republican seats!
+- to flip, democrats need to get up to 51. They need to win their 12 seats plus 4 of the republican seats! They have 8 guaranteed (not swing)
+- DEMS NEED TO WIN 8 SWING STATES!
+
+
+Seats up:
+
+Georgia
+Georgia*
+Iowa
+North Carolina
+Montana
+Maine
+Kansa
+South Carolina
+Arkansas
+Arizona*
+Alabama
+Michigan
+Colorado
+Texas
+Mississippi
+Minnesota
+Kentucky
+New Mexico
+Louisiana
+New Hampshire
+Virginia
+Oklahoma
+Tennessee
+Idaho
+West Virginia
+Oregon
+New Jersey
+South Dakota
+Illinois
+New England
+Deleware
+Maryland
+Wyoming
+Rhode Island
+Arkansas
+
+GUARANTEED: 8 DEM, 11 REP. Swing states? 16 total
+
+BLUE
+Alabama
+Michigan
+Minnesota
+New Hampshire
+
+
+RED:
+Arizona*
+Colorado
+Georgia
+Georgia*
+Iowa
+Kansas
+Kentucky
+Maine
+Montana
+North Carolina
+South Carolina
+Texas
+
 
 ```{r, function checking for installed packages, include=FALSE}
 # Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
@@ -27,12 +91,15 @@ pkgTest <- function(x)
 pkgTest("ggplot2")
 pkgTest("R2jags")
 pkgTest("tidyverse")
+pkgTest("lubridate")
+
 ```
 
 ```{r load packages, include=FALSE, results="hide"}
 library(ggplot2)
 library(R2jags)
 library(tidyverse)
+library(lubridate)
 ```
 
 ```{r Read in Data}
@@ -82,7 +149,7 @@ senate_polls_cleaned <- senate_polls %>%
 ```{r}
 democratic_candidates <- senate_polls_cleaned %>%
   filter(candidate_party == "DEM") %>%
-  group_by(question_id, poll_id, state, race_id, pollster) %>%
+  group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
   summarize(total_dems_pct = sum(pct)) 
 democratic_candidates 
 ```
@@ -90,15 +157,239 @@ democratic_candidates
 ```{r}
 republican_candidates <- senate_polls_cleaned %>%
   filter(candidate_party == "REP") %>%
-  group_by(question_id, poll_id, state, race_id, pollster) %>%
+  group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
   summarize(total_rep_pct = sum(pct)) 
 republican_candidates
 ```
 
 ```{r}
-senate_data <- merge(democratic_candidates, republican_candidates, by = c("state", "question_id", "poll_id", "race_id", "pollster"))
+senate_data <- merge(democratic_candidates, republican_candidates, by = c("state", "question_id", "poll_id", "race_id", "pollster", "start_date", "end_date"))
 senate_data <- senate_data %>%
   mutate(pct_dem = 100*total_dems_pct/(total_dems_pct + total_rep_pct))
 senate_data
 ```
+
+```{r}
+senate_data
+```
+
+```{r}
+senate <- senate_data %>%
+   mutate(start_date = mdy(start_date),
+         end_date = mdy(end_date),
+         election_date = "2020-11-03" %>% as.Date(),
+         days_to_election = election_date - end_date,
+         y = pct_dem) %>%
+  dplyr::filter(days_to_election <= 100) %>%
+  filter(state %in% c("Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", "Kentucky", "Maine", "Michigan", "Minnesota", "Montana", "New Hampshire", "North Carolina", "South Carolina", "Texas"))
+```
+
+
+Model without priors from last senate election.
+
+```{r}
+states <- senate$state %>% unique
+y <- senate$y
+r <- match(senate$state,states)
+t <- senate$days_to_election + 1 
+N_polls <- y %>% length
+N_states <- states %>% length
+N_days <- t %>% max
+jags_data <- list(y=y,t=t,r=r,
+                  N_polls=N_polls,N_states=N_states,N_days=N_days)
+```
+
+```{r}
+model_mv_senate <- function(){
+  for(k in 1:N_polls){
+    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
+    p[k] = theta[r[k],t[k]]
+  }
+  for(j in 2:N_days){
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+  }
+  Phi ~ dwish(I_states,N_states+1) 
+  Sigma = inverse(Phi)
+  
+  
+  for(j in 1:N_states){
+      sigma2_y[j] = 1/sigma2_y_inv[j]
+      sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+      
+      theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+  }
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  nu_beta ~ dunif(0,100)
+  tau_beta ~ dunif(0,100)
+  
+  mu0 ~ dnorm(50,pow(7.5,-2))
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(.5,.5)
+}
+```
+
+```{r}
+jags_data$I_states <- diag(N_states)
+
+jags_sims_mv_senate <- jags(data = jags_data,model.file = model_mv_senate,parameters.to.save = c("theta","Sigma",
+                                                                                "p","sigma2_y"),
+                  n.iter = 5000)
+
+```
+
+
+```{r}
+elec_sims <- jags_sims_mv_senate$BUGSoutput$sims.list$theta[1,,1]
+vote_share_by_state <- data.frame(states, elec_sims)
+```
+
+
+```{r}
+# this function finds the probability that the senate flips!
+n_iter <- dim(jags_sims_mv_senate$BUGSoutput$sims.list$theta[,,1])
+
+
+prediction_per_simulation_senate <- function(i){
+  elec_sims <- jags_sims_mv_senate$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states, elec_sims)
+
+  dem_states_df <- vote_share_by_state %>%
+    filter(elec_sims > 50)
+  dem_states <- dem_states_df$states
+  num_dem_states <- length(dem_states)
+  return(num_dem_states)
+  
+}
+
+final_results <- c()
+
+for (i in 1:n_iter){
+  final_results[i] = prediction_per_simulation_senate(i)
+}
+
+mean(final_results > 8)
+mean(final_results)
+```
+
+
+Model WITH priors from last presidential election
+
+
+```{r}
+states <- senate$state %>% unique
+y <- senate$y
+r <- match(senate$state,states)
+t <- senate$days_to_election + 1 
+N_polls <- y %>% length
+N_states <- states %>% length
+N_days <- t %>% max
+I_states <- diag(N_states)
+```
+
+
+```{r}
+# swing states 
+vote_share_2016 <- data.frame(senate$state, number = r)
+vote_share_2016 <- unique(vote_share_2016) %>%
+  mutate(clinton_percent = case_when(
+    senate.state == "North Carolina" ~ 47/(47 + 51),
+    senate.state == "Michigan" ~ 47/(47 + 48),
+    senate.state == "New Hampshire" ~ 48/(48 + 47) ,
+    senate.state == "Texas" ~ 43/(43 + 53) , 
+    senate.state == "Minnesota" ~ 47/(47 + 45) ,
+    senate.state %in% c("Georgia", "Georgia*") ~ 46/(46 + 51),
+    senate.state == "Iowa" ~ 42/(42 + 52),
+    senate.state == "Maine" ~ 48/(48 + 45),
+    senate.state == "Arizona*" ~ 45/(48 + 45),
+    senate.state == "Alabama" ~ 35/(35 + 63),
+    senate.state == "Colorado" ~ 47/(47 + 44),
+    senate.state == "Kansas" ~ 35/(35 + 63),
+    senate.state == "South Carolina" ~ 41/(41 + 55),
+    senate.state == "Kentucky" ~ 33/(33 + 63),
+    senate.state == "Alabama" ~ 35/(35 + 63),
+    senate.state == "Montana" ~ 36/(36 + 57),
+    
+    
+
+  )) %>%
+  mutate(clinton_percent = 100*clinton_percent)
+h <- vote_share_2016$clinton_percent
+
+```
+
+```{r}
+model_mv_senate_adj_priors <- function(){
+  for(k in 1:N_polls){
+    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
+    p[k] = theta[r[k],t[k]] 
+  }
+  for(j in 2:N_days){
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+  }
+  
+  Phi ~ dwish(I_states,N_states+1) 
+  Sigma = inverse(Phi)
+  #hierarchical component
+  for(j in 1:N_states){
+    sigma2_y[j] = 1/sigma2_y_inv[j]
+    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+      
+    theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-1))
+    #theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+  }
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+    sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(2, 0.5)
+}
+```
+
+```{r}
+jags_data_senate_adj_prior <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
+
+jags_sims_mv_senate_adj_prior <- jags(data = jags_data_senate_adj_prior,model.file = model_mv_senate_adj_priors,parameters.to.save = c("theta","Sigma",
+                                                                                "p","sigma2_y"),
+                  n.iter = 5000)
+
+```
+
+
+```{r}
+elec_sims <- jags_sims_mv_senate_adj_prior$BUGSoutput$sims.list$theta[1,,1]
+vote_share_by_state <- data.frame(states, elec_sims)
+```
+
+
+```{r}
+# this function finds the probability that the senate flips!
+n_iter <- dim(jags_sims_mv_senate_adj_prior$BUGSoutput$sims.list$theta[,,1])
+
+
+prediction_per_simulation_senate <- function(i){
+
+  elec_sims <- jags_sims_mv_senate_adj_prior$BUGSoutput$sims.list$theta[i,,1]
+
+  vote_share_by_state <- data.frame(states, elec_sims)
+ 
+  dem_states_df <- vote_share_by_state %>%
+    filter(elec_sims > 50)
+  dem_states <- dem_states_df$states
+  num_dem_states <- length(dem_states)
+  return(num_dem_states)
+  
+}
+
+final_results <- c()
+
+for (i in 1:n_iter){
+  final_results[i] = prediction_per_simulation_senate(i)
+}
+
+mean(final_results > 8)
+mean(final_results)
+```
+
 
