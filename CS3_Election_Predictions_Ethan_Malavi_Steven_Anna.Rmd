@@ -421,3 +421,122 @@ do.call(bind_rows, sen_tbl_list) %>%
   facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
 ```
 
+## Predicting 2012 Elections Using this Model 
+
+```{r}
+# https://www.politico.com/2012-election/swing-state/  used to determine swing states 
+polls2012 <- read_csv("all_polls_2012.csv") 
+
+polls2012 <- polls2012 %>% 
+  filter(population %in% c("Registered Voters", "Likely Voters")) %>% 
+  mutate(state = ifelse(state == "--","US",state)) %>%
+  mutate(pct = obama / (obama + romney) *100) %>% 
+  mutate(start.date = mdy(start.date),
+         end.date = mdy(end.date),
+         election_date = "2012-11-06" %>% as.Date(),
+         days_to_election = election_date - end.date) %>%
+  filter(state %in% c("CO", "FL", "IA", "NV", "NH", "NC", "OH", "VA", "WI"))
+```
+
+```{r}
+obama_votes <- 237
+states_2012 <- polls2012$state %>% unique
+y_2012 <- polls2012$pct
+r_2012 <- match(polls2012$state,states_2012)
+t_2012 <- polls2012$days_to_election + 1 
+N_polls_2012 <- y_2012 %>% length
+N_states_2012 <- states_2012 %>% length
+N_days_2012 <- t_2012 %>% max
+I_states_2012 <- diag(N_states_2012)
+```
+
+```{r}
+# obama's vote share in 2008: https://www.nytimes.com/elections/2008/results/president/votes.html
+vote_share_2008 <- data.frame(polls2012$state) 
+vote_share_2008 <- distinct(vote_share_2008) %>%
+  mutate(obama_percent = case_when(
+    polls2012.state == "CO" ~ 54/(54 + 45),
+    polls2012.state == "FL" ~ 51/(51 + 48),
+    polls2012.state == "IA" ~ 54/(54 + 45),
+    polls2012.state == "NV" ~ 55/(55 + 43),
+    polls2012.state == "NH" ~ 54/(54 + 45),
+    polls2012.state == "NC" ~ 50/(50 + 50),
+    polls2012.state == "OH" ~ 51/(51 + 47),
+    polls2012.state == "VA" ~ 53/(53 + 46),
+    polls2012.state == "WI" ~ 56/(56 + 42)
+    
+  )) %>%
+  mutate(obama_percent = 100*obama_percent)
+obama2008 <- vote_share_2008$obama_percent
+```
+
+```{r}
+# final model 
+gamma_2_0.5_prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(2,0.5)
+  "
+
+model_file <- generate_presidential_model_text(gamma_2_0.5_prior)
+if (file.exists("gamma_2_0.5_2012.Rds")) {
+  presidential2012_model_gamma_2_0.5_prior <- readRDS("gamma_2_0.5_2012.Rds")
+} else {
+  presidential2012_model_gamma_2_0.5_prior <- jags(data = list(y=y_2012,t=t_2012, r=r_2012, N_polls=N_polls_2012, 
+                                                           N_states=N_states_2012, N_days=N_days_2012, h=obama2008, I_states=I_states_2012),  
+                                               parameters.to.save = c("theta", "Sigma", 
+                                                                    "p","sigma2_y", "sigma2_0"),
+                                               n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                               model.file = model_file)
+  
+  saveRDS(presidential2012_model_gamma_2_0.5_prior, file = "gamma_2_0.5_2012.Rds")
+}
+```
+
+```{r}
+iterations = presidential2012_model_gamma_2_0.5_prior$BUGSoutput$n.keep * presidential2012_model_gamma_2_0.5_prior$BUGSoutput$n.chains 
+
+electoral_data <- read.csv("Electoral_College.csv") %>%
+  filter(Year == 2012)
+
+electoral_data$states_2012 <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+                           "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                           "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                           "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                           "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+
+#returns number of electoral votes biden wins for each iteration of the sampler
+#we need to add to this the votes that he is guaranteed from other states
+
+prediction_per_simulation <- function(model_output, i){
+  elec_sims <- presidential2012_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states_2012, elec_sims)
+  
+  
+  results <- merge(vote_share_by_state, electoral_data, by = "states_2012") %>%
+    dplyr::select(-c(Year)) 
+  obama_wins <- results %>%
+    filter(elec_sims > 50) 
+  obama_electoral_votes <- sum(obama_wins$Votes)
+  
+  #add in the number of guaranteed votes from other states!
+  biden_votes = obama_votes + obama_electoral_votes
+  return(biden_votes)
+}
+
+final_results2012 <- c()
+
+for (i in 1:iterations){
+  final_results2012[i] = prediction_per_simulation(presidential2012_model_gamma_2_0.5_prior, i)
+}
+
+hist(final_results2012)
+mean(final_results2012 >=1)
+mean(final_results2012)
+
+final_results2012 %>% quantile()
+```
+
+
