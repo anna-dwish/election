@@ -269,34 +269,34 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
 
 
 ```{r}
-senate_gamma_5_1_prior <- "
+senate_gamma_4_2_prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
   
   mu0 ~ dnorm(50,pow(7.5,-1))
   
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(5, 5)
+  sigma2_0_inv ~ dgamma(4, 2)
   "
 
-model_file <- generate_senate_model_text(senate_gamma_5_1_prior)
-if (file.exists("senate_gamma_5_1_prior.Rds")) {
-  senate_gamma_5_1_prior <- readRDS("senate_gamma_5_1_prior.Rds")
+model_file <- generate_senate_model_text(senate_gamma_4_2_prior)
+if (file.exists("senate_gamma_4_2_prior.Rds")) {
+  senate_gamma_4_2_prior <- readRDS("senate_gamma_4_2_prior.Rds")
 } else {
-  senate_gamma_5_1_prior <- jags(data = jags_data_senate,  
+  senate_gamma_4_2_prior <- jags(data = jags_data_senate,  
                                      parameters.to.save = c("theta", "Sigma", 
                                                             "p","sigma2_y", "sigma2_0"),
-                                     n.iter = 1000, #n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                     n.iter = 125000, n.burnin = 50000, n.thin = 75, n.chains = 2,
                                      model.file = model_file)
   
-  saveRDS(senate_gamma_5_1_prior, file = "senate_gamma_5_1_prior.Rds")
+  saveRDS(senate_gamma_4_2_prior, file = "senate_gamma_4_2_prior.Rds")
 }
 ```
 
 ```{r}
 # this function finds the probability that the senate flips!
-#senate_gamma_5_1_prior <- readRDS("senate_gamma_2_2_prior.Rds")
-n_iter <- dim(senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,,1])[1]
+#senate_gamma_4_2_prior <- readRDS("senate_gamma_2_2_prior.Rds")
+n_iter <- dim(senate_gamma_4_2_prior$BUGSoutput$sims.list$theta[,,1])[1]
 
 prediction_per_simulation_senate <- function(model_output, i){
   elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
@@ -312,14 +312,14 @@ prediction_per_simulation_senate <- function(model_output, i){
 final_results_senate <- c()
 
 for (i in 1:n_iter){
-  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_5_1_prior, i)
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_4_2_prior, i)
 }
 
 mean(final_results_senate >= 9)
 mean(final_results_senate)
 final_results_senate %>% hist()
 
-#senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,14,1] %>% hist()
+#senate_gamma_4_2_prior$BUGSoutput$sims.list$theta[,14,1] %>% hist()
 ```
 
 Model WITH priors from last presidential election
