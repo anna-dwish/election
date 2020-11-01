@@ -395,7 +395,7 @@ jags_data_senate_adj <- list(y=y_senate,t=t_senate,r=r_senate,
                          N_polls=N_polls_senate,N_states=N_states_senate,N_days=N_days_senate, I_states=I_states_senate)
 jags_sims_mv_senate_adj_prior <- jags(data = jags_data_senate_adj,  model.file = model_mv_senate_adj_priors,parameters.to.save = c("theta","Sigma",
                                                                                                                                        "p","sigma2_y"),
-                                      n.iter = 5000)
+                                      n.iter = 1500)
 
 ```
 
@@ -506,3 +506,41 @@ z1 %>%
   theme(axis.text.x = element_text(angle = 60, vjust = 0.25, hjust=0.25, size = 7)) +
   scale_x_reverse()
 ```
+
+
+
+
+
+
+
+
+```{r}
+h1 %>%
+  gather("variable", "value") %>%
+  mutate(variable = as.factor(variable) %>% as.numeric()) %>%
+  group_by(variable) %>%
+  summarise(mean = mean(value) - 50,
+            lower = quantile(value, probs=0.025) - 50,
+            upper = quantile(value, probs=0.975) - 50) %>%
+  mutate(party = ifelse(mean > 0, "Democrat", "Republican")) %>%
+  ggplot(mapping=aes(x=variable, y = mean)) +
+  geom_errorbar(aes(ymin=lower, 
+                 ymax=upper,
+                 color=case_when(
+                   lower > 0 & upper > 0 ~ "red",
+                   lower < 0 & upper < 0 ~ "blue",
+                   TRUE ~ "grey"
+                 ))) +
+  geom_point() +
+  guides(fill = FALSE) + 
+  labs(title = "US Senate Win Gap in North Carolina Election",
+       subtitle = "Percent Above 50%, using 2020 Polling Data",
+       caption = "The Democrat is predicted to win",
+       x = "# of Days Before Election",
+       y = "Percent Difference",
+       color=" ") +
+  #scale_color_manual(values = c("#000099", "#CC0000")) +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.25, hjust=0.25, size = 7)) +
+  scale_x_reverse()
+```
+
