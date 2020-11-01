@@ -7,8 +7,8 @@ Overview:
 - 35 seats up; 12 dem, 23 republican
 - currently there are 47 dems (counting independents) and 53 republicans 
 - this means that, other than the 35 seats up, there are 35 democrats and 30 republicans in the senate
-- to flip, democrats need to get up to 51. They need to win their 12 seats plus 4 of the republican seats! They have 8 guaranteed (not swing)
-- DEMS NEED TO WIN 8 SWING STATES!
+- to flip, democrats need to get up to 51. They need to win their 12 seats plus 4 of the republican seats! They have 7 (VA, OR, IL,  NJ, DE,  CT, RI) guaranteed (not swing)
+- DEMS NEED TO WIN 9 SWING STATES!
 
 
 Seats up:
@@ -186,7 +186,11 @@ senate <- senate_data %>%
          days_to_election = election_date - end_date,
          y = pct_dem) %>%
   dplyr::filter(days_to_election <= 100) %>%
-  filter(state %in% c("Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", "Kentucky", "Maine", "Michigan", "Minnesota", "Mississippi", "Montana", "New Hampshire", "New Mexico", "North Carolina", "South Carolina", "Texas"))
+  filter(state %in% c("Alaska", "Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", #"Kentucky", 
+                      "Maine", "Michigan", "Minnesota", "Mississippi",
+                      "Montana", #"New Hampshire", 
+                      "New Mexico", 
+                      "North Carolina", "South Carolina", "Texas"))
 ```
 
 
@@ -265,33 +269,34 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
 
 
 ```{r}
-senate_gamma_0.1_0.5_prior <- "
+senate_gamma_5_1_prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
   
   mu0 ~ dnorm(50,pow(7.5,-1))
   
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(0.1, 0.5)
+  sigma2_0_inv ~ dgamma(5, 5)
   "
 
-model_file <- generate_senate_model_text(senate_gamma_0.1_0.5_prior)
-if (file.exists("senate_gamma_0.1_0.5_prior.Rds")) {
-  senate_gamma_0.1_0.5_prior <- readRDS("senate_gamma_0.1_0.5_prior.Rds")
+model_file <- generate_senate_model_text(senate_gamma_5_1_prior)
+if (file.exists("senate_gamma_5_1_prior.Rds")) {
+  senate_gamma_5_1_prior <- readRDS("senate_gamma_5_1_prior.Rds")
 } else {
-  senate_gamma_0.1_0.5_prior <- jags(data = jags_data_senate,  
+  senate_gamma_5_1_prior <- jags(data = jags_data_senate,  
                                      parameters.to.save = c("theta", "Sigma", 
                                                             "p","sigma2_y", "sigma2_0"),
-                                     n.iter = 5000, #n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                     n.iter = 1000, #n.burnin = 25000, n.thin = 50, n.chains = 2,
                                      model.file = model_file)
   
-  saveRDS(senate_gamma_0.1_0.5_prior, file = "senate_gamma_0.1_0.5_prior.Rds")
+  saveRDS(senate_gamma_5_1_prior, file = "senate_gamma_5_1_prior.Rds")
 }
 ```
 
 ```{r}
 # this function finds the probability that the senate flips!
-n_iter <- dim(senate_gamma_0.1_0.5_prior$BUGSoutput$sims.list$theta[,,1])[1]
+#senate_gamma_5_1_prior <- readRDS("senate_gamma_2_2_prior.Rds")
+n_iter <- dim(senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,,1])[1]
 
 prediction_per_simulation_senate <- function(model_output, i){
   elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
@@ -307,11 +312,14 @@ prediction_per_simulation_senate <- function(model_output, i){
 final_results_senate <- c()
 
 for (i in 1:n_iter){
-  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_0.1_0.5_prior, i)
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_5_1_prior, i)
 }
 
-mean(final_results_senate > 8)
+mean(final_results_senate >= 9)
 mean(final_results_senate)
+final_results_senate %>% hist()
+
+#senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,14,1] %>% hist()
 ```
 
 
@@ -351,9 +359,9 @@ vote_share_2016 <- unique(vote_share_2016) %>%
     senate.state == "Kentucky" ~ 33/(33 + 63),
     senate.state == "Alabama" ~ 35/(35 + 63),
     senate.state == "Montana" ~ 36/(36 + 57),
-    
-    
-    
+    senate.state == "Mississippi" ~ 46.4/(53.6 + 46.4),
+    senate.state == "New Mexico" ~ 54.1 / (54.1 + 30.5)
+
   )) %>%
   mutate(clinton_percent = 100*clinton_percent)
 h <- vote_share_2016$clinton_percent
@@ -377,8 +385,8 @@ model_mv_senate_adj_priors <- function(){
     sigma2_y[j] = 1/sigma2_y_inv[j]
     sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
     
-    #theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-1))
-    theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+    theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-2))
+    #theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
   }
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
@@ -386,17 +394,18 @@ model_mv_senate_adj_priors <- function(){
   mu0 ~ dnorm(50,pow(7.5,-2))
   
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(0.1, 0.5)
+  sigma2_0_inv ~ dgamma(5, 1)
 }
 ```
 
 ```{r}
 jags_data_senate_adj_prior <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
 jags_data_senate_adj <- list(y=y_senate,t=t_senate,r=r_senate,
-                         N_polls=N_polls_senate,N_states=N_states_senate,N_days=N_days_senate, I_states=I_states_senate)
+                         N_polls=N_polls_senate,N_states=N_states_senate,N_days=N_days_senate, I_states=I_states_senate,h=h)
 jags_sims_mv_senate_adj_prior <- jags(data = jags_data_senate_adj,  model.file = model_mv_senate_adj_priors,parameters.to.save = c("theta","Sigma",
                                                                                                                                        "p","sigma2_y"),
-                                      n.iter = 5000)
+                                      n.iter = 1000, #n.burnin = 50000, n.thin = 75, n.chains = 2
+                                      )
 
 ```
 
@@ -432,8 +441,11 @@ for (i in 1:n_iter[1]){
   final_results[i] = prediction_per_simulation_senate(i)
 }
 
-mean(final_results > 8)
+mean(final_results >= 9)
 mean(final_results)
 ```
 
+```{r}
+jags_sims_mv_senate_adj_prior
+```
 
