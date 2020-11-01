@@ -72,7 +72,6 @@ president_polls <- president_polls %>%
 
 ```{r}
 swing <- c("AZ", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
-State_Abbrev[!(State_Abbrev %in% swing)]
 ```
 
 
@@ -290,8 +289,7 @@ electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
                            "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
                            "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
 
-    filter(Year == 2020)
-  
+ 
 #returns number of electoral votes biden wins for each iteration of the sampler
 #we need to add to this the votes that he is guaranteed from other states
 ```
@@ -299,8 +297,8 @@ electoral_data$states <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
 
 
 ```{r}
-prediction_per_simulation2 <- function(i){
-  elec_sims <- jags_sims_mv$BUGSoutput$sims.list$theta[i,,1]
+prediction_per_simulation2 <- function(model_output, i){
+  elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
   vote_share_by_state <- data.frame(states, elec_sims)
 
   
@@ -319,22 +317,78 @@ prediction_per_simulation2 <- function(i){
 final_results <- c()
 
 for (i in 1:n_iter){
-  final_results[i] = prediction_per_simulation2(i)
+  final_results[i] = prediction_per_simulation2(jags_sims_mv, i)
 }
 
-hist(final_results)
+hist(final_results, main = "Presidential Election: Predicted Number of Electoral Votes to Biden", xlab = "Count")
 mean(final_results > 270)
-mean(final_results)
+mean_electoral <- mean(final_results)
+lower_q <- quantile(final_results, probs = c(0.025))
+upper_q <-  quantile(final_results, probs = c(0.975))
+
+#ETHAN CAN YOU FORMAT THESE
 
 ```
 
 ```{r}
-sims <- jags_sims_mv$BUGSoutput$sims.list$theta[,,1]
-colnames(sims) <- states
-sims %>% colMeans()
+elec_sims <- jags_sims_mv$BUGSoutput$sims.list$theta[1,,1]
+data.frame(states, elec_sims)
+```
+
+```{r}
+n_iter <- dim(jags_sims_mv$BUGSoutput$sims.list$theta[,,1])[1]
+
+predictions_per_state_presidential <- function(model_output, state){
+  win_dem <- c()
+  for (i in 1:n_iter){
+    
+    elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+    vote_share_for_state <- data.frame(states, elec_sims) %>%
+      filter(states == state)
+    vote_share_val <- vote_share_for_state$elec_sims
+    if (vote_share_val > 50){
+      win_dem[i] <- 1
+    }
+    if (vote_share_val < 50){
+      win_dem[i] <- 0
+    }
+  }
+  probability_voting_dem <- round(100*sum(win_dem)/n_iter, 3)
+  return(probability_voting_dem)
+}
+
+probs_voting_dem <- c()
+i = 1
+for (state in states){
+ # print(state)
+  prob_voting_dem <- predictions_per_state_presidential(jags_sims_mv, state)
+ # print(prob_voting_dem)
+  probs_voting_dem[i] <- prob_voting_dem
+  i = i + 1
+}
+
+prob_voting_dem_table <- data.frame(states, probs_voting_dem) %>%
+  mutate(State = states) %>%
+  mutate(Probability = probs_voting_dem/100) %>%
+  select(State, Probability)
+kable(prob_voting_dem_table, caption = "Presidential Election: Probability of Democratic Victory in each Swing State")
+
 ```
 
 
+```{r}
+mean_vote_share <- jags_sims_mv$BUGSoutput$sims.list$theta[,,1] %>% colMeans()
+lower_q <- jags_sims_mv$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.025))
+upper_q <- jags_sims_mv$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.975))
+
+vote_share_by_state <- data.frame(states, lower_q, mean_vote_share, upper_q) %>%
+  mutate(State = states) %>%
+  mutate(`2.5%` = round(lower_q, 1)) %>%
+  mutate(`97.5%` = round(upper_q, 1)) %>%
+  mutate(Mean = round(mean_vote_share, 1)) %>%
+  select(State, `2.5%`, Mean, `97.5%`)
+kable(vote_share_by_state, caption = "Presidential Elections: Predicted Democratic Vote Share in each Swing State")
+```
 
 # older stuff 
 
