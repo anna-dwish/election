@@ -96,6 +96,8 @@ pkgTest("ggplot2")
 pkgTest("R2jags")
 pkgTest("tidyverse")
 pkgTest("lubridate")
+pkgTest("matrixStats")
+
 
 ```
 
@@ -104,6 +106,9 @@ library(ggplot2)
 library(R2jags)
 library(tidyverse)
 library(lubridate)
+library(knitr)
+library(matrixStats)
+
 ```
 
 ```{r Read in Data}
@@ -293,6 +298,8 @@ if (file.exists("senate_gamma_5_1_prior.Rds")) {
 }
 ```
 
+
+
 ```{r}
 # this function finds the probability that the senate flips!
 #senate_gamma_5_1_prior <- readRDS("senate_gamma_2_2_prior.Rds")
@@ -319,15 +326,71 @@ mean(final_results_senate >= 9)
 mean(final_results_senate)
 final_results_senate %>% hist()
 
-<<<<<<< HEAD
--------------------------IGONRE---------------------------------
-Model WITH priors from last presidential election THIS SUCKS DON'T USE!
-=======
-#senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,14,1] %>% hist()
+
 ```
 
-Model WITH priors from last presidential election
->>>>>>> ae9115b8d7889974159f01ab92d48f5fc1dc20f3
+```{r}
+elec_sims <- senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[1,,1]
+vote_share_by_state <- data.frame(states_senate, elec_sims)
+```
+
+```{r}
+predictions_per_state_senate <- function(model_output, state){
+  win_dem <- c()
+  for (i in 1:n_iter){
+    
+    elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+    vote_share_for_state <- data.frame(states_senate, elec_sims) %>%
+      filter(states_senate == state)
+    vote_share_val <- vote_share_for_state$elec_sims
+    if (vote_share_val > 50){
+      win_dem[i] <- 1
+    }
+    if (vote_share_val < 50){
+      win_dem[i] <- 0
+    }
+  }
+  probability_voting_dem <- round(100*sum(win_dem)/n_iter, 3)
+  return(probability_voting_dem)
+}
+
+probs_voting_dem <- c()
+i = 1
+for (state in states_senate){
+ # print(state)
+  prob_voting_dem <- predictions_per_state_senate(senate_gamma_5_1_prior, state)
+ # print(prob_voting_dem)
+  probs_voting_dem[i] <- prob_voting_dem
+  i = i + 1
+}
+
+prob_voting_dem_table <- data.frame(states_senate, probs_voting_dem) %>%
+  mutate(State = states_senate) %>%
+  mutate(Probability = probs_voting_dem/100) %>%
+  select(State, Probability)
+kable(prob_voting_dem_table, caption = "Senate Elections: Probability of Democratic Victory in each Swing State")
+
+```
+
+
+
+```{r}
+mean_vote_share <- senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,,1] %>% colMeans()
+lower_q <- senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.025))
+upper_q <- senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.975))
+
+vote_share_by_state <- data.frame(states_senate, lower_q, mean_vote_share, upper_q) %>%
+  mutate(State = states_senate) %>%
+  mutate(`2.5%` = round(lower_q, 1)) %>%
+  mutate(`97.5%` = round(upper_q, 1)) %>%
+  mutate(Mean = round(mean_vote_share, 1)) %>%
+  select(State, `2.5%`, Mean, `97.5%`)
+kable(vote_share_by_state, caption = "Senate Elections: Predicted Democratic Vote Share in each Swing State")
+```
+
+
+
+IGNORE THIS
 
 
 ```{r}
