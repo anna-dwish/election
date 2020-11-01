@@ -153,17 +153,17 @@ senate_polls_cleaned$state %>% unique
 
 ```{r}
 democratic_candidates <- senate_polls_cleaned %>%
-  filter(candidate_party == "DEM") %>%
-  group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
-  summarize(total_dems_pct = sum(pct)) 
+  dplyr::filter(candidate_party == "DEM") %>%
+  dplyr::group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
+  dplyr::summarize(total_dems_pct = sum(pct)) 
 democratic_candidates 
 ```
 
 ```{r}
 republican_candidates <- senate_polls_cleaned %>%
-  filter(candidate_party == "REP") %>%
-  group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
-  summarize(total_rep_pct = sum(pct)) 
+  dplyr::filter(candidate_party == "REP") %>%
+  dplyr::group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
+  dplyr::summarize(total_rep_pct = sum(pct)) 
 republican_candidates
 ```
 
@@ -322,7 +322,6 @@ final_results_senate %>% hist()
 #senate_gamma_5_1_prior$BUGSoutput$sims.list$theta[,14,1] %>% hist()
 ```
 
-
 Model WITH priors from last presidential election
 
 
@@ -449,3 +448,73 @@ mean(final_results)
 jags_sims_mv_senate_adj_prior
 ```
 
+
+### Senate Visualizations 
+
+```{r warnings=F, message=F}
+h1 <- as.data.frame(senate_gamma_0.1_0.5_prior$BUGSoutput$sims.list$theta[,16,1:101]) %>%
+  mutate_all(as.character())
+#senate_gamma_0.1_0.5_prior$BUGSoutput$sims.list$theta[,16,1:10] # ten days before
+options(dplyr.summarise.inform = FALSE)
+
+h1 %>%
+  gather("variable", "value") %>%
+  mutate(variable = as.factor(variable) %>% as.numeric()) %>%
+  dplyr::group_by(variable) %>% 
+  #mutate(variable = as.factor(variable)) %>%
+  dplyr::summarize(median_val = median(value), 
+            lower = quantile(value, probs= 0.025),
+            high = quantile(value, probs= 0.975)) %>%
+  #dplyr::arrange(-row_number()) %>%
+  cbind(rownames(.)) %>%
+  mutate(diff = median_val - 50,
+         diff_val = case_when(
+           diff > 0 ~ "above",
+           diff < 0 ~ "below",
+           TRUE ~ "tie"
+         )) %>%
+  ggplot(mapping=aes(x=variable, y = diff, fill = diff_val)) +
+  geom_col(position = position_stack(reverse = TRUE)) + guides(fill = FALSE) +
+  labs(title = "US Senate Win Gap in North Carolina",
+       subtitle = "Percent Above 50%, using 2020 Polling Data",
+       caption = "The Democrat is predicted to win",
+       x = "# of Days Before Election",
+       y = "Percent Difference",
+       fill = "") +
+  scale_fill_manual( values = c("#000099", "#CC0000")) +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.25, hjust=0.25, size = 7)) +
+  scale_x_reverse()
+
+z1 <- as.data.frame(senate_gamma_0.1_0.5_prior$BUGSoutput$sims.list$theta[,5,1:101]) %>%
+  mutate_all(as.character())
+#senate_gamma_0.1_0.5_prior$BUGSoutput$sims.list$theta[,16,1:10] # ten days before
+options(dplyr.summarise.inform = FALSE)
+
+z1 %>%
+  gather("variable", "value") %>%
+  mutate(variable = as.factor(variable) %>% as.numeric()) %>%
+  dplyr::group_by(variable) %>% 
+  #mutate(variable = as.factor(variable)) %>%
+  dplyr::summarize(median_val = median(value), 
+            lower = quantile(value, probs= 0.025),
+            high = quantile(value, probs= 0.975)) %>%
+  #dplyr::arrange(-row_number()) %>%
+  cbind(rownames(.)) %>%
+  mutate(diff = median_val - 50,
+         diff_val = case_when(
+           diff > 0 ~ "above",
+           diff < 0 ~ "below",
+           TRUE ~ "tie"
+         )) %>%
+  ggplot(mapping=aes(x=variable, y = diff, fill = diff_val)) +
+  geom_col(position = position_stack(reverse = TRUE)) + guides(fill = FALSE) +
+  labs(title = "US Senate Win Gap in Georgia Special Election",
+       subtitle = "Percent Above 50%, using 2020 Polling Data",
+       caption = "The Republican is predicted to win",
+       x = "# of Days Before Election",
+       y = "Percent Difference",
+       fill = "YES") +
+  scale_fill_manual(values = c("#000099", "#CC0000")) +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.25, hjust=0.25, size = 7)) +
+  scale_x_reverse()
+```
