@@ -273,8 +273,8 @@ mean(final_results > 8)
 mean(final_results)
 ```
 
-
-Model WITH priors from last presidential election
+-------------------------IGONRE---------------------------------
+Model WITH priors from last presidential election THIS SUCKS DON'T USE!
 
 
 ```{r}
