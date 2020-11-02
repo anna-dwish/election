@@ -42,6 +42,12 @@ library(kableExtra)
 library(matrixStats)
 ```
 
+```{r}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
 ```{r Read in Presidential Polls Data}
 president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
   filter(population %in% c("lv","rv")) %>% 
@@ -69,28 +75,28 @@ president_polls <- president_polls %>%
 
 ```{r include=FALSE}
 #which states are not represented at all in polling data? none are swing, so we're good
-State_Abbrev <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
-                  "DE","FL","GA","HI","ID","IL","IN","IA","KS",
-                  "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
-                  "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
-                  "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+# State_Abbrev <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
+#                   "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+#                   "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+#                   "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+#                   "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
 
 ```
 
 ```{r include=FALSE}
-swing <- c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
-State_Abbrev[!(State_Abbrev %in% swing)]
+# swing <- c("AZ", "CO", "FL", "GA", "IA", "ME", "MI", "NC", "OH", "PA", "TX", "WI", "MN", "NV", "NH")
+# State_Abbrev[!(State_Abbrev %in% swing)]
 ```
 
-```{r}
+```{r votes going to Biden}
 #going to biden:
 biden <- c(55, 7, 3, 3, 4, 20, 10, 11, 14, 5, 29, 7, 4, 3, 13, 12)
 dem_states <- c("CA", "CT", "DC", "DE", "HI", "IL", "MD", "MA", "NJ", "NM", "NY", "OR", "RI", "VT", "VA", "WA")
 votes_going_to_biden <- sum(biden)
-votes_going_to_biden
+#votes_going_to_biden
 ```
 
-```{r data_list}
+```{r presidential data_list}
 states <- president_polls$state %>% unique
 y <- president_polls$pct
 r <- match(president_polls$state,states)
@@ -101,7 +107,7 @@ N_days <- t %>% max
 I_states <- diag(N_states)
 ```
 
-```{r}
+```{r clinton vote share priors}
 #"AZ", "CO", "FL", "GA", "IA", "ME", "MI","MN","NC", "NV", "NH", "OH", "PA", "TX", "WI"
 vote_share_2016 <- data.frame(president_polls$state, number = r)
 vote_share_2016 <- unique(vote_share_2016) %>%
@@ -163,7 +169,7 @@ generate_presidential_model_text = function(hierarchical_priors) {
 ```
 
 
-```{r}
+```{r final presidential model}
 # final model 
 gamma_2_0.5_prior <- "
   nu_y ~ dunif(0,100)
@@ -191,7 +197,7 @@ if (file.exists("gamma_2_0.5.Rds")) {
 }
 ```
 
-```{r}
+```{r final presidential model electoral votes function}
 iterations = presidential_model_gamma_2_0.5_prior$BUGSoutput$n.keep * presidential_model_gamma_2_0.5_prior$BUGSoutput$n.chains 
 
 electoral_data <- read.csv("Electoral_College.csv") %>%
@@ -220,26 +226,29 @@ prediction_per_simulation <- function(model_output, i){
   #add in the number of guaranteed votes from other states!
   biden_votes = votes_going_to_biden + biden_electoral_votes
   return(biden_votes)
-  
 }
 ```
 
-```{r}
-final_results <- c()
+```{r final presidential model electoral votes histogram}
+final_results_presidential <- c()
 
 for (i in 1:iterations){
-  final_results[i] = prediction_per_simulation(presidential_model_gamma_2_0.5_prior, i)
+  final_results_presidential[i] = prediction_per_simulation(presidential_model_gamma_2_0.5_prior, i)
 }
 
 
-hist(final_results, main = "Presidential Election: Predicted Number of Electoral Votes to Biden", xlab = "Count")
-prob_of_biden_winning <- mean(final_results > 270)
-mean_electoral <- mean(final_results)
-lower_q <- quantile(final_results, probs = c(0.025))
-upper_q <-  quantile(final_results, probs = c(0.975))
+#hist(final_results, main = "Presidential Election: Predicted Number of Electoral Votes to Biden", xlab = "Count")
+
+prob_of_biden_winning <- mean(final_results_presidential > 270) * 100
+lower_q_prob_of_biden_winning  <- quantile(final_results_presidential > 270, probs = c(0.025))
+upper_q_prob_of_biden_winning  <-  quantile(final_results_presidential > 270, probs = c(0.975))
+mean_electoral <- mean(final_results_presidential)
+lower_q_presidential_electoral_college <- quantile(final_results_presidential, probs = c(0.025))
+upper_q_presidential_electoral_college <-  quantile(final_results_presidential, probs = c(0.975))
+
 ```
 
-```{r}
+```{r Probability of Democratic Victory in each Swing State, cache=TRUE}
 predictions_per_state_presidential <- function(model_output, state){
   win_dem <- c()
   for (i in 1:iterations){
@@ -275,15 +284,15 @@ kable(prob_voting_dem_table, caption = "Presidential Election: Probability of De
 
 ```
 
-```{r}
+```{r Predicted Democratic Vote Share in each Swing State}
 mean_vote_share <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,,1] %>% colMeans()
-lower_q <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.025))
-upper_q <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.975))
+lower_q_presidential <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.025))
+upper_q_presidential <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,,1] %>%  matrixStats::colQuantiles(probs = c(0.975))
 
-vote_share_by_state <- data.frame(states, lower_q, mean_vote_share, upper_q) %>%
+vote_share_by_state <- data.frame(states, lower_q_presidential, mean_vote_share, upper_q_presidential) %>%
   mutate(State = states) %>%
-  mutate(`2.5%` = round(lower_q, 1)) %>%
-  mutate(`97.5%` = round(upper_q, 1)) %>%
+  mutate(`2.5%` = round(lower_q_presidential, 1)) %>%
+  mutate(`97.5%` = round(upper_q_presidential, 1)) %>%
   mutate(Mean = round(mean_vote_share, 1)) %>%
   select(State, `2.5%`, Mean, `97.5%`)
 kable(vote_share_by_state, caption = "Presidential Elections: Predicted Democratic Vote Share in each Swing State")
@@ -305,7 +314,7 @@ ggplot() +
 #   facet_grid(param~., scales = "free_y")
 ```
 
-```{r}
+```{r presidential model sensitivity 1}
 gamma_4_1_prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
@@ -355,7 +364,7 @@ if (file.exists("gamma_4_1.Rds")) {
 
 ```
 
-```{r}
+```{r presidential model sensitivity 2}
 exp_0.25_prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
@@ -406,7 +415,7 @@ if (file.exists("exp_0_25.Rds")) {
 
 ```
 
-```{r}
+```{r presidential model sensitivity 3}
 gamma_1_0.25_prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
@@ -456,7 +465,7 @@ if (file.exists("gamma_1_025.Rds")) {
 #   facet_grid(param~., scales = "free_y")
 ```
 
-```{r}
+```{r presidential model sensitivity plots, cache=TRUE, eval=FALSE}
 sen_analysis_priors_names <- c("Ga(2, 0.5))",
                                "Ga(4, 1)",
                                "Ga(1, 0.25)",
@@ -471,7 +480,7 @@ for (i in 1:4) {
   sen_tbl_list[[i]] <- tidybayes::gather_draws(sen_analysis_priors[[i]] %>% coda::as.mcmc(), theta[i, j]) %>% 
     filter(i == 1 & j == 1)
 }
-do.call(bind_rows, sen_tbl_list) %>% 
+sensitivity_plot_presidential <- do.call(bind_rows, sen_tbl_list) %>% 
   dplyr::mutate(model = rep(sen_analysis_priors_names, each=2000),
                 model = factor(model,
                                levels = sen_analysis_priors_names,
@@ -485,6 +494,62 @@ do.call(bind_rows, sen_tbl_list) %>%
   geom_vline(xintercept = theta_1_1_mean) +  
   facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
 ```
+
+# Introduction
+
+The 2020 U.S. elections, coupled with the unique social and economic turmoil corroborated by COVID-19, is documented to have globally political implications [[1]][Bibliography],[[2]][Bibliography]. Researchers have thus used prediction models to determine election outcomes. But often, with the unique voting patterns of certain demographics, making conclusive results requires additional focus on who votes and where. Therefore, in an attempt to predict the US presidential, senate-majority, electoral college, NC congressional, and NC senate election outcomes, our study explores the voting patterns of certain demographics and the characterization of uncertainty in our predicted results. In addition to determining the likely voters, when modeling how certain demographics vote, our findings illuminate the groups in a swing state like North Carolina that are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups that are seeking to bolster support and foster more politically minded communities. 
+
+# Presidential Election
+
+## Data
+
+## Methods
+
+To model the outcome of the presidential election, we used an extension of the Linzer model, which takes a dynamic Bayesian approach to forecasting election results [[3]][Bibliography]. Our motivation for selecting this model is its ability to incorporate polling information over time and account for evolving preferences. While the Linzer model incorrectly predicted the results of the 2016 presidential election due to polling information inaccuracies, we hope to balance this reliance on the polling information by adjusting our priors to rely more heavily on the 2016 election [[5]][Bibliography]. By June 9th, Biden had enough delegates to secure his nomination as the Democratic candidate, so we only included polls whose start date was after June 1st. These data were used to predict the outcomes of 15 swing states: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, Minnesota,  New Hampshire, Nevada, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin [[4]][Bibliography], with a hierarchical prior on our model parameters. Further, our final model estimates the correlation structure between states, so more similar states pull information from one another.
+
+$$
+\begin{aligned}
+Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
+\theta_{i 1} \sim N(h_i, \sigma^2_0) , \ \mathbf{\theta_{\mathbf{ \cdot} t}} \sim MVN&(\mathbf{\theta_{\mathbf{\cdot} t-1}},\mathbf{\Sigma}) \\ 
+\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16&) &  (1) \\
+\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim & \ Ga(2, 0.5)\\
+\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
+\end{aligned}
+$$
+
+Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Hilary Clinton’s 2016 vote share from swing state $i$, with variance $\sigma^2_0$. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$
+
+Using JAGS, we ran Model 1 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
+
+1. Extract the 15 values of  $\theta_{\cdot 1}$, Biden’s estimated vote share on the day of the election from each swing state $i \in (1 \dots 15)$.
+
+2. For each $\theta_{i 1}$ value, if it is greater than 50%, record the number of electoral votes from swing state $i$.
+
+Based on [SOURCE], Biden is expected to safely win 200 electoral votes from __ states. The sum of the 200 expected electoral votes with the predicted electoral votes from the 15 swing states indicates the total number of estimated electoral votes he would win. If the number of estimated electoral votes is greater than 270, we predict that Biden wins the electoral college vote. Thus, from this model, we are able to predict the electoral college vote and the outcome of the presidential election.
+
+## Results
+
+Our model predicts that Biden will win `r mean_electoral` (`r lower_q_presidential_electoral_college`, `r upper_q_presidential_electoral_college`) electoral college votes. Additionally, the model estimates that in `r round(prob_of_biden_winning*100, 4)`% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win with probability `r round(prob_of_biden_winning*100)`. 
+
+### Model Diagnostics
+
+Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. RHAT values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the RHAT value to 1, the better the model has converged. The traceplots show the chains have mixed well and RHAT values close to 1, indicating that our model has sufficiently converged. 
+
+### Sensitivity Analysis
+
+```{r}
+sensitivity_plot_presidential
+``` 
+
+In Figure XXXX,  We explore the posterior distributions of  $\theta_{1 1}$  and $\theta_{51}$, which are the posterior parameters that indicate Biden’s predicted two-party vote share on the day of the election in North Carolina  and Pennsylvania, resulting from various priors. The red lines indicate our posterior mean estimate from our final model. The posterior distributions are roughly the same for the four different priors on  $\frac{1}{\sigma^2_0}$. Thus, we can verify our results are not as sensitive to prior choice [[6]][Bibliography].
+
+
+### External Validation
+
+We perform validation on this model by predicting the winner of the 2012 presidential election and the electoral college vote. In this model, we predict the outcomes from 9 swing states [ https://www.politico.com/2012-election/swing-state/,  maybe list the swing states] We used the same priors from the previous presidential model, with the exception of the normal priors on $\theta_{\cdot 1}$. This time, we centered on President Obama’s  2008  vote share from swing state $i in (1 \dots 9)$.  
+
+We applied the same prediction method to estimate the election outcome and the electoral college vote from 2012. Based on https://www.politico.com/2012-election/swing-state/, Obama  gained 237 electoral votes from ____ states. This was  summed up with the total number of electoral votes he was predicted to win from  the 9 swing states.  Similarly, if Obama gained more than 270 electoral votes, that meant that the model predicts he would win the 2012 election (which he did :)). 
+
 
 ## Predicting 2012 Elections Using this Model 
 
@@ -604,6 +669,12 @@ mean(final_results2012)
 final_results2012 %>% quantile()
 ```
 
+
+```{r}
+knitr::opts_chunk$set(eval = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+```
 # US Senate Election
 
 ```{r Read in Data}
@@ -914,7 +985,7 @@ final_results_senate %>% hist()
 ```
 
 
-```{r}
+```{r cache=TRUE, include=FALSE}
 senate_sen_analysis_priors_names <- c("Ga(2, 0.5))",
                                       "Ga(4, 1)",
                                       "Ga(1, 0.25)",
@@ -943,58 +1014,6 @@ do.call(bind_rows, senate_sen_tbl_list) %>%
   geom_vline(xintercept = senate_theta_1_1_mean) +  
   facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
 ```
-
-# Introduction
-
-The 2020 U.S. elections, coupled with the unique social and economic turmoil corroborated by COVID-19, is documented to have globally political implications [[1]][Bibliography],[[2]][Bibliography]. Researchers have thus used prediction models to determine election outcomes. But often, with the unique voting patterns of certain demographics, making conclusive results requires additional focus on who votes and where. Therefore, in an attempt to predict the US presidential, senate-majority, electoral college, NC congressional, and NC senate election outcomes, our study explores the voting patterns of certain demographics and the characterization of uncertainty in our predicted results. In addition to determining the likely voters, when modeling how certain demographics vote, our findings illuminate the groups in a swing state like North Carolina that are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups that are seeking to bolster support and foster more politically minded communities. 
-
-# Presidential Election
-
-## Data
-
-## Methods
-
-To model the outcome of the presidential election, we used an extension of the Linzer model, which takes a dynamic Bayesian approach to forecasting election results [[3]][Bibliography]. Our motivation for selecting this model is its ability to compound polling information over time and account for evolving preferences. While the Linzer model incorrectly predicted the results of the 2016 presidential election due to polling information inaccuracies, we hope to balance this reliance on the polling information by adjusting our priors to rely mo  re heavily on the 2016 election [[5]][Bibliography]. By June 9th, Biden had enough delegates to secure his nomination as the Democratic candidate, so we only included polls whose start date was after June 1st. These data were used to predict the outcomes of 15 swing states: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, Minnesota,  New Hampshire, Nevada, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin [[4]][Bibliography], with a hierarchical prior on our model parameters. Further, our final model estimates the correlation structure between states, so more similar states pull information from one another.
-
-$$
-\begin{aligned}
-Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
-\theta_{i 1} \sim N(h_i, \sigma^2_0) , \ \mathbf{\theta_{\mathbf{ \cdot} t}} \sim MVN&(\mathbf{\theta_{\mathbf{\cdot} t-1}},\mathbf{\Sigma}) \\ 
-\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16&) &  (1) \\
-\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim & \ Ga(2, 0.5)\\
-\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
-\end{aligned}
-$$
-
-Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Hilary Clinton’s 2016 vote share from swing state $i$, with variance $\sigma^2_0$. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$
-
-Using JAGS, we ran Model 1 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
-
-Extract the 15 values of  $\theta_{\cdot 1}$, Biden’s estimated vote share on the day of the election from each swing state $i \in (1 \dots 15)$.
-Initialize a variable, swing_electoral_votes, to 0. (electoral_votes = 0)
-For each $\theta_{i 1}$ value
-If it is greater than 50%, record the number of electoral votes from swing state $i$. add the number of electoral votes from that state to swing_electoral_votes.
-Otherwise, don’t add to swing_electoral_votes.
-
-Based on [SOURCE], Biden is expected to safely win 200 electoral votes from __ states. The sum of his expected electoral votes with the predicted electoral votes from the 15 swing states indicates the total number of estimated electoral votes he would win. Now, let electoral votes = 200 + swing_electoral_votes. These 200 votes come from states that Biden will safely win, as noted by several political experts (citation). Thus, electoral_votes represents the predicted number of electoral votes going to Joe Biden in the sample. If the number of estimated electoral votes is greater than 270, we predict that Biden wins the electoral college vote. Thus, from this model, we are able to predict the electoral college vote and the outcome of the presidential election.
-
-## Results
-
-From the algorithm above, we obtain, for each sample, the predicted number of electoral votes going to Biden. Computing the mean, 2.5% quantile, and 95% quantile of the predicted electoral votes across the 2000 samples, we see that Biden is predicted to win ____ (mean) electoral votes with a 95% confidence interval of (lower, upper). We further find that in __% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win with ___% probability. 
-
-### Model Diagnostics
-
-Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. $R_hat$ values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the 𝑅̂ value to 1, the better the model has converged. The traceplots show the chains have mixed well and $R_hat$ values close to 1, indicating that our model has sufficiently converged. 
-
-### Sensitivity Analysis
-
-In Figure XXXX,  We explore the posterior distributions of  $\theta_{1 1}$  and $\theta_{51}$, which are the posterior parameters that indicate Biden’s predicted two-party vote share on the day of the election in North Carolina  and Pennsylvania, resulting from various priors. The red lines indicate our posterior mean estimate from our final model. The posterior distributions are roughly the same for the four different priors on  $\frac{1}{\sigma^2_0}$. Thus, we can verify our results are not as sensitive to prior choice [[6]][Bibliography].
-
-### External Validation
-
-We perform validation on this model by predicting the winner of the 2012 presidential election and the electoral college vote. In this model, we predict the outcomes from 9 swing states [ https://www.politico.com/2012-election/swing-state/,  maybe list the swing states] We used the same priors from the previous presidential model, with the exception of the normal priors on $\theta_{\cdot 1}$. This time, we centered on President Obama’s  2008  vote share from swing state $i in (1 \dots 9)$.  
-
-We applied the same prediction method to estimate the election outcome and the electoral college vote from 2012. Based on https://www.politico.com/2012-election/swing-state/, Obama  gained 237 electoral votes from ____ states. This was  summed up with the total number of electoral votes he was predicted to win from  the 9 swing states.  Similarly, if Obama gained more than 270 electoral votes, that meant that the model predicts he would win the 2012 election (which he did :)). 
 
 ## Discussion
 
