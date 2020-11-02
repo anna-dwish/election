@@ -6,7 +6,6 @@ output: html_document
 https://www.pewresearch.org/politics/2020/10/21/large-shares-of-voters-plan-to-vote-a-straight-party-ticket-for-president-senate-and-house/ => resource to justify using the presidential predictions for congressional elections!
 
 
-
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(dplyr)
@@ -23,7 +22,7 @@ last_day_to_register <- as.Date("11/08/2016", format= "%m/%d/%Y")
 nc_registered_voters <- readr::read_rds("ncvoter_Statewide_small_2016.rds")  # nc registered voters
 
 nc_registered_voters <- nc_registered_voters %>% 
-  filter(voter_status_reason_desc != "DECEASED") %>%
+  filter(voter_status_reason_desc != "DECEASED") %>% 
   mutate(voter_reg_num = as.integer(substr(voter_reg_num,6,12)))
 
 nc_registered_voters$registr_dt <- as.character(nc_registered_voters$registr_dt)
@@ -39,7 +38,6 @@ nc_voters <- read.csv("ncvhis_Statewide_small_2016.csv") # voters in year
 voter_data <- left_join(nc_registered_voters,nc_voters %>% filter(voted_party_desc != ""),by=c("voter_reg_num", "county_id", "county_desc")) %>%
   filter(!is.na(voted_party_desc))
 ```
-
 
 
 ```{r setup, include=FALSE}
@@ -74,23 +72,23 @@ voter_data <- voter_data %>%
          
   )
 
-grouped_voter_only_data <- voter_data %>%
+grouped_voter_data <- voter_data %>%
   dplyr::group_by(county_desc, cong_dist_abbrv, race_ethnicity, party_cd,
                   age_bin, gender_code) %>%
   dplyr::summarize(Democrat = sum(voted_party_cd=="DEM"),
                    Republican = sum(voted_party_cd=="REP"),
                    total = n())
 
-grouped_voter_only_data <- grouped_voter_only_data  %>% dplyr::rename(gender = gender_code)
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(party_cd != "CST")
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(party_cd != "GRE")
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(party_cd != "LIB")
+grouped_voter_data <- grouped_voter_data  %>% dplyr::rename(gender = gender_code)
+grouped_voter_data <- grouped_voter_data %>% filter(party_cd != "CST")
+grouped_voter_data <- grouped_voter_data %>% filter(party_cd != "GRE")
+grouped_voter_data <- grouped_voter_data %>% filter(party_cd != "LIB")
 
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(gender != "U")
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Undetermined")
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(!is.na(gender))
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Non-Hispanic Other")
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Non-Hispanic Pacific Islander")
+grouped_voter_data <- grouped_voter_data %>% filter(gender != "U")
+grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Undetermined")
+grouped_voter_data <- grouped_voter_data %>% filter(!is.na(gender))
+grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Non-Hispanic Other")
+grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Non-Hispanic Pacific Islander")
 ```
 
 
@@ -114,7 +112,7 @@ district13 <-c("CASWELL", "PERSON", "ALAMANCE", "CHATHAM", "LEE", "RANDOLPH", "D
 
 multiple <- c("RUTHERFORD", "FORSYTH", "MECKLENBURG", "MOORE", "CHATHAM", "LEE", "WAKE", "HARNETT", "PITT")
 
-grouped_voter_only_data <- grouped_voter_only_data %>% mutate(cong_dist_abbrv = case_when(
+grouped_voter_data <- grouped_voter_data %>% mutate(cong_dist_abbrv = case_when(
     !(county_desc %in% multiple) & county_desc %in% district1 ~ as.integer(1),
     !(county_desc %in% multiple) & county_desc %in% district2 ~ as.integer(2),
     !(county_desc %in% multiple) & county_desc %in% district3 ~ as.integer(3),
@@ -131,19 +129,19 @@ grouped_voter_only_data <- grouped_voter_only_data %>% mutate(cong_dist_abbrv = 
     TRUE ~ cong_dist_abbrv
   ))
 
-t <- grouped_voter_only_data
-grouped_voter_only_data <- t
+t <- grouped_voter_data
+grouped_voter_data <- t
 for (m in multiple){
-  for (a in unique(grouped_voter_only_data$age_bin)){
-    for (r in unique(grouped_voter_only_data$race_ethnicity)){
-      for (p in unique(grouped_voter_only_data$party_cd)){
-        for (g in unique(grouped_voter_only_data$gender))
+  for (a in unique(grouped_voter_data$age_bin)){
+    for (r in unique(grouped_voter_data$race_ethnicity)){
+      for (p in unique(grouped_voter_data$party_cd)){
+        for (g in unique(grouped_voter_data$gender))
           {
-            curr = grouped_voter_only_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & is.na(cong_dist_abbrv))
+            curr = grouped_voter_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & is.na(cong_dist_abbrv))
             if (nrow(curr) == 0){
               next
             }
-            curr.dist = grouped_voter_only_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & !is.na(cong_dist_abbrv))
+            curr.dist = grouped_voter_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & !is.na(cong_dist_abbrv))
             if (nrow(curr.dist) == 0){
               next
             }
@@ -160,7 +158,7 @@ for (m in multiple){
             print(first.county)
             second.county <- max(unique(curr.dist$cong_dist_abbrv))
             
-            grouped_voter_only_data <- grouped_voter_only_data  %>% 
+            grouped_voter_data <- grouped_voter_data  %>% 
               mutate(Democrat= case_when(
                 county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == first.county ~ Democrat + add.to.first.dem,
                 county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == second.county ~ Democrat + all.dem - add.to.first.dem,
@@ -182,14 +180,14 @@ for (m in multiple){
 
   }
   print(m)
-  print(nrow(grouped_voter_only_data))
+  print(nrow(grouped_voter_data))
 
 }
 ```
 
 
 ```{r setup, include=FALSE}
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(!is.na(cong_dist_abbrv))
+grouped_voter_only_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv))
 ```
 
 
@@ -197,212 +195,64 @@ grouped_voter_only_data <- grouped_voter_only_data %>% filter(!is.na(cong_dist_a
 
 ```{r setup, include=FALSE}
 grouped_voter_only_data %>% write_csv("grouped_voter_only_data_2016.csv")
-```
-
-
-# EDA
-
-```{r}
-grouped_voter_only_data <- read_csv("grouped_voter_only_data_2016.csv")
+voter_data %>% filter(is.na(cong_dist_abbrv))
 ```
 
 
 ```{r}
-grouped_voter_only_data  <- grouped_voter_only_data %>% filter(!is.na(gender))
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Non-Hispanic Other")
+read_csv("grouped_voter_only_data_2016.csv")
 ```
 
 ```{r}
-grouped_voter_only_data <-grouped_voter_only_data %>% ungroup()
-```
-
-
-```{r}
-# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
-grouped_voter_only_data %>% 
-  filter(gender %in% c("F", "M")) %>%
-  mutate(sums = Democrat + Republican) %>%
-  mutate(race_ethnicity = case_when(
-    race_ethnicity == "Hispanic Any Race" ~  paste0("Hispanic Any Race (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Hispanic Any Race") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic American Indian" ~  paste0("Non-Hispanic American Indian (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Non-Hispanic American Indian") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Non-Hispanic Asian") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican)  %>%
-                                                     filter(race_ethnicity == "Non-Hispanic Black") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican)  %>%
-                                                     filter(race_ethnicity == "Non-Hispanic Mixed") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican)  %>%
-                                                     filter(race_ethnicity == "Non-Hispanic White") %>%
-                                                     summarise(sum(sums)),
-                                                   ")")
-  )) %>%
-  dplyr::select(race_ethnicity, age_bin, gender, Democrat, Republican) %>%
-  dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
-  dplyr::summarize(Democrat = sum(Democrat), 
-                   Republican = sum(Republican), 
-                   proportion = Democrat/(Democrat+Republican)) %>% ungroup()%>% 
-  ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
-  geom_bar(stat = "identity", position = "dodge") + 
-  facet_wrap(~race_ethnicity, nrow = 2) + 
-  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
-            position = position_dodge(width = 1),  
-            colour="Black", 
-            size = 2.2) + 
-  labs(x = expression("Age Group"), 
-       y= ("Proportion of Democratic Voters"), 
-       title = "Democratic Voters Across Age Groups, Race/Ethnicity, and Sex", 
-       caption="Figure 1a") +
-  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
-  guides(fill=guide_legend(title="Sex"))
-```
-
-```{r EDA party, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
-grouped_voter_only_data %>% 
-  mutate(sums = Democrat + Republican) %>%
-  mutate(race_ethnicity = case_when(
-    race_ethnicity == "Hispanic Any Race" ~ paste0("Hispanic Any Race (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Hispanic Any Race") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic American Indian" ~ paste0("Non-Hispanic American Indian (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Non-Hispanic American Indian") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Non-Hispanic Asian") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Non-Hispanic Black") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Non-Hispanic Mixed") %>%
-                                                     summarise(sum(sums)),
-                                                   ")"),
-    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
-                                                   grouped_voter_only_data %>%
-                                                     mutate(sums = Democrat + Republican) %>%
-                                                     filter(race_ethnicity == "Non-Hispanic White") %>%
-                                                     summarise(sum(sums)),
-                                                   ")")
-  )) %>%
-  dplyr::select(race_ethnicity, age_bin, party_cd,Democrat,Republican) %>%
-  dplyr::group_by(race_ethnicity, age_bin, party_cd) %>% 
-  dplyr::summarize(Democrat = sum(Democrat), 
-                   Republican = sum(Republican), 
-                   proportion = Democrat/(Democrat + Republican)) %>% ungroup() %>% 
-  ggplot(aes(x = age_bin, y = proportion, fill = party_cd)) + 
-  geom_bar(stat = "identity", position = "dodge") + 
-  facet_wrap(~race_ethnicity, nrow = 2) + 
-  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
-            position = position_dodge(width = 1),  
-            colour="Black", 
-            size = 2.2) + 
-  labs(x = expression("Age Group"), 
-       y= ("Proportion of Democratic Voters"), 
-       title = "Democratic Voters Across Age Groups, Race/Ethnicity, and Party Affiliation", 
-       caption="Figure 1b") +
-  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
-  guides(fill=guide_legend(title="Party"))
-```
-
-```{r EDA gender, fig.width=9, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
-edap1c <- who_votes_data %>% 
-  mutate(sums = Likely + Unlikely) %>%
-  dplyr::select(gender, age_bin, party_cd,Likely,Unlikely) %>%
-  dplyr::group_by(gender, age_bin, party_cd) %>% 
-  dplyr::summarize(Likely = sum(Likely), 
-                   Unlikely = sum(Unlikely), 
-                   proportion = Likely/(Likely+Unlikely)) %>% ungroup() %>% 
-  ggplot(aes(x = age_bin, y = proportion, fill = party_cd)) + 
-  geom_bar(stat = "identity", position = "dodge") + 
-  facet_wrap(~gender, nrow = 1) + 
-  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
-            position = position_dodge(width = 1),  
-            colour="Black", 
-            size = 2.2) + 
-  labs(x = expression("Age Group"), 
-       y= ("Proportion of Likely Voters"), 
-       title = "Likely Voters Across Age Groups, Gender, and Party Affiliation", 
-       caption="Figure 1c") +
-  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
-  guides(fill=guide_legend(title="Party"))
-```
-
-
-```{r EDA county map, fig.width=5.5, fig.height=2.5,fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-# http://www.peterhaschke.com/r/2013/12/05/NCmaps.html
-map <- map_data("county")
-nc <- subset(map, region =="north carolina")
-nc$subregion <- toupper(nc$subregion)
-nc <- nc %>% dplyr::rename(county_desc=subregion)
-dem.by.county <- grouped_voter_only_data %>% dplyr::select(everything()) %>%
-  dplyr::group_by(county_desc) %>% 
-  dplyr::summarise(Democrat=sum(Democrat),
-                   Republican=sum(Republican),
-                   Prop=sum(Democrat)/(sum(Democrat) + sum(Republican)))
-mapdata <- merge(nc, dem.by.county, by = "county_desc")
-# fix gray background, make lines darker, find a better color than purple, make borders lighter color
-ggplot(data=mapdata) + 
-  labs(caption="Figure 2a") +
-  geom_polygon(aes(x=long, y=lat, group = group, fill = Prop),colour = "#202020", size=.8) +
-  scale_fill_gradient2(high="#454545", low="#b1b1b1", "% Democratic Voters") +
-  theme(legend.title = element_text(size = 10), axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank(),
-    panel.grid = element_blank(), legend.position=c(.2,.2), plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12), 
-    legend.key.width = unit(1.7,"line"), legend.key.height = unit(.8,"line")) +
-  guides(fill = guide_colorbar(title.position = "top", direction = "horizontal"), shape = guide_legend(override.aes = list(size = 0.5))) 
-
-```
-
-
-# Model
-
-```{r}
-grouped_voter_only_data <- grouped_voter_only_data %>% filter(gender %in% c("M", "F"))
+#??? why can't it split into folds
+fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
 ```
 
 
 ```{r}
-# cross validation for model!
-set.seed(1540825)
-fold_df <- groupdata2::fold(grouped_voter_only_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "cong_dist_abbrv", "party_cd")) %>%
+smp_size <- floor(0.75 * nrow(grouped_voter_data))
+
+## set the seed to make your partition reproducible
+set.seed(123)
+train_ind <- sample
+(seq_len(nrow(grouped_voter_data)), size = smp_size)
+
+train <- grouped_voter_data[train_ind, ]
+test <- grouped_voter_data[-train_ind, ]
+```
+
+
+```{r}
+glmer.fit.congressional <- glmer(cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|county_desc) + (1|cong_dist_abbrv),
+                         data = train,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+```
+
+```{r}
+test <- test %>%
+  mutate(vote = ifelse(Democrat/(Democrat+Republican) > 0.5, 1, 0),
+                vote = ifelse(is.nan(Democrat/(Democrat+Republican)), 0, vote),
+                vote = dplyr::case_when(
+                  Democrat == 0 & Republican == 0 ~ 0,
+                  TRUE ~ vote
+                ))
+
+```
+
+```{r}
+glmer.probs <- predict(glmer.fit.congressional,  test,  type = "response")
+glmer.pred <- rep(0, nrow(test))
+glmer.pred[glmer.probs > 0.5] <- 1
+  
+acc <-  mean(glmer.pred == test$vote)
+f1 <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
+```
+
+
+```{r cross validation, warning=FALSE, message=F, cache=TRUE}
+set.seed(5934512)
+fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
   dplyr::mutate(vote = ifelse(Democrat/(Democrat+Republican) > 0.5, 1, 0),
                 vote = ifelse(is.nan(Democrat/(Democrat+Republican)), 0, vote),
                 vote = dplyr::case_when(
@@ -410,27 +260,36 @@ fold_df <- groupdata2::fold(grouped_voter_only_data, k = 5, cat_col = c("age_bin
                   TRUE ~ vote
                 ))
 
-cross_validation <- function(model_formula, grouped_voter_only_data){
+round_perc = function(x) {
+  if (is.double(x)) {
+    round(x*100, digits = 2)
+  }
+}
+
+create_model <- function(model_formula, grouped_voter_data, perform_cv=TRUE){
+  model_results = list()
+  results_idx = 1
   
-  acc_list = c()
-  f1_list = c()
-  AUC_list = c()
-  for (i in 1:5) {
-    print(i)
-    train <- grouped_voter_only_data %>% filter(.folds != i)
-    test <- grouped_voter_only_data %>% filter(.folds == i)
+  # STEP 1: CROSS VALIDATION
+  if (perform_cv){
+    acc_list = c()
+    f1_list = c()
+    AUC_list = c()
+    for (i in 1:5) {
+      train <- grouped_voter_data %>% filter(.folds != i)
+      test <- grouped_voter_data %>% filter(.folds == i)
   
-    glmer.fit <- glmer(model_formula,
+      glmer.fit <- glmer(model_formula,
                      data = train,
                      family = binomial,
                      control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
   
-    glmer.probs <- predict(glmer.fit,  test,  type = "response")
-    glmer.pred <- rep(0, nrow(test))
-    glmer.pred[glmer.probs > 0.5] <- 1
+      glmer.probs <- predict(glmer.fit,  test,  type = "response")
+      glmer.pred <- rep(0, nrow(test))
+      glmer.pred[glmer.probs > 0.5] <- 1
   
-    acc_list[i] <-  mean(glmer.pred == test$vote)
-    f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
+      acc_list[i] <-  mean(glmer.pred == test$vote)
+      f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
       AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
     }
     
@@ -446,6 +305,7 @@ cross_validation <- function(model_formula, grouped_voter_only_data){
       F1 = paste(f1_mean, "±", f1_sd),
       AUC = paste(AUC_mean, "±", AUC_sd))
     
+<<<<<<< HEAD
   return(cv_df)
 }
 ```
@@ -554,8 +414,33 @@ for (district in districts){
   print(district)
   simulated_district_shares <- vote_shares_by_district(district)
   df[, i] <- simulated_district_shares
+
+    model_results[[results_idx]] = cv_df
+    results_idx = results_idx + 1
+  }
+
+  # STEP 2: FIT FULL MODEL WITH ALL DATA
+  glmer.fit.final <- glmer(model_formula,
+                         data = grouped_voter_data,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  model_results[[results_idx]] = glmer.fit.final
+  results_idx = results_idx + 1
   
-  i = i + 1
+  # results <- data.frame(VarCorr(glmer.fit.final))
+  # final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
+  
+  # STEP 3: CREATE FORMATTED DATAFRAME WITH MODEL RESULTS
+  final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
+                                       Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
+                                       P.Value=summary(glmer.fit.final)$coefficients[, 4])
+  model_results[[results_idx]] = final.model.fixed.results
+  return(model_results)
 }
 ```
 
+
+```{r cross validation, warning=FALSE, message=F, cache=TRUE}
+model.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|county_desc) + (1|cong_dist_abbrv)"
+create_model(model.text, grouped_voter_data)
+```

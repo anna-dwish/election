@@ -83,13 +83,15 @@ Our study will use publicly available voter and registration data in order to de
 
 The North Carolina voter history dataset shows how each registered voter, uniquely identified by a voter registration number, voted in elections over the last 10 years. As not all voters participate in all elections, we designated only those who voted in 2016 as “likely” voters for the 2020 election. This decision was made due to the similarities between the 2016 and 2020 presidential election years, such as the incumbent candidate and a hyper-polarized political environment [[2]][Bibliography]. We elected to omit voter information from the 2018 midterm election as turnout for midterm elections is typically not comparable to that of the presidential [[3]][Bibliography]. 
 
-The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their unique voter registration number, county of residence, race, ethnicity, gender, age, and party affiliation. In this dataset, race could take on one of the following categories: Asian, Black or African American, American Indian or Alaska Native, Two or more races, Other, Native Hawaiian or Pacific Islander, Undesignated, and White. Ethnicity was one of the following: Hispanic or Latino, Not Hispanic or Not Latino, and Undesignated. Gender belonged to one of: Male, Female, and Undetermined. Finally, party affiliation included Democrat, Republican, Unaffiliated, Libertarian, Green, and Constitution.
+The North Carolina voter registration dataset contains all legally available voter specific information for eligible voters in the state. Individuals for whom the most recent last voted date was greater than ten years were not included in the dataset. Information provided for each voter includes their unique voter registration number, county and district of residence, race, ethnicity, gender, age, and party affiliation. In this dataset, race could take on one of the following categories: Asian, Black or African American, American Indian or Alaska Native, Two or more races, Other, Native Hawaiian or Pacific Islander, Undesignated, and White. Ethnicity was one of the following: Hispanic or Latino, Not Hispanic or Not Latino, and Undesignated. Gender belonged to one of: Male, Female, and Undetermined. Finally, party affiliation included Democrat, Republican, Unaffiliated, Libertarian, Green, and Constitution.
 
-Recall that, in our study, a "likely" voter was one who voted in the 2016 election. Thus, not all individuals in the North Carolina registration dataset were necessarily “likely” voters. This is because certain individuals who were registered to vote and *did* vote within the last 10 years still may not have voted in the 2016 election. Thus, upon joining the voter and registration data by the unique voter registration number, only those individuals who were both registered to vote and voted in the 2016 election were preserved. In this sense, only 2016 voters remained in the merged data frame. 
+Recall that, in our study, a "likely" voter was one who voted in the 2016 election. Therefore, "unlikely" voters are ones who voted at least once in the last 10 years, but not in the 2016 election.
 
-Next, certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, age bin, which belonged to one of five categories: 18-29, 30-39, 40-49, 50-64, and 65+. In addition, the individual race and ethnic identities were combined into a race/ethnicity variable with the following categories: Hispanic any race, Non Hispanic White, Non Hispanic Black, Non Hispanic Other, Non Hispanic Asian, Non Hispanic Multi-Racial, Non Hispanic American Indian or Alaska Native, Non Hispanic Native Hawaiian or Pacific Islander, and Undetermined. For gender, we chose to limit our analysis to include Female and Male as most of the subgroups did not include Undetermined gender groups. Finally, we only included registered Democrats, Republicans, and Unaffiliated groups.
+Next, certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, age bin, which belonged to one of five categories: 18-29, 30-39, 40-49, 50-64, and 65+. In addition, the individual race and ethnic identities were combined into a race/ethnicity variable with categories: Hispanic any race, Non Hispanic White, Non Hispanic Black, Non Hispanic Other, Non Hispanic Asian, Non Hispanic Multi-Racial, Non Hispanic American Indian or Alaska Native, Non Hispanic Native Hawaiian or Pacific Islander, and Undetermined. For gender, we chose to limit our analysis to include Female and Male as most of the subgroups did not include Undetermined gender groups. Finally, we only included registered Democrats, Republicans, and Unaffiliated groups.
 
-Once these modifications were made, the data was grouped by county, race/ethnicity, age bin, gender, and party affiliation. Additionally, for each group we included the number of registered voters that voted in 2016 and didn't vote. For example, one row of the grouped data frame would report the number of registered 2016 voters that did and didn't vote among 18-29 year old Hispanic women in Alamance county.
+While congressional district lines have changed over the course of the past few presidential election years, we maintained the 2020 congressional district lines for our final dataset to better understand who votes within these boundaries. Given that some voters had registered in areas that were re-districted later on, there were some missing values for district in the dataset. For those individuals whose counties reside wholly in one district, we simply assigned them to their 2020 congressional district. For counties that are split between two districts, we split the "likely" and "unlikely" voters evenly between the two districts.
+
+Once these modifications were made, the data was grouped by county, congressional district, race/ethnicity, age bin, gender, and party affiliation. Additionally, for each group we included the number of registered voters that voted in 2016 and didn't vote. For example, one row of the grouped data frame would report the number of registered 2016 voters that did and didn't vote among 18-29 year old Hispanic women that are registered Democrats in Alamance county.
 
 # Exploratory Data Analysis
 
@@ -250,7 +252,7 @@ edap1c <- who_votes_data %>%
 
 In Figure 1a, we can see the proportion of 2016 voters across race/ethnicity, gender, and age group identities. There appears to be profound differences in 2016 voter proportion among the different race-ethnicity groups. *Non-Hispanic American Indian*, *Non-Hispanic Black*, and *Non-Hispanic White* groups generally have a much higher proportion of 2016 voters relative to other groups in North Carolina.
 
-In general, we see an increasing trend in the proportion of 2016 voters with age. However, this effect appears to be steeper for *Non-Hispanic American Indian*, *Non-Hispanic Black*, *Non-Hispanic White*, and *Non-Hispanic Multi-Racial* groups. This trend points to a potential interactio effect between gender and race/ethnicity.
+In general, we see an increasing trend in the proportion of 2016 voters with age. However, this effect appears to be steeper for *Non-Hispanic American Indian*, *Non-Hispanic Black*, *Non-Hispanic White*, and *Non-Hispanic Multi-Racial* groups. This trend points to a potential interaction effect between gender and race/ethnicity.
 
 There appears to be a higher proportion of 2016 voters among women compared to men. However, we see this trend level off in the two oldest age groups for most of the race/ethnicity groups.
 
@@ -321,19 +323,19 @@ eda2d <- ggplot(data = nc_merged, aes(fill = Likely/1000)) +
   theme_void()
 ```
 
-In Figure 2a, we see how the proportion of 2016 voters varies throughout North Carolina. Heterogeneity among the counties motivates a consideration of a random county intercept in modelling the likelihood of voting. We will address a few trends from this map. Cherokee county, which is the westernmost county in the state, has an extremely high proportion of 2016 voters. This county is 95% White and heavily Republican, with 75% of the vote share going to Donald Trump in 2016. Watauga County, located slightly northeast of Cherokee, similarly shows a high proportion of 2016 voters. However, despite being similar in racial composition to Cherokee (96% White), growth of a younger voting population brought forth by Appalachian State University has turned Watauga into a hotly contested swing county [[5]][Bibliography]. Figure 2c in the Appendix displays a similar heat map with the proportion of 2016 voters across congressional district lines. Given that our goal is to better understand voting behavior for the 2020 elections, we chose to use 2020 congressional district lines. From Figure 4b, we can see that within a given district, voter proportion is notably different across counties. This suggests our final model will need to incorporate county-granular information. Figures 2b and 2d show these same plots, but with counts instead of proportions. Note that the counts are in thousands of people.
+In Figure 2a, we see how the proportion of 2016 voters varies throughout North Carolina. Heterogeneity among the counties motivates a consideration of a random county intercept in modelling the likelihood of voting. We will address a few trends from this map. Cherokee county, which is the westernmost county in the state, has an extremely high proportion of 2016 voters. This county is 95% White and heavily Republican, with 75% of the vote share going to Donald Trump in 2016. Watauga County, located slightly northeast of Cherokee, similarly shows a high proportion of 2016 voters. However, despite being similar in racial composition to Cherokee (96% White), growth of a younger voting population brought forth by Appalachian State University has turned Watauga into a hotly contested swing county [[5]][Bibliography]. Figure 2c in the Appendix displays a similar heat map with the proportion of 2016 voters across congressional district lines. Given that our goal is to better understand voting behavior for the 2020 elections, we chose to use 2020 congressional district lines. Figure 4b in the Appendix shows that  within a given district, voter proportion is notably different across counties. This suggests our final model will need to incorporate county-granular information. Figures 2b and 2d in the Appendix show these same plots, but with counts instead of proportions. Note that the counts are in thousands of people.
 
 # Methods
 
 We conducted exploratory data analysis to get a sense of which covariates were influential in determining likelihood to vote, along with any possible interactions. This led to a starting model with main effects for gender, age, party, and race/ethnicity, an interaction effect between age and race/ethnicity, and random intercepts for district and county. Some possible effects we were interested in exploring given our initial data analysis were random slopes for age, race, gender, and party, along with interaction effects between age and race, party and race, and age and gender.
 
-In order to compare different models, we began by examining their in-sample, or 2016, F1-score and their F1-score in the 2012 elections. This provided us with an overview with each model's fit and its ability to generalize to a different election year. Table 3 in the Appendix has a summary of each model we explored, their in-sample and out-sample F1-scores, and their in-sample false negative rate. Note that all models had main effect terms for age, race/ethnicity, gender, and party affiliation. After this initial look into the models' performances, we began examining their residual plots and confusion matrices. A common trend was a consistent issue of disproportionate false negatives, along with a strong curve downwards for higher predicted probabilities. Despite exploring a multitude of models with different interactions and random slopes, we could not find a combination that significantly negated this issue. Given that our goal is to provide insight into likely voters, we decided to prioritize models with a lower false negative rate on the training set, as the F1-scores were quite similar to one another. Our focus on the model's performance in the 2016 election stems from our priority to predict in the 2020 election, which shares a candidate and similar issues of divisive policies between demographic groups [[9]][Bibliography]. This motivated us to select the following model as our final model: 
+In order to compare different models, we began by examining their in-sample, or 2016, F1-score and their F1-score in the 2012 elections. This provided us with an overview with each model's fit and its ability to generalize to a different election year. Table 5 in the Appendix has a summary of each model we explored, their in-sample and out-sample F1-scores, and their in-sample false negative rate. Note that all models had main effect terms for age, race/ethnicity, gender, and party affiliation. After this initial look into the models' performances, we began examining their residual plots and confusion matrices. A common trend was a consistent issue of disproportionate false negatives, along with a strong curve downwards for higher predicted probabilities. Despite exploring a multitude of models with different interactions and random slopes, we could not find a combination that significantly negated this issue. Given that our goal is to provide insight into likely voters, we decided to prioritize models with a lower false negative rate on the training set, as the F1-scores were quite similar to one another. Our focus on the model's performance in the 2016 election stems from our priority to predict in the 2020 election, which shares a candidate and similar issues of divisive policies between demographic groups [[9]][Bibliography]. This motivated us to select the following model as our final model: 
 
 $$ 
 \begin{aligned}
-log(\frac{P_{ijk}}{1-P_{ijk}}) = \alpha_{j} + \alpha_{k} + \alpha_{2} * I(Gender_{ijk}=Male &) + \sum_{a = 2}^5\alpha_{3a}*I(Age_{ijk}=a) + \sum_{p = 2}^{3}\alpha_{4r}*I(Party_{ijk}=p) +\ \\
- \sum_{r =  2}^{6}\alpha_{5r}*I(Race/ Ethnicity_{ijk}=r)   + \sum_{p = 2}^{3}\sum_{r =  2}^6&\gamma_{2pr}*I (Party_{ijk} = p)*I(Race/Ethnicity_{ijk}=r) \\
-\alpha_j \sim N(\alpha_0,\tau_0^2), & \ \alpha_k \sim N(\alpha_1,\tau_1^2)
+log(\frac{P_{ijk}}{1-P_{ijk}}) = \alpha_{0} + \alpha_{j} + \alpha_{k} + \alpha_{3} * I(Gender_{ijk}=Male &) + \sum_{a = 2}^5\alpha_{4a}*I(Age_{ijk}=a) + \sum_{p = 2}^{3}\alpha_{5r}*I(Party_{ijk}=p) +\ \\
+ \sum_{r =  2}^{6}\alpha_{6r}*I(Race/ Ethnicity_{ijk}=r)   + \sum_{p = 2}^{3}\sum_{r =  2}^6&\gamma_{1pr}*I (Party_{ijk} = p)*I(Race/Ethnicity_{ijk}=r) \\
+\alpha_j \sim N(0,\tau_0^2), & \ \alpha_k \sim N(0,\tau_1^2)
 \end{aligned}
 $$
 
@@ -341,7 +343,7 @@ $P_{ijk}$ is the probability that individual $i$ from county $j$ in district $k$
 
 This final model yielded an F1-score of 0.654 in the 2016 election and 0.748 on the 2012 election. Another model we considered selecting had the same covariates as this one, but with a random age slope over each county and an interaction between age slope and race/ethnicity. While the age slope model had the best F1-scores in the 2016 and 2012 elections (0.6782 and 0.8027 respectively), it also had the worst false negative rates in the 2016 election. Removing the random age slope and interaction between age slope and race/ethnicity yielded one of the lowest false negative rates in the 2016 election among all of the models we explored. Further, while the interaction between race/ethnicity and age was significant, the model with both interactions and no age slope only marginally performed better than one without the interaction and had a higher false negative rate. Removing this interaction yielded our final model with a single interaction between race/ethnicity and party, a random intercept for county, and a random intercept for congressional district. This model had a false negative rate of 0.228.
 
-In terms of sensitivity analysis, our priority was to validate our coefficient estimates, as there can be convergence issues with random effect models within a frequentist framework. We began by recreating our final model with a Bayesian approach. For this model, we relied on relatively flat priors, given the size of the dataset, and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. The results of this model are in Table 9 in the Appendix. Relative to the random age slope model we discussed in the previous paragraph, many of the coefficients were within two standard errors of each other, except for the age bin fixed effects. However, the relative relationship to our baseline, 65+ year olds, was consistent. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into the following groups: $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates, which can be found in Table 10 in the Appendix.
+In terms of sensitivity analysis, our priority was to validate our coefficient estimates, as there can be convergence issues with random effect models within a frequentist framework. We began by recreating our final model with a Bayesian approach. For this model, we relied on relatively flat priors and noticed that virtually all of the coefficients converged to be within two standard errors of our estimates from the frequentist approach. The results of this model are in Table 9 in the Appendix. Relative to the random age slope model we discussed in the previous paragraph, many of the coefficients were within two standard errors of each other, except for the age bin fixed effects. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into: $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates, which can be found in Table 10 in the Appendix.
 
 # Results
 
@@ -482,7 +484,7 @@ mod.res.map.3b <- ggplot(data = nc_merged_district, aes(fill = intercepts)) +
   theme_void()
 ```
 
-The results of our final model can be viewed in Table 3 in our Appendix. The average accuracy, F1-score, and AUC from cross-validation were `r cv_df$Accuracy`, `r cv_df$F1`, and `r cv_df$AUC`, respectively. From the confusion matrix, we see that our model is predisposed to committing false negatives. As we described in the methods section, we were unable to find any other model that achieved a notably lower rate.
+The results of our final model can be viewed in Table 4 in our Appendix. The average accuracy, F1-score, and AUC from cross-validation were `r cv_df$Accuracy`, `r cv_df$F1`, and `r cv_df$AUC`, respectively. From the confusion matrix, we see that our model is predisposed to committing false negatives. As we described in the methods section, we were unable to find any other model that achieved a notably lower rate.
 
 ```{r initial model cm, fig.height=2.5, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 # Returns list(accuracy, F1-score, plot of confusion matrix)
@@ -506,7 +508,22 @@ final.insample.results <- cv_plot(glmer.fit.final, fold_df)
 cv_plot(glmer.fit.final, fold_df)[[3]]
 ```
 
-Figures 3a and 3b are heatmaps of the estimated intercepts in congressional districts and counties. While the intercepts appear to generally capture relative trends, they appear to be more homogeneous than the true percent of likely voters (see Figures 2a and 2b). This is likely a consequence of our assumption that they stem from the same distribution. From Figure 4, we see the distribution of these intercepts and their associated intervals, with district on the left and county on the right. From the plot of district intercepts, there is one notably higher intercept than the others. This was Congressional District 2, which makes sense given that a shocking 71% of voting age citizens participated in the 2016 election [[7]][Bibliography]. The lowest intercept was associated with District 8, which is a hotly contested district in North Carolina [[13]][Bibliography]. From the plot of county intercepts, we noticed a bunching of counties below the zero line, along with three more that fell below -2. These counties were Wake, Forsyth, and Durham, which is supported by concerns of historically low voter turnout in these counties [[6]][Bibliography]. Despite these historically low turnouts, however, it is important to mention that Durham and Wake County are on track to shatter voting records in the upcoming 2020 election [[6]][Bibliography].
+Figures 3a and 3b in the Appendix are heatmaps of the estimated random intercepts. While the intercepts appear to generally capture relative trends, they appear to be more homogeneous than the true percent of likely voters (see Figures 2a and 2b). This is likely a consequence of our assumption that they stem from the same distribution. From Figure 4, we see the distribution of these intercepts and their intervals. From the plot of district intercepts, there is one notably higher intercept than the others. This was Congressional District 2, which makes sense given that a shocking 71% of voting age citizens participated in the 2016 election [[7]][Bibliography]. The lowest intercept was associated with District 8, which is a hotly contested district in North Carolina [[13]][Bibliography]. From the plot of county intercepts, we noticed a bunching of counties below the zero line, along with three more that fell below -2. These counties were Wake, Forsyth, and Durham, which is supported by concerns of historically low voter turnout in these counties [[6]][Bibliography]. Despite these historically low turnouts, however, it is important to mention that Durham and Wake County are on track to shatter voting records in the upcoming 2020 election [[6]][Bibliography].
+
+```{r}
+final.random.effects <- as.data.frame(VarCorr(final.model.results[[2]])) %>% dplyr::select(c("sdcor"))
+colnames(final.random.effects) <- c(expression(paste("tau^2")))
+rownames(final.random.effects) <- c("County", "District")
+
+final.random.effects %>% knitr::kable(., format="latex", 
+                                      escape = F, 
+                                      booktabs = T, 
+                                      linesep = "", 
+                                      align = "c",
+                                      col.names=c("$\\tau^2$"),
+                                      caption="Random Effect Parameter Estimates") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"))
+```
 
 ```{r, warning=F, fig.height=2.5, fig.align="center"}
 rownames(likely.by.county.plot) <- likely.by.county.plot$county_desc
@@ -528,17 +545,9 @@ merTools::plotREsim(merTools::REsim(glmer.fit.final)) %>% +
         strip.background =element_rect(fill='transparent', color=NA))
 ```
 
-```{r}
-final.random.effects <- as.data.frame(VarCorr(final.model.results[[2]])) %>% dplyr::select(c("grp","vcov", "sdcor"))
-colnames(final.random.effects) <- c("Effect", expression(paste("alpha")), expression(paste("tau^2")))
-rownames(final.random.effects) <- c("County", "District")
-pander(final.random.effects, caption="Random Effects Estimates")
-```
-
-
 ## Model Diagnostics 
 
-Figure 5 in the Appendix shows our binned residuals, which provide more insight into issues with this model. There is a strong curve downwards for higher predicted probabilities, meaning that we greatly overestimate the likelihood of voting for certain demographic groupus. We examined these residuals more carefully across race/ethnicity groups, age bins, genders, party affiliations, counties, and congressional districts, and noted a few identities that tended to incur large negative residuals. Tables 5 and 6 in the Appendix shows a table of the samples that incurred residuals less than -2, grouped by race ethnicity and party affiliation, respectively. These show that Non-Hispanic Whites and registered Democrats. This may be due to greater race/ethnic diversity within Democrats relative to Unaffiliated and Republican groups, which could lend to more varying relationships with voting likelihood.
+Figure 5 in the Appendix shows our binned residuals, which provide more insight into issues with this model. There is a strong curve downwards for higher predicted probabilities, meaning that we greatly overestimate the likelihood of voting for certain demographic groupus. We examined these residuals more carefully across race/ethnicity groups, age bins, genders, party affiliations, counties, and congressional districts, and noted Non-Hispanic Whites and registered Democrats were two identities that tended to incur large negative residuals. Tables 6 and 7 in the Appendix shows more details. This may be due to greater race/ethnic diversity within Democrats relative to Unaffiliated and Republican groups, which could lend to more varying relationships with voting likelihood.
 
 ```{r County Random Effects Model Residual Plot,fig.height=3,fig.align="center", warning=FALSE,echo=FALSE}
 fold_df_hold <- fold_df
@@ -610,7 +619,7 @@ row.names(interpretation) <- interpretation$id
 
 Having addressed assumptions and validated our model with both in sample and out of sample predictions, we now interpret the results. 
 
-Table 3 in the Appendix shows that, with all else held constant, we are 95% confident that the odds of a male voting in 2016 are between `r round(interpretation["genderM", "lower_bound"],3)` and `r round(interpretation["genderM", "upper_bound"],3)` times less than that of a female. 
+Table 4 in the Appendix shows that, with all else held constant, we are 95% confident that the odds of a male voting in 2016 are between `r round(interpretation["genderM", "lower_bound"],3)` and `r round(interpretation["genderM", "upper_bound"],3)` times less than that of a female. 
 
 We are 95% confident that the odds a 50-64 year old voted in the 2016 election are between `r round(interpretation["age_bin50-64", "lower_bound"],3)` and `r round(interpretation["age_bin50-64", "upper_bound"],3)` times less than that of 65+ year old of the same gender, race/ethnic identity, and political affiliation. Holding all else constant, we are 95% confident that the odds a 40-49 year old voted in the 2016 election are between `r round(interpretation["age_bin40-49", "lower_bound"],3)` and `r round(interpretation["age_bin40-49", "upper_bound"],3)` times less than that of 65+ year old. Holding all else constant, we are 95% confident that the odds a 30-39 year old voted in the 2016 election are between `r round(interpretation["age_bin30-39", "lower_bound"],3)` and `r round(interpretation["age_bin30-39", "upper_bound"],3)` times less than that of 65+ year old. Finally, holding all else constant, we are 95% confident that the odds an 18-29 year old voted in the 2016 election are between `r round(interpretation["age_bin18-29", "lower_bound"],3)` and `r round(interpretation["age_bin18-29", "upper_bound"],3)` times less than that of 65+ year old. This is consistent with the increasing voting likelihood with age we saw in our exploratory data analysis.
 
@@ -623,9 +632,9 @@ dem.table <- generate_multiplicative_bounds(dem.table)
 pander(dem.table, caption="Voting Likelihood over Registered Democrats")
 ```
 
-Table 1 shows the multiplicative odds of being a 2016 voter over registered Democrats, relative to our baseline of Hispanic Any Race groups. Holding all else constant, we are 95% confident that Non-Hispanic American Indian registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic American Indian", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic American Indian", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Democrats. We did not observe a significant difference in the odds of voting in 2016 between Hispanic Any Race registered Democrats and Non-Hispanic Asian registered Democrats. Holding all else constant, we are 95% confident that Non-Hispanic Black registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic Black", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic Black", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Democrats. Holding all else constant, we are 95% confident that Non-Hispanic Multi-Race registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic Mixed", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic Mixed", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Democrats. Finally, relative to Hispanic Any Race registered Democrats of the same gender and age, we are 95% confident Non-Hispanic White registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic White", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic White", "upper_bound"],3)` times as likely to have voted in the 2016 election.
+Table 2 shows the multiplicative odds of being a 2016 voter over registered Democrats, relative to our baseline of Hispanic Any Race groups. Holding all else constant, we are 95% confident that Non-Hispanic American Indian registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic American Indian", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic American Indian", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Democrats. We did not observe a significant difference in the odds of voting in 2016 between Hispanic Any Race registered Democrats and Non-Hispanic Asian registered Democrats. Holding all else constant, we are 95% confident that Non-Hispanic Black registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic Black", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic Black", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Democrats. Holding all else constant, we are 95% confident that Non-Hispanic Multi-Race registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic Mixed", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic Mixed", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Democrats. Finally, relative to Hispanic Any Race registered Democrats of the same gender and age, we are 95% confident Non-Hispanic White registered Democrats are between `r round(interpretation["race_ethnicityNon-Hispanic White", "lower_bound"],3)` and `r round(interpretation["race_ethnicityNon-Hispanic White", "upper_bound"],3)` times as likely to have voted in the 2016 election.
 
-This suggests that campaign managers supporting Democratic candidates should focus their resources on urban areas with large White populations, along with areas with large Black populations. Rural, White areas in North Carolina tend to be heavily dominated by Republicans that are unlikely to ever vote in favor of a Democratic candidate. While this raises challenges given North Carolina's recent redistricting in 2020, it is also important to note that focusing on urban areas would also present a great opportunity to reach out to American Indian voters, who largely feel unheard in larger political elections in the Untied States [[11]][Bibliography]. It is also important to mention that 67% of American Indians live in urban areas, meaning aforementioned efforts could easily coincide with encouraging registered American Indian Democrats to vote [[11]][Bibliography].
+This suggests that campaign managers supporting Democratic candidates should focus their resources on urban areas with large White populations, along with areas with large Black populations. Rural, White areas in North Carolina tend to be heavily dominated by Republicans that are unlikely to ever vote in favor of a Democratic candidate. While this raises challenges given North Carolina's recent redistricting in 2020, it is also important to note that focusing on urban areas would also present a great opportunity to reach out to American Indian voters, who largely feel unheard in larger political elections in the Untied States [[11]][Bibliography]. It is also important to mention that 67% of Non-Hispanic American Indians live in urban areas, meaning aforementioned efforts could easily coincide with encouraging registered American Indian Democrats to vote [[11]][Bibliography].
 
 ```{r}
 rep.table <- interpretation[c(7:11), ]
@@ -643,7 +652,7 @@ rep.table <- generate_multiplicative_bounds(rep.table)
 pander(rep.table, caption="Voting Likelihood over Registered Republicans")
 ```
 
-Table 2 shows the multiplicative odds of being a 2016 voter over registered Republicans, relative to our baseline of Hispanic Any Race groups. Holding all else constant, we are 95% confident that Non-Hispanic American Indian registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic American Indian", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic American Indian", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Republicans. In contrast, we are 95% confident that Non-Hispanic Asian registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic Asian", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic Asian", "upper_bound"],3)` times less likely to vote as Hispanic Any Race Republican individuals of the same age and gender. Holding all else constant, we are 95% confident that Non-Hispanic Black registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic Black", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic Black", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Republicans. Holding all else constant, we are 95% confident that Non-Hispanic Multi-Race registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic Multi-Race", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic Multi-Race", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Republicans. Finally, relative to Hispanic Any Race registered Republicans of the same gender and age, we are 95% confident Non-Hispanic White registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic White", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic White", "upper_bound"],3)` times as likely to have voted in the 2016 election.
+Table 3 shows the multiplicative odds of being a 2016 voter over registered Republicans, relative to our baseline of Hispanic Any Race groups. Holding all else constant, we are 95% confident that Non-Hispanic American Indian registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic American Indian", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic American Indian", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Republicans. In contrast, we are 95% confident that Non-Hispanic Asian registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic Asian", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic Asian", "upper_bound"],3)` times less likely to vote as Hispanic Any Race Republican individuals of the same age and gender. Holding all else constant, we are 95% confident that Non-Hispanic Black registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic Black", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic Black", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Republicans. Holding all else constant, we are 95% confident that Non-Hispanic Multi-Race registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic Multi-Race", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic Multi-Race", "upper_bound"],3)` times as likely to have voted in the 2016 election relative to Hispanic Any Race registered Republicans. Finally, relative to Hispanic Any Race registered Republicans of the same gender and age, we are 95% confident Non-Hispanic White registered Republicans are between `r round(rep.table.interpretations["Non-Hispanic White", "lower_bound"],3)` and `r round(rep.table.interpretations["Non-Hispanic White", "upper_bound"],3)` times as likely to have voted in the 2016 election.
 
 This suggests that campaign managers supporting Republican candidates should focus their resources on rural areas with large White populations, which are well known to be primarily Republican. It is important to provide more context to the estimates for Non-Hispanic American Indians, as a smaller proportion of these groups are registered Republicans relative to other groups. Therefore, it may be better to focus campaign resources on primarily White and rural areas.
 
@@ -662,7 +671,7 @@ una.table.interpretations <- una.table
 una.table <- generate_multiplicative_bounds(una.table)
 ```
 
-Table 7 in the Appendix shows the multiplicative odds of being a 2016 voter over unaffiliated individuals, and a includes a fuller discussion and interpretation of each term.
+Table 8 in the Appendix shows the multiplicative odds of being a 2016 voter over unaffiliated individuals, and a includes a fuller discussion and interpretation of each term.
 
 Understanding the likelihood of unaffiliated individuals to vote is critical to electoral campaigns, as they don't identify with a specific party. However it is important to note that unaffiliated voters often consistently vote in one direction[[12]][Bibliography]. Similar to Democrats and Republicans, White voters are consistently active in elections. Multi-race groups are not far behind, which suggests that it is critical to explore and understand these voters' interests so they are motivated to vote for a candidate.
 
@@ -731,25 +740,25 @@ pander(mod.ri.county.rs.age.intrxn.age.race.results[[4]], caption = "Frequentist
 ```
 
 ```{r cross validation no intrxn, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all', cache=TRUE}
-model.random.intercept.no.interaction.text <- "cbind(Likely,Unlikely) ~ age_bin + race_ethnicity + party_cd + gender + (1 |county_desc) +  + (1 | cong_dist_abbrv)"
-model.ri.county.no.intrxn.results <- create_model(model.random.intercept.no.interaction.text, fold_df, perform_cv = FALSE)
-model.ri.county.no.intrxn.cm <- cv_plot(model.ri.county.no.intrxn.results[[1]], fold_df)
-# model.ri.county.no.intrxn.cm[[3]]
+model.random.intercept.no.interaction.txt <- "cbind(Likely,Unlikely) ~ age_bin + race_ethnicity + party_cd + gender + (1 |county_desc) +  + (1 | cong_dist_abbrv)"
+model.ri.county.no.intrxn.res <- create_model(model.random.intercept.no.interaction.txt, fold_df, perform_cv = FALSE)
+model.ri.county.no.intrxn.cm <- cv_plot(model.ri.county.no.intrxn.res[[1]], fold_df)
+model.ri.county.no.intrxn.cm[[3]]
 ```
 
 ```{r oos no intrxn, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-oos.no.intrxn <- cv_plot(model.ri.county.no.intrxn.results[[1]], election2012)
+oos.no.intrxn <- cv_plot(model.ri.county.no.intrxn.res[[1]], election2012)
 # cv_plot(model.ri.county.no.intrxn.results[[1]], election2012)[[3]]
 ```
 
 ```{r random age slope no interaction, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
-model.random.slope.age.no.intrxn.text <- "cbind(Likely,Unlikely) ~ age_bin + race_ethnicity + party_cd + gender + (1 + age_bin|county_desc)  + (1 | cong_dist_abbrv)"
-model.rs.age.no.intrxn.results <- create_model(model.random.slope.age.no.intrxn.text, fold_df, perform_cv = FALSE)
-model.rs.age.no.intrxn.cm <- cv_plot(model.rs.age.no.intrxn.results[[1]], fold_df)
+model.random.slope.age.no.intrxn.txt <- "cbind(Likely,Unlikely) ~ age_bin + race_ethnicity + party_cd + gender + (1 + age_bin|county_desc)  + (1 | cong_dist_abbrv)"
+model.rs.age.no.intrxn.res <- create_model(model.random.slope.age.no.intrxn.txt, fold_df, perform_cv = FALSE)
+model.rs.age.no.intrxn.cm <- cv_plot(model.rs.age.no.intrxn.res[[1]], fold_df)
 ```
 
 ```{r oos random age slope no interaction, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-model.rs.age.no.intrxn.oos.cm <- cv_plot(model.rs.age.no.intrxn.results[[1]], election2012)
+model.rs.age.no.intrxn.oos.cm <- cv_plot(model.rs.age.no.intrxn.res[[1]], election2012)
 ```
 
 ```{r random age slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
@@ -810,35 +819,35 @@ model.rs.race.ethnicity.intrxn.oos.factor.cm <- cv_plot(model.rs.race.ethnicity.
 ```
 
 ```{r random gender slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
-model.random.slope.gender.intrxn.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + gender + (1 + gender|county_desc) + (1 | cong_dist_abbrv)"
-model.rs.gender.intrxn.results <- create_model(model.random.slope.gender.intrxn.text, fold_df, perform_cv = FALSE)
-model.rs.gender.intrxn.cm <- cv_plot(model.rs.gender.intrxn.results[[1]], fold_df)
+model.random.slope.gender.intrxn.txt <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + gender + (1 + gender|county_desc) + (1 | cong_dist_abbrv)"
+model.rs.gender.intrxn.res <- create_model(model.random.slope.gender.intrxn.txt, fold_df, perform_cv = FALSE)
+model.rs.gender.intrxn.cm <- cv_plot(model.rs.gender.intrxn.res[[1]], fold_df)
 ```
 
 ```{r oos random gender slope, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-model.rs.gender.intrxn.oos.cm <- cv_plot(model.rs.gender.intrxn.results[[1]], election2012)
+model.rs.gender.intrxn.oos.cm <- cv_plot(model.rs.gender.intrxn.res[[1]], election2012)
 # cv_plot(model.rs.gender.intrxn.results[[1]], election2012)[[3]]
 ```
 
 ```{r intrxn age gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
-model.intrxn.age.gender.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + age_bin * gender + (1 | cong_dist_abbrv)  + (1 | county_desc)"
+model.intrxn.age.gender.txt <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + age_bin * gender + (1 | cong_dist_abbrv)  + (1 | county_desc)"
 
-model.intrxn.age.gender.results <- create_model(model.intrxn.age.gender.text, fold_df, perform_cv = FALSE)
-model.intrxn.age.gender.cm <- cv_plot(model.intrxn.age.gender.results[[1]], fold_df)
+model.intrxn.age.gender.res <- create_model(model.intrxn.age.gender.txt, fold_df, perform_cv = FALSE)
+model.intrxn.age.gender.cm <- cv_plot(model.intrxn.age.gender.res[[1]], fold_df)
 ```
 
 ```{r oos intrxn age gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-model.intrxn.age.gender.oos.cm <- cv_plot(model.intrxn.age.gender.results[[1]], election2012)
+model.intrxn.age.gender.oos.cm <- cv_plot(model.intrxn.age.gender.res[[1]], election2012)
 ```
 
 ```{r intrxn race gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
-model.intrxn.re.gender.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + race_ethnicity * gender + (1 | cong_dist_abbrv) + (1 | county_desc)"
-model.intrxn.re.gender.results <- create_model(model.intrxn.re.gender.text, fold_df, perform_cv = FALSE)
-model.intrxn.re.gender.intrxn.cm <- cv_plot(model.intrxn.re.gender.results[[1]], fold_df)
+model.intrxn.re.gender.txt <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + party_cd + race_ethnicity * gender + (1 | cong_dist_abbrv) + (1 | county_desc)"
+model.intrxn.re.gender.res <- create_model(model.intrxn.re.gender.txt, fold_df, perform_cv = FALSE)
+model.intrxn.re.gender.intrxn.cm <- cv_plot(model.intrxn.re.gender.res[[1]], fold_df)
 ```
 
 ```{r oos intrxn race gender, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
-model.rs.re.gender.intrxn.oos.cm <- cv_plot(model.rs.gender.intrxn.results[[1]], election2012)
+model.rs.re.gender.intrxn.oos.cm <- cv_plot(model.intrxn.re.gender.res[[1]], election2012)
 ```
 
 ```{r intrxn race party only, fig.height=3, fig.align="center",warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=TRUE}
@@ -903,11 +912,11 @@ old.model.and.party.oos.cm <- cv_plot(old.model.and.party.results[[1]], election
 ```
 
 ```{r, cache=T}
-mod.ri.county.district.intrxn.age.race.party.race.text <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + gender + party_cd * race_ethnicity + (1 |county_desc) +  (1 | cong_dist_abbrv)"
+mod.ri.county.district.intrxn.age.race.party.race.txt <- "cbind(Likely,Unlikely) ~ age_bin * race_ethnicity + gender + party_cd * race_ethnicity + (1 |county_desc) +  (1 | cong_dist_abbrv)"
 
-mod.ri.county.rs.age.intrxn.age.race.results <- create_model(mod.ri.county.district.intrxn.age.race.party.race.text, fold_df, perform_cv = FALSE)
-mod.ri.county.rs.age.intrxn.age.race.cm <- cv_plot(mod.ri.county.rs.age.intrxn.age.race.results[[1]], fold_df)
-mod.ri.county.rs.age.intrxn.age.race.oos.cm <- cv_plot(mod.ri.county.rs.age.intrxn.age.race.results[[1]], election2012)
+mod.ri.county.rs.age.intrxn.age.race.res <- create_model(mod.ri.county.district.intrxn.age.race.party.race.txt, fold_df, perform_cv = FALSE)
+mod.ri.county.rs.age.intrxn.age.race.cm <- cv_plot(mod.ri.county.rs.age.intrxn.age.race.res[[1]], fold_df)
+mod.ri.county.rs.age.intrxn.age.race.oos.cm <- cv_plot(mod.ri.county.rs.age.intrxn.age.race.res[[1]], election2012)
 ```
 
 ```{r, cache=T}

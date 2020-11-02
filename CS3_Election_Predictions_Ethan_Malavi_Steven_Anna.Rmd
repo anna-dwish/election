@@ -28,6 +28,8 @@ pkgTest("lubridate")
 pkgTest("R2jags")
 pkgTest("tidyverse")
 pkgTest("coda")
+pkgTest("kableExtra")
+pkgTest("matrixStats")
 ```
 
 ```{r load packages, include=FALSE, results="hide"}
@@ -36,9 +38,9 @@ library(lubridate)
 library(R2jags)
 library(tidyverse)
 library(coda)
+library(kableExtra)
+library(matrixStats)
 ```
-
-## Presidential Election
 
 ```{r Read in Presidential Polls Data}
 president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
@@ -100,24 +102,30 @@ I_states <- diag(N_states)
 ```
 
 ```{r}
+#"AZ", "CO", "FL", "GA", "IA", "ME", "MI","MN","NC", "NV", "NH", "OH", "PA", "TX", "WI"
 vote_share_2016 <- data.frame(president_polls$state, number = r)
 vote_share_2016 <- unique(vote_share_2016) %>%
   mutate(clinton_percent = case_when(
-    president_polls.state == "NC" ~ 47/(47 + 51),
-    president_polls.state == "MI" ~ 47/(47 + 48),
-    president_polls.state == "NH" ~ 48/(48 + 47),
-    president_polls.state == "NV" ~ 48/(48 + 46),
-    president_polls.state == "PA" ~ 48/(48 + 49),
-    president_polls.state == "WI" ~ 47/(47 + 48),
-    president_polls.state == "TX" ~ 43/(43 + 53),
-    president_polls.state == "OH" ~ 44/(44 + 52),
-    president_polls.state == "MN" ~ 47/(47 + 45),
-    president_polls.state == "GA" ~ 46/(46 + 51),
-    president_polls.state == "FL" ~ 48/(48 + 49),
+    president_polls.state == "AZ" ~ 45/(48 + 45),
     president_polls.state == "CO" ~ 47/(47 + 44),
+    president_polls.state == "FL" ~ 48/(48 + 49),
+    president_polls.state == "GA" ~ 46/(46 + 51),
     president_polls.state == "IA" ~ 42/(42 + 52),
     president_polls.state == "ME" ~ 48/(48 + 45),
-    president_polls.state == "AZ" ~ 45/(48 + 45)
+    president_polls.state == "MI" ~ 47/(47 + 48),
+    president_polls.state == "MN" ~ 47/(47 + 45),
+    president_polls.state == "NC" ~ 47/(47 + 51),
+    president_polls.state == "NH" ~ 48/(48 + 47),
+    president_polls.state == "NV" ~ 48/(48 + 46),
+    president_polls.state == "OH" ~ 44/(44 + 52),
+    president_polls.state == "PA" ~ 48/(48 + 49),
+    president_polls.state == "TX" ~ 43/(43 + 53),    
+    president_polls.state == "WI" ~ 47/(47 + 48)
+    
+    
+    
+    
+    
     
   )) %>%
   mutate(clinton_percent = 100*clinton_percent)
@@ -133,7 +141,7 @@ generate_presidential_model_text = function(hierarchical_priors) {
     p[k] = theta[r[k],t[k]] 
   }
   for(j in 2:N_days){
-    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1], Phi)
   }
   
   Phi ~ dwish(I_states,N_states+1) 
@@ -175,7 +183,7 @@ if (file.exists("gamma_2_0.5.Rds")) {
   presidential_model_gamma_2_0.5_prior <- jags(data = list("y","t", "r", "N_polls", 
                                                            "N_states", "N_days", "h", "I_states"),  
                                                parameters.to.save = c("theta", "Sigma", 
-                                                                    "p","sigma2_y", "sigma2_0"),
+                                                                      "p","sigma2_y", "sigma2_0"),
                                                n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
                                                model.file = model_file)
   
@@ -247,7 +255,7 @@ predictions_per_state_presidential <- function(model_output, state){
       win_dem[i] <- 0
     }
   }
-  probability_voting_dem <- round(100*sum(win_dem)/n_iter, 3)
+  probability_voting_dem <- round(100*sum(win_dem)/iterations, 3)
   return(probability_voting_dem)
 }
 
@@ -289,12 +297,12 @@ ggplot() +
   geom_density(aes(x = presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,1,1])) + 
   geom_vline(xintercept = theta_1_1_mean)
 
-tidybayes::gather_draws(presidential_model_gamma_2_0.5_prior %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>% 
-  filter(i == 1 & j == 1) %>% 
-  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
-  geom_line(alpha = 0.6) +  
-  facet_grid(param~., scales = "free_y")
+# tidybayes::gather_draws(presidential_model_gamma_2_0.5_prior %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>% 
+#   filter(i == 1 & j == 1) %>% 
+#   mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+#   ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+#   geom_line(alpha = 0.6) +  
+#   facet_grid(param~., scales = "free_y")
 ```
 
 ```{r}
@@ -325,25 +333,25 @@ if (file.exists("gamma_4_1.Rds")) {
 ```
 
 ```{r}
-final_results <- c()
-
-for (i in 1:iterations){
-  final_results[i] = prediction_per_simulation(presidential_model_gamma_4_1_prior, i)
-}
-
-hist(final_results)
-mean(final_results >= 270)
-
-ggplot() + 
-  geom_density(aes(x = presidential_model_gamma_4_1_prior$BUGSoutput$sims.list$theta[,1,1])) + 
-  geom_vline(xintercept = theta_1_1_mean)
-
-tidybayes::gather_draws(presidential_model_gamma_4_1_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
-  filter(i == 1 & j == 1) %>% 
-  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
-  geom_line(alpha = 0.6) +  
-  facet_grid(param~., scales = "free_y")
+# final_results <- c()
+# 
+# for (i in 1:iterations){
+#   final_results[i] = prediction_per_simulation(presidential_model_gamma_4_1_prior, i)
+# }
+# 
+# hist(final_results)
+# mean(final_results >= 270)
+# 
+# ggplot() + 
+#   geom_density(aes(x = presidential_model_gamma_4_1_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+#   geom_vline(xintercept = theta_1_1_mean)
+# 
+# tidybayes::gather_draws(presidential_model_gamma_4_1_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
+#   filter(i == 1 & j == 1) %>% 
+#   mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+#   ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+#   geom_line(alpha = 0.6) +  
+#   facet_grid(param~., scales = "free_y")
 
 ```
 
@@ -366,7 +374,7 @@ if (file.exists("exp_0_25.Rds")) {
   presidential_model_exp_0.25_prior <- jags(data = list("y","t", "r", "N_polls", 
                                                         "N_states", "N_days", "h", "I_states"),  
                                             parameters.to.save = c("theta", "Sigma", 
-                                                                    "p","sigma2_y", "sigma2_0"),
+                                                                   "p","sigma2_y", "sigma2_0"),
                                             n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
                                             model.file = model_file)
   
@@ -375,26 +383,26 @@ if (file.exists("exp_0_25.Rds")) {
 ```
 
 ```{r}
-final_results <- c()
+# final_results <- c()
+# 
+# for (i in 1:iterations){
+#   final_results[i] = prediction_per_simulation(presidential_model_exp_0.25_prior, i)
+# }
+# 
+# hist(final_results)
+# mean(final_results >= 270)
+# 
+# 
+# ggplot() + 
+#   geom_density(aes(x = presidential_model_exp_0.25_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+#   geom_vline(xintercept = theta_1_1_mean)
 
-for (i in 1:iterations){
-  final_results[i] = prediction_per_simulation(presidential_model_exp_0.25_prior, i)
-}
-
-hist(final_results)
-mean(final_results >= 270)
-
-
-ggplot() + 
-  geom_density(aes(x = presidential_model_exp_0.25_prior$BUGSoutput$sims.list$theta[,1,1])) + 
-  geom_vline(xintercept = theta_1_1_mean)
-
-tidybayes::gather_draws(presidential_model_exp_0.25_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
-  filter(i == 1 & j == 1) %>% 
-  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
-  geom_line(alpha = 0.6) +  
-  facet_grid(param~., scales = "free_y")
+# tidybayes::gather_draws(presidential_model_exp_0.25_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
+#   filter(i == 1 & j == 1) %>% 
+#   mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+#   ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+#   geom_line(alpha = 0.6) +  
+#   facet_grid(param~., scales = "free_y")
 
 ```
 
@@ -417,7 +425,7 @@ if (file.exists("gamma_1_025.Rds")) {
   presidential_model_gamma_1_0.25_prior <- jags(data = list("y","t", "r", "N_polls", 
                                                             "N_states", "N_days", "h", "I_states"),  
                                                 parameters.to.save = c("theta", "Sigma", 
-                                                                    "p","sigma2_y", "sigma2_0"),
+                                                                       "p","sigma2_y", "sigma2_0"),
                                                 n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
                                                 model.file = model_file)
   
@@ -426,26 +434,26 @@ if (file.exists("gamma_1_025.Rds")) {
 ```
 
 ```{r}
-final_results <- c()
+# final_results <- c()
+# 
+# for (i in 1:iterations){
+#   final_results[i] = prediction_per_simulation(presidential_model_gamma_1_0.25_prior, i)
+# }
+# 
+# hist(final_results)
+# mean(final_results >= 270)
+# 
+# 
+# ggplot() + 
+#   geom_density(aes(x = presidential_model_gamma_1_0.25_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+#   geom_vline(xintercept = theta_1_1_mean)
 
-for (i in 1:iterations){
-  final_results[i] = prediction_per_simulation(presidential_model_gamma_1_0.25_prior, i)
-}
-
-hist(final_results)
-mean(final_results >= 270)
-
-
-ggplot() + 
-  geom_density(aes(x = presidential_model_gamma_1_0.25_prior$BUGSoutput$sims.list$theta[,1,1])) + 
-  geom_vline(xintercept = theta_1_1_mean)
-
-tidybayes::gather_draws(presidential_model_gamma_1_0.25_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
-  filter(i == 1 & j == 1) %>% 
-  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
-  geom_line(alpha = 0.6) +  
-  facet_grid(param~., scales = "free_y")
+# tidybayes::gather_draws(presidential_model_gamma_1_0.25_prior %>% coda::as.mcmc(), theta[i, j]) %>% 
+#   filter(i == 1 & j == 1) %>% 
+#   mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+#   ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) + 
+#   geom_line(alpha = 0.6) +  
+#   facet_grid(param~., scales = "free_y")
 ```
 
 ```{r}
@@ -542,11 +550,11 @@ if (file.exists("gamma_2_0.5_2012.Rds")) {
   presidential2012_model_gamma_2_0.5_prior <- readRDS("gamma_2_0.5_2012.Rds")
 } else {
   presidential2012_model_gamma_2_0.5_prior <- jags(data = list(y=y_2012,t=t_2012, r=r_2012, N_polls=N_polls_2012, 
-                                                           N_states=N_states_2012, N_days=N_days_2012, h=obama2008, I_states=I_states_2012),  
-                                               parameters.to.save = c("theta", "Sigma", 
-                                                                    "p","sigma2_y", "sigma2_0"),
-                                               n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
-                                               model.file = model_file)
+                                                               N_states=N_states_2012, N_days=N_days_2012, h=obama2008, I_states=I_states_2012),  
+                                                   parameters.to.save = c("theta", "Sigma", 
+                                                                          "p","sigma2_y", "sigma2_0"),
+                                                   n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                                   model.file = model_file)
   
   saveRDS(presidential2012_model_gamma_2_0.5_prior, file = "gamma_2_0.5_2012.Rds")
 }
@@ -559,10 +567,10 @@ electoral_data <- read.csv("Electoral_College.csv") %>%
   filter(Year == 2012)
 
 electoral_data$states_2012 <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
-                           "DE","FL","GA","HI","ID","IL","IN","IA","KS",
-                           "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
-                           "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
-                           "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
+                                "DE","FL","GA","HI","ID","IL","IN","IA","KS",
+                                "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT",
+                                "NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK",
+                                "OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY")
 
 #returns number of electoral votes biden wins for each iteration of the sampler
 #we need to add to this the votes that he is guaranteed from other states
@@ -596,4 +604,471 @@ mean(final_results2012)
 final_results2012 %>% quantile()
 ```
 
+# US Senate Election
 
+```{r Read in Data}
+#Filter to see if any non democratic or republican candidates are polling high
+# add New Mexico  and Missisipi 
+`%notin%` <- Negate(`%in%`)
+senate_polls <- read_csv("senate_polls.csv")
+senate_polls$state %>% unique
+senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(candidate_party %notin% c("DEM", "REP")) %>%
+  arrange(desc(pct)) %>%
+  select(poll_id, state, candidate_name, candidate_party, pct)
+
+#TOP THREE: DUNBAR, HARRINGTON, WILSON
+#Dunbar (AK) is a democrat, but running as an independent against republican and democratic candidates- but as of more recent polls he isn't relevant
+#Harrington (AR) is liberatrian running against a republican
+#Wilson (IL) is an independent running against a democrat- he can be counted as a democrat 
+
+#filter out AR because there is a 0% chance a democrat wins here
+#filter out IL because there is a 100% chance a democrat wins here
+#remember to add back in one senator for IL because that's sort of a given!
+```
+
+```{r}
+senate_polls_cleaned <- senate_polls %>%
+  filter(cycle == "2020") %>%
+  filter(population %in% c("lv","rv")) %>% 
+  filter(office_type == "U.S. Senate") %>%
+  
+  #add separate elections for georgia and arizona special
+  mutate(state = case_when(
+    state == "Georgia" & seat_name == "Class III" ~ "Georgia*",
+    state == "Arizona" & seat_name == "Class III" ~ "Arizona*",
+    TRUE ~ as.character(state)
+  )) %>%
+  
+  #get rid of arkansas because there is no chance that a democrat will win here 
+  #get rid of illionis because basically guarantted a democrat wins
+  filter(state %notin% c("Arkansas", "Illinois")) %>%
+  filter(candidate_party %in% c("DEM", "REP")) %>%
+  filter(poll_id != 58956 & question_id != 100828) %>%
+  filter(poll_id != 67060 & question_id != 125304) #get rid of weird polls
+#senate_polls_cleaned$state %>% unique
+```
+
+
+```{r}
+democratic_candidates <- senate_polls_cleaned %>%
+  dplyr::filter(candidate_party == "DEM") %>%
+  dplyr::group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
+  dplyr::summarize(total_dems_pct = sum(pct)) 
+#democratic_candidates 
+```
+
+```{r}
+republican_candidates <- senate_polls_cleaned %>%
+  dplyr::filter(candidate_party == "REP") %>%
+  dplyr::group_by(question_id, poll_id, state, race_id, pollster, start_date, end_date) %>%
+  dplyr::summarize(total_rep_pct = sum(pct)) 
+#republican_candidates
+```
+
+```{r}
+senate_data <- merge(democratic_candidates, republican_candidates, by = c("state", "question_id", "poll_id", "race_id", "pollster", "start_date", "end_date"))
+senate_data <- senate_data %>%
+  mutate(pct_dem = 100*total_dems_pct/(total_dems_pct + total_rep_pct))
+#senate_data
+```
+
+```{r}
+senate <- senate_data %>%
+  mutate(start_date = mdy(start_date),
+         end_date = mdy(end_date),
+         election_date = "2020-11-03" %>% as.Date(),
+         days_to_election = election_date - end_date,
+         y = pct_dem) %>%
+  dplyr::filter(days_to_election <= 100) %>%
+  filter(state %in% c("Alaska", "Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", "Kentucky",
+                      "Maine", "Michigan", "Minnesota", "Mississippi",
+                      "Montana", #"New Hampshire",
+                      "New Mexico",
+                      "North Carolina", "South Carolina", "Texas")) #THIS is 538 (Kentucky+NH are  kinda red and kinda blue)
+
+# filter(state %in% c("Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", "Kentucky",
+#                     "Maine", "Michigan", "Minnesota", 
+#                     "Montana", "New Hampshire",
+#                     
+#                     "North Carolina", "South Carolina", "Texas")) #  THIS is ballotpedia states
+```
+
+
+```{r senate jags data}
+states_senate <- senate$state %>% unique
+y_senate <- senate$y
+r_senate <- match(senate$state,states_senate)
+t_senate <- senate$days_to_election + 1 
+N_polls_senate <- y_senate %>% length
+N_states_senate <- states_senate %>% length
+N_days_senate <- t_senate %>% max
+I_states_senate <- diag(N_states_senate)
+jags_data_senate <- list(y=y_senate,t=t_senate,r=r_senate,
+                         N_polls=N_polls_senate,N_states=N_states_senate,N_days=N_days_senate, I_states=I_states_senate)
+```
+
+```{r}
+generate_senate_model_text = function(hierarchical_priors_senate) {
+  model_file <- tempfile()
+  likelihood_base_priors = "
+  for(k in 1:N_polls){
+    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
+    p[k] = theta[r[k],t[k]] 
+  }
+  for(j in 2:N_days){
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+  }
+  
+  Phi ~ dwish(I_states,N_states+1) 
+  Sigma = inverse(Phi)
+  #hierarchical component
+  for(j in 1:N_states){
+    sigma2_y[j] = 1/sigma2_y_inv[j]
+    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+    
+    theta[j,1] ~ dnorm(mu0, sigma2_0)
+  }
+  "
+  
+  model_text <- paste("model{ ", likelihood_base_priors, hierarchical_priors_senate,"}")
+  writeLines(model_text,con=model_file)
+  return(model_file)
+}
+```
+
+```{r}
+senate_gamma_2_1_mu_7.5.prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  mu0 ~ dnorm(50, pow(7.5,-1)) 
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(2,1) 
+  "
+
+model_file_senate_gamma_2_1_mu_7.5.prior <- generate_senate_model_text(senate_gamma_2_1_mu_7.5.prior) 
+if (file.exists("senate_gamma_2_1_mu_7.5.prior.Rds")) { 
+  senate_gamma_2_1_mu_7.5.prior_model <- readRDS("senate_gamma_2_1_mu_7.5.prior.Rds") 
+} else {
+  senate_gamma_2_1_mu_7.5.prior_model <- jags(data = jags_data_senate,  
+                                              parameters.to.save = c("theta", "Sigma", 
+                                                                     "p","sigma2_y", "sigma2_0"),
+                                              n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                              model.file = model_file_senate_gamma_2_1_mu_7.5.prior)
+  
+  saveRDS(senate_gamma_2_1_mu_7.5.prior_model, file = "senate_gamma_2_1_mu_7.5.prior.Rds")
+}
+
+n_iter <- dim(senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
+
+prediction_per_simulation_senate <- function(model_output, i){
+  elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states_senate, elec_sims)
+  
+  dem_states_df <- vote_share_by_state %>%
+    filter(elec_sims > 50)
+  dem_states <- dem_states_df$states_senate
+  num_dem_states <- length(dem_states)
+  return(num_dem_states)
+}
+
+final_results_senate <- c()
+
+for (i in 1:n_iter){
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_1_mu_7.5.prior_model, i)
+}
+
+mean(final_results_senate >= 9)
+mean(final_results_senate)
+final_results_senate %>% hist()
+
+tidybayes::gather_draws(senate_gamma_2_1_mu_7.5.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+  filter(i == 1 & j == 1) %>%
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+  geom_line(alpha = 0.6) +
+  facet_grid(param~., scales = "free_y")
+```
+
+```{r}
+senate_gamma_5_2_mu_7.5.prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  mu0 ~ dnorm(50, pow(7.5,-1)) 
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(5,2) 
+  "
+
+model_file_senate_gamma_5_2_mu_7.5.prior <- generate_senate_model_text(senate_gamma_5_2_mu_7.5.prior) 
+if (file.exists("senate_gamma_5_2_mu_7.5.prior.Rds")) { 
+  senate_gamma_5_2_mu_7.5.prior_model <- readRDS("senate_gamma_5_2_mu_7.5.prior.Rds") 
+} else {
+  senate_gamma_5_2_mu_7.5.prior_model <- jags(data = jags_data_senate,  
+                                              parameters.to.save = c("theta", "Sigma", 
+                                                                     "p","sigma2_y", "sigma2_0"),
+                                              n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                              model.file = model_file_senate_gamma_5_2_mu_7.5.prior)
+  
+  saveRDS(senate_gamma_5_2_mu_7.5.prior_model, file = "senate_gamma_5_2_mu_7.5.prior.Rds")
+}
+
+final_results_senate <- c()
+
+for (i in 1:n_iter){
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_5_2_mu_7.5.prior_model, i)
+}
+
+mean(final_results_senate >= 9)
+mean(final_results_senate)
+final_results_senate %>% hist()
+
+tidybayes::gather_draws(senate_gamma_5_2_mu_7.5.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+  filter(i == 1 & j == 1) %>%
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+  geom_line(alpha = 0.6) +
+  facet_grid(param~., scales = "free_y")
+```
+
+
+```{r}
+senate_gamma_2_2_mu_10.prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  mu0 ~ dnorm(50, pow(10,-1)) 
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(0.5,0.5) 
+  "
+
+model_file_senate_gamma_2_2_mu_10.prior <- generate_senate_model_text(senate_gamma_2_2_mu_10.prior) 
+if (file.exists("senate_gamma_2_2_mu_10.prior.Rds")) { 
+  senate_gamma_2_2_mu_10.prior_model <- readRDS("senate_gamma_2_2_mu_10.prior.Rds") 
+} else {
+  senate_gamma_2_2_mu_10.prior_model <- jags(data = jags_data_senate,  
+                                             parameters.to.save = c("theta", "Sigma", 
+                                                                    "p","sigma2_y", "sigma2_0"),
+                                             n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                             model.file = model_file_senate_gamma_2_2_mu_10.prior)
+  
+  saveRDS(senate_gamma_2_2_mu_10.prior_model, file = "senate_gamma_2_2_mu_10.prior.Rds")
+}
+
+final_results_senate <- c()
+
+for (i in 1:n_iter){
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_2_mu_10.prior_model, i)
+}
+
+mean(final_results_senate >= 9)
+mean(final_results_senate)
+final_results_senate %>% hist()
+
+tidybayes::gather_draws(senate_gamma_2_2_mu_10.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+  filter(i == 1 & j == 1) %>%
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+  geom_line(alpha = 0.6) +
+  facet_grid(param~., scales = "free_y")
+```
+
+```{r}
+senate_gamma_0.5_0.5_mu_10.prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  mu0 ~ dnorm(50, pow(10,-1)) 
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(0.5,0.5) 
+  "
+
+model_file_senate_gamma_0.5_0.5_mu_10.prior <- generate_senate_model_text(senate_gamma_0.5_0.5_mu_10.prior) 
+if (file.exists("senate_gamma_0.5_0.5_mu_10.prior.Rds")) { 
+  senate_gamma_0.5_0.5_mu_10.prior_model <- readRDS("senate_gamma_0.5_0.5_mu_10.prior.Rds") 
+} else {
+  senate_gamma_0.5_0.5_mu_10.prior_model <- jags(data = jags_data_senate,  
+                                                 parameters.to.save = c("theta", "Sigma", 
+                                                                        "p","sigma2_y", "sigma2_0"),
+                                                 n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                                 model.file = model_file_senate_gamma_0.5_0.5_mu_10.prior)
+  
+  saveRDS(senate_gamma_0.5_0.5_mu_10.prior_model, file = "senate_gamma_0.5_0.5_mu_10.prior.Rds")
+}
+
+final_results_senate <- c()
+
+for (i in 1:n_iter){
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_0.5_0.5_mu_10.prior_model, i)
+}
+
+mean(final_results_senate >= 9)
+mean(final_results_senate)
+final_results_senate %>% hist()
+```
+
+
+```{r}
+senate_sen_analysis_priors_names <- c("Ga(2, 0.5))",
+                                      "Ga(4, 1)",
+                                      "Ga(1, 0.25)",
+                                      "Exp(1/4)")   
+senate_sen_analysis_priors <- list(senate_gamma_2_1_mu_7.5.prior_model,
+                                   senate_gamma_5_2_mu_7.5.prior_model,
+                                   senate_gamma_2_2_mu_10.prior_model,
+                                   senate_gamma_0.5_0.5_mu_10.prior_model)     
+senate_theta_1_1_mean <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,1,1] %>% mean()
+senate_sen_tbl_list <- list()
+for (i in 1:4) {
+  senate_sen_tbl_list[[i]] <- tidybayes::gather_draws(senate_sen_analysis_priors[[i]] %>% coda::as.mcmc(), theta[i, j]) %>% 
+    filter(i == 1 & j == 1)
+}
+do.call(bind_rows, senate_sen_tbl_list) %>% 
+  dplyr::mutate(model = rep(senate_sen_analysis_priors_names, each=2000),
+                model = factor(model,
+                               levels = senate_sen_analysis_priors_names,
+                               labels = c(expression(paste(sigma[0]^2, " ~ Ga(2, 0.5)")),
+                                          expression(paste(sigma[0]^2, " ~ Ga(4, 1)")),
+                                          expression(paste(sigma[0]^2, " ~ Ga(1, 0.25)")),
+                                          expression(paste(sigma[0]^2, " ~ Exp(0.25)"))))) %>% 
+  #mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot() + 
+  geom_density(aes(x = .value)) + 
+  geom_vline(xintercept = senate_theta_1_1_mean) +  
+  facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
+```
+
+# Introduction
+
+The 2020 U.S. elections, coupled with the unique social and economic turmoil corroborated by COVID-19, is documented to have globally political implications [[1]][Bibliography],[[2]][Bibliography]. Researchers have thus used prediction models to determine election outcomes. But often, with the unique voting patterns of certain demographics, making conclusive results requires additional focus on who votes and where. Therefore, in an attempt to predict the US presidential, senate-majority, electoral college, NC congressional, and NC senate election outcomes, our study explores the voting patterns of certain demographics and the characterization of uncertainty in our predicted results. In addition to determining the likely voters, when modeling how certain demographics vote, our findings illuminate the groups in a swing state like North Carolina that are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups that are seeking to bolster support and foster more politically minded communities. 
+
+# Presidential Election
+
+## Data
+
+## Methods
+
+To model the outcome of the presidential election, we used an extension of the Linzer model, which takes a dynamic Bayesian approach to forecasting election results [[3]][Bibliography]. Our motivation for selecting this model is its ability to compound polling information over time and account for evolving preferences. While the Linzer model incorrectly predicted the results of the 2016 presidential election due to polling information inaccuracies, we hope to balance this reliance on the polling information by adjusting our priors to rely mo  re heavily on the 2016 election [[5]][Bibliography]. By June 9th, Biden had enough delegates to secure his nomination as the Democratic candidate, so we only included polls whose start date was after June 1st. These data were used to predict the outcomes of 15 swing states: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, Minnesota,  New Hampshire, Nevada, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin [[4]][Bibliography], with a hierarchical prior on our model parameters. Further, our final model estimates the correlation structure between states, so more similar states pull information from one another.
+
+$$
+\begin{aligned}
+Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
+\theta_{i 1} \sim N(h_i, \sigma^2_0) , \ \mathbf{\theta_{\mathbf{ \cdot} t}} \sim MVN&(\mathbf{\theta_{\mathbf{\cdot} t-1}},\mathbf{\Sigma}) \\ 
+\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16&) &  (1) \\
+\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim & \ Ga(2, 0.5)\\
+\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
+\end{aligned}
+$$
+
+Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Hilary Clinton’s 2016 vote share from swing state $i$, with variance $\sigma^2_0$. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$
+
+Using JAGS, we ran Model 1 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
+
+Extract the 15 values of  $\theta_{\cdot 1}$, Biden’s estimated vote share on the day of the election from each swing state $i \in (1 \dots 15)$.
+Initialize a variable, swing_electoral_votes, to 0. (electoral_votes = 0)
+For each $\theta_{i 1}$ value
+If it is greater than 50%, record the number of electoral votes from swing state $i$. add the number of electoral votes from that state to swing_electoral_votes.
+Otherwise, don’t add to swing_electoral_votes.
+
+Based on [SOURCE], Biden is expected to safely win 200 electoral votes from __ states. The sum of his expected electoral votes with the predicted electoral votes from the 15 swing states indicates the total number of estimated electoral votes he would win. Now, let electoral votes = 200 + swing_electoral_votes. These 200 votes come from states that Biden will safely win, as noted by several political experts (citation). Thus, electoral_votes represents the predicted number of electoral votes going to Joe Biden in the sample. If the number of estimated electoral votes is greater than 270, we predict that Biden wins the electoral college vote. Thus, from this model, we are able to predict the electoral college vote and the outcome of the presidential election.
+
+## Results
+
+From the algorithm above, we obtain, for each sample, the predicted number of electoral votes going to Biden. Computing the mean, 2.5% quantile, and 95% quantile of the predicted electoral votes across the 2000 samples, we see that Biden is predicted to win ____ (mean) electoral votes with a 95% confidence interval of (lower, upper). We further find that in __% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win with ___% probability. 
+
+### Model Diagnostics
+
+Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. $R_hat$ values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the 𝑅̂ value to 1, the better the model has converged. The traceplots show the chains have mixed well and $R_hat$ values close to 1, indicating that our model has sufficiently converged. 
+
+### Sensitivity Analysis
+
+In Figure XXXX,  We explore the posterior distributions of  $\theta_{1 1}$  and $\theta_{51}$, which are the posterior parameters that indicate Biden’s predicted two-party vote share on the day of the election in North Carolina  and Pennsylvania, resulting from various priors. The red lines indicate our posterior mean estimate from our final model. The posterior distributions are roughly the same for the four different priors on  $\frac{1}{\sigma^2_0}$. Thus, we can verify our results are not as sensitive to prior choice [[6]][Bibliography].
+
+### External Validation
+
+We perform validation on this model by predicting the winner of the 2012 presidential election and the electoral college vote. In this model, we predict the outcomes from 9 swing states [ https://www.politico.com/2012-election/swing-state/,  maybe list the swing states] We used the same priors from the previous presidential model, with the exception of the normal priors on $\theta_{\cdot 1}$. This time, we centered on President Obama’s  2008  vote share from swing state $i in (1 \dots 9)$.  
+
+We applied the same prediction method to estimate the election outcome and the electoral college vote from 2012. Based on https://www.politico.com/2012-election/swing-state/, Obama  gained 237 electoral votes from ____ states. This was  summed up with the total number of electoral votes he was predicted to win from  the 9 swing states.  Similarly, if Obama gained more than 270 electoral votes, that meant that the model predicts he would win the 2012 election (which he did :)). 
+
+## Discussion
+
+# Senate
+
+## Data
+
+## Methods
+
+#The Senate currently has 53 Republicans and 47 Democrats (including 2 Independents who caucus with the Democratic party). 35 seats are up in 2020 - thus, in order to reach 51 and “flip” the Senate, Democrats will need to win 16 of the 35 seats up for election. Of the 16 needed to flip the senate, several reputable sources confirm that the following8 states are very likely to vote for the Democratic candidate (Virginia, Oregon, Illinois, New Jersey, Delaware, Massachusetts, New Hampshire, and Rhode Island) and 9 states are very likely to vote Republican (Arkansas, Idaho, Louisiana, Nebraska, Oklahoma, Tennessee, South Dakota, West Virginia and Wyoming). However, 18 races in 17 states will be instrumental in determining if the senate flips: Alaska, Alabama, Arizona, Colorado, Georgia, Iowa, Kansas, Kentucky, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, and Texas. (from 538). There are also two special elections: one in Arizona and one in Georgia (both of Georgia’s seats are up). [SOURCE for special election? or do we wanna say more about it] Of these 18 races, Democrats will need to win 8 in order to reach 16 seats and flip the senate. Thus, we are primarily interested in modelling the outcomes of only these “battleground” races. 
+*mention somewhere that we are not using priors for vote shares, and this is because we don’t have a previous election that we can center our priors on. So, we stuck with 50*
+This approach utilized polling data and a model similar to that of the presidential election [cite Linzer].  In this model, we predict the outcomes from 19 swing races. [4,SOURCE,  maybe list the swing states]We let these  races influence each other by placing a hierarchical prior on the model  parameters. Further, our final model estimates the correlation structure between races, so more similar races pull information from one another. 
+
+[insert model latex]
+
+Let $Y_k$, the Democratic candidate’s share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in battleground race $i \in (1 \dots 19)$. Each race has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each race We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered about 50 with variance $\sigma^2_0$. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{19}}, 20)$
+
+Using JAGS, we ran Model 2 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
+Extract the 19 values of  $\theta_{\cdot 1}$, the Democratic candidate’s estimated vote share on the day of the election from each battleground race $i \in (1 \dots 19)$.
+For each $\theta_{i 1}$ value, if it is greater than 50%, that race is predicted to elect the Democratic candidate. 
+Based on [SOURCE], 7 races are very likely to elect the Democratic candidate. We then add this to the number of predicted races that will elect a Democratic candidate. If the total number of races that predict a Democratic candidate being elected is at least  16, the Senate is then predicted to flip. 
+
+
+Swing States Senate Election (from 538) : Alaska, Alabama, Arizona*, Colorado, Georgia*, Georgia, Iowa, Kansas, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, Texas (17 states)
+
+Out of the 18 remaining seats up for election: 
+Solid Dem (>= 95): New  Hampshire, Virginia, Oregon, Illinois, New Jersey, DE, MA,  RI (8 states solid Dem)
+Solid Rep (>= 95): Kentucky, Louisiana, WV, OK, ID,  SD, TN, NE, WY, AR (10 states solid Rep)
+currently there are 47 dems (counting independents) and 53 republicans 
+this means that, other than the 35 (23 Rep, 12 Dem) seats up, there are 35 democrats and 30 republicans in the senate
+to flip, democrats need to get up to 51. They need 16 seats. 8 are “guarenteed”,  they need 8 from the swing states.  
+
+
+# Results
+
+### Model Diagnostics
+
+### Sensitivity Analysis
+
+### External Validation
+
+## Discussion
+
+# # North Carolina Senate Election
+
+#Congressional Elections
+
+## Data
+
+## Methods
+
+## Results
+
+### Model Diagnostics
+
+### Sensitivity Analysis
+
+### External Validation
+
+## Discussion
+
+# Conclusion
+
+# Appendix A
+
+# Appendix B
+
+# Bibliography
+
+1). “Braced for impact; America's presidential election." The Economist, 10 Oct. 2020, p. 66(US). Gale OneFile: CPI.Q, https://link.gale.com/apps/doc/A637802159/CPI?u=duke_perkins&sid=CPI&xid=e45fed0d. Accessed 28 Oct. 2020.
+2). Martin, Susan F. “Commentary: The 2020 U.S. Presidential Election and Immigration.” International Migration, vol. 58, no. 5, 2020, pp. 274–276., doi:10.1111/imig.12772. 
+3). Drew A. Linzer (2013) Dynamic Bayesian Forecasting of Presidential Elections in the States, Journal of the American Statistical Association, 108:501, 124-134, DOI: 10.1080/01621459.2012.737735
+4). Linge, M. (2020, October 31). Inside the nine swing states the 2020 presidential election hinges on. Retrieved November 01, 2020, from https://nypost.com/2020/10/31/the-9-swing-states-the-2020-presidential-election-hinges-on/
+5). Tamman, M., & Faulconbridge, G. (2016, November 09). How the polls, including ours, missed Trump's victory. Retrieved November 01, 2020, from https://www.reuters.com/article/us-usa-election-polls/how-the-polls-including-ours-missed-trumps-victory-idUSKBN1343O6
+6). Hoff, P. D. (2010). Chapter 1: Introduction and examples. In A first course in bayesian statistical methods (pp. 5-7). Dordrecht: Springer.
+
+>
