@@ -2,7 +2,234 @@
 title: "Predicting Who Votes in 2020"
 output: html_document
 ---
+
 ```{r}
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(readr)
+library(groupdata2)
+library(lme4)
+```
+
+```{r Read Data}
+#read in 2016 data
+
+who_votes_data <- read_csv("grouped_voter_data_2016.csv")
+who_votes_data <- who_votes_data %>% filter(!is.na(gender))
+who_votes_data <- who_votes_data %>% filter(race_ethnicity != "Non-Hispanic Other")
+
+who_votes_data <- who_votes_data %>%
+  dplyr::mutate(vote = ifelse(Likely/(Likely+Unlikely) > 0.5, 1, 0),
+                vote = ifelse(is.nan(Likely/(Likely+Unlikely)), 0, vote),
+                vote = dplyr::case_when(
+                  Likely == 0 & Unlikely == 0 ~ 0,
+                  TRUE ~ vote
+                ))
 
 ```
+
+```{r}
+#train model on ALL data predicting likelihood of voting
+model.text <- "cbind(Likely, Unlikely) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|county_desc) + (1|cong_dist_abbrv)"
+glmer.fit.final <- glmer(model.text,
+                         data = who_votes_data,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+```
+
+```{r}
+#now obtain predicted probabilities over ALL data
+glmer.probs <- predict(glmer.fit.final,  who_votes_data,  type = "response")
+
+#bind these to the exiting data frame
+who_votes_data$pred_prob = glmer.probs
+```
+
+
+```{r}
+#read in all registration information
+
+nc_registered_voters <- readr::read_rds("ncvoter_Statewide_small.rds")
+nc_registered_voters <- nc_registered_voters %>% 
+  filter(voter_status_reason_desc != "DECEASED") %>%
+  mutate(voter_reg_num = as.integer(substr(voter_reg_num,6,12)))
+
+nc_registered_voters$registr_dt <- as.character(nc_registered_voters$registr_dt)
+nc_registered_voters$registr_dt<- as.Date(nc_registered_voters$registr_dt, format= "%m/%d/%Y")
+nc_registered_voters <- subset(nc_registered_voters, registr_dt <= last_day_to_register)
+```
+
+
+```{r setup, include=FALSE}
+# modify registration data 
+
+registration_data <- nc_registered_voters %>% 
+  mutate(
+         age_bin = case_when(
+           birth_age <= 29 ~ "18-29",
+           birth_age >= 30 & birth_age <= 39 ~ "30-39",
+           birth_age >= 40 & birth_age <= 49 ~ "40-49",
+           birth_age >= 50 & birth_age <= 64 ~ "50-64",
+           birth_age >= 65 ~ "65+"
+         ),
+         race_ethnicity = case_when(
+           ethnic_code == "HL" ~ "Hispanic Any Race",
+           ethnic_code == "NL" & race_code == "W" ~ "Non-Hispanic White",
+           ethnic_code == "NL" & race_code == "B" ~ "Non-Hispanic Black",
+           ethnic_code == "NL" & race_code == "O" ~ "Non-Hispanic Other",
+           ethnic_code == "NL" & race_code == "A" ~ "Non-Hispanic Asian",
+           ethnic_code == "NL" & race_code == "M" ~ "Non-Hispanic Mixed",
+           ethnic_code == "NL" & race_code == "I" ~ "Non-Hispanic American Indian",
+           ethnic_code == "NL" & race_code == "P" ~ "Non-Hispanic Pacific Islander",
+           ethnic_code == "NL" & race_code == "U" ~ "Undetermined",
+           TRUE ~ "Undetermined"
+         ),
+         
+  )
+
+grouped_registration_data <- registration_data %>%
+  dplyr::group_by(county_desc, cong_dist_abbrv, race_ethnicity, party_cd,
+                  age_bin, gender_code) %>%
+  dplyr::summarize(total = n())
+
+
+grouped_registration_data <- grouped_registration_data  %>% dplyr::rename(gender = gender_code)
+grouped_registration_data <- grouped_registration_data %>% filter(party_cd != "CST")
+grouped_registration_data <- grouped_registration_data %>% filter(party_cd != "GRE")
+grouped_registration_data <- grouped_registration_data %>% filter(party_cd != "LIB")
+
+grouped_registration_data <- grouped_registration_data %>% filter(gender != "U")
+grouped_registration_data <- grouped_registration_data %>% filter(race_ethnicity != "Undetermined")
+grouped_registration_data <- grouped_registration_data %>% filter(!is.na(gender))
+grouped_registration_data <- grouped_registration_data %>% filter(race_ethnicity != "Non-Hispanic Other")
+grouped_registration_data <- grouped_registration_data %>% filter(race_ethnicity != "Non-Hispanic Pacific Islander")
+
+
+district1 <- c("VANCE", "WARREN", "HALIFAX", "NORTHAMPTON", "HERTFORD", "GATES", "NASH", "EDGECOMBE", "MARTIN", "BERTIE", "WASHINGTON", "WILSON", "WAYNE", "GREENE", "PITT")
+district2 <- c("WAKE")
+district3 <-c("CURRITUCK", "CAMDEN", "PASQUOTANK", "PERQUIMANS", "CHOWAN", "DARE", "TYRRELL", "HYDE", "BEAUFORT", "PAMLICO", "CARTERET", "CRAVEN", "PITT", "LENOIR", "JONES", "ONSLOW", "DUPLIN")
+length(district3)
+district4 <-c("GRANVILLE", "ORANGE", "WAKE", "DURHAM", "FRANKLIN", "CHATHAM")
+district5 <-c("WATAUGA", "ASHE", "ALLEGHANY", "WILKES", "ALEXANDER", "CALDWELL", "BURKE", "CLEVELAND", "GASTON", "RUTHERFORD")
+district6 <-c("FORSYTH","GUILFORD")
+district7 <-c("JOHNSTON", "SAMPSON", "BRUNSWICK", "PENDER", "NEW HANOVER","COLUMBUS", "BLADEN", "HARNETT")
+district8 <-c("CABARRUS", "STANLY", "MONTGOMERY", "MOORE", "LEE", "CUMBERLAND", "HARNETT")
+district9 <-c("MECKLENBURG", "UNION", "ANSON", "RICHMOND", "SCOTLAND", "MOORE", "HOKE", "ROBESON")
+district10 <-c("SURRY", "STOKES", "ROCKINGHAM", "FORSYTH", "YADKIN", "IREDELL", "CATAWBA", "LINCOLN")
+district11 <-c("CHEROKEE", "CLAY", "GRAHAM", "SWAIN", "MACON", "JACKSON", "HAYWOOD", "TRANSYLVANIA", "HENDERSON", "BUNCOMBE", "MADISON", "YANCEY", "MITCHELL", "AVERY", "MCDOWELL", "RUTHERFORD", "POLK")
+district12 <-c("MECKLENBURG")
+district13 <-c("CASWELL", "PERSON", "ALAMANCE", "CHATHAM", "LEE", "RANDOLPH", "DAVIDSON", "DAVIE", "ROWAN")
+
+multiple <- c("RUTHERFORD", "FORSYTH", "MECKLENBURG", "MOORE", "CHATHAM", "LEE", "WAKE", "HARNETT", "PITT")
+
+grouped_registration_data <- grouped_registration_data %>% mutate(cong_dist_abbrv = case_when(
+    !(county_desc %in% multiple) & county_desc %in% district1 ~ as.integer(1),
+    !(county_desc %in% multiple) & county_desc %in% district2 ~ as.integer(2),
+    !(county_desc %in% multiple) & county_desc %in% district3 ~ as.integer(3),
+    !(county_desc %in% multiple) & county_desc %in% district4 ~ as.integer(4),
+    !(county_desc %in% multiple) & county_desc %in% district5 ~ as.integer(5),
+    !(county_desc %in% multiple) & county_desc %in% district6 ~ as.integer(6),
+    !(county_desc %in% multiple) & county_desc %in% district7 ~ as.integer(7),
+    !(county_desc %in% multiple) & county_desc %in% district8 ~ as.integer(8),
+    !(county_desc %in% multiple) & county_desc %in% district9 ~ as.integer(9),
+    !(county_desc %in% multiple) & county_desc %in% district10 ~ as.integer(10),
+    !(county_desc %in% multiple) & county_desc %in% district11 ~ as.integer(11),
+    !(county_desc %in% multiple) & county_desc %in% district12 ~ as.integer(12),
+    !(county_desc %in% multiple) & county_desc %in% district13 ~ as.integer(13),
+    TRUE ~ cong_dist_abbrv
+  ))
+
+t <- grouped_registration_data
+grouped_registration_data <- t
+for (m in multiple){
+  for (a in unique(grouped_registration_data$age_bin)){
+    for (r in unique(grouped_registration_data$race_ethnicity)){
+      for (p in unique(grouped_registration_data$party_cd)){
+        for (g in unique(grouped_registration_data$gender))
+          {
+            curr = grouped_registration_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & is.na(cong_dist_abbrv))
+            if (nrow(curr) == 0){
+              next
+            }
+            curr.dist = grouped_registration_data %>% filter(county_desc==m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & !is.na(cong_dist_abbrv))
+            if (nrow(curr.dist) == 0){
+              next
+            }
+            number.total.from.na <- curr[,7]
+
+            all.total <- number.total.from.na$total
+            add.to.first.total <- as.integer(all.total/2)
+            
+          
+            first.county <- min(unique(curr.dist$cong_dist_abbrv))
+            print(first.county)
+            second.county <- max(unique(curr.dist$cong_dist_abbrv))
+            
+            grouped_registration_data <- grouped_registration_data  %>% 
+              mutate(total= case_when(
+                county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == first.county ~ total + add.to.first.total,
+                county_desc == m & age_bin == a & race_ethnicity == r & party_cd == p & gender == g & cong_dist_abbrv == second.county ~ total + add.to.first.total,
+                TRUE ~ total
+              ))
+            
+            
+        }
+
+    
+      }
+
+    }
+
+  }
+  print(m)
+  print(nrow(grouped_registration_data))
+
+}
+
+grouped_registration_data <- grouped_registration_data %>% filter(!is.na(cong_dist_abbrv))
+
+grouped_registration_data %>% write_csv("grouped_registration_data_2020.csv")
+```
+
+```{r}
+grouped_registration_data <- grouped_registration_data %>% filter(!is.na(gender)) %>% filter(race_ethnicity != "Non-Hispanic Other") 
+```
+
+START HERE ON SUNDAY!
+
+```{r}
+#now we have dataframe with registration numbers by group- grouped_registration_data
+#who_votes_data has predicted probabilities for each group
+
+#first, select relevant info in who_votes
+who_votes_data <- who_votes_data %>%
+  dplyr::select(c(age_bin, race_ethnicity, gender, party_cd, county_desc, cong_dist_abbrv, pred_prob))
+
+#we want to merge the two data frames
+
+registration_with_predicted_probabilites <- inner_join(grouped_registration_data, who_votes_data, by=c("age_bin", "race_ethnicity", "gender", "party_cd", "county_desc", "cong_dist_abbrv"))
+
+```
+
+```{r}
+#next, we iterate through each group and pull out the predicted probabilitiy
+totals <- registration_with_predicted_probabilites$total
+probs <- registration_with_predicted_probabilites$pred_prob
+
+n_likely <- c()
+
+for (i in 1:length(totals)){
+  #binomial parameters
+  total <- totals[i]
+  prob <- probs[i]
+  likely <- sum(rbinom(total,1,prob))
+  n_likely[i] <- likely
+  
+}
+
+registration_with_predicted_probabilities$predicted_likely = n_likely
+```
+
+
 
