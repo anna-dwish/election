@@ -1004,8 +1004,8 @@ We applied the same prediction method to estimate the election outcome and the e
 
 ## Methods
 
-#The Senate currently has 53 Republicans and 47 Democrats (including 2 Independents who caucus with the Democratic party). 35 seats are up in 2020 - thus, in order to reach 51 and “flip” the Senate, Democrats will need to win 16 of the 35 seats up for election. Of the 16 needed to flip the senate, several reputable sources confirm that the following8 states are very likely to vote for the Democratic candidate (Virginia, Oregon, Illinois, New Jersey, Delaware, Massachusetts, New Hampshire, and Rhode Island) and 9 states are very likely to vote Republican (Arkansas, Idaho, Louisiana, Nebraska, Oklahoma, Tennessee, South Dakota, West Virginia and Wyoming). However, 18 races in 17 states will be instrumental in determining if the senate flips: Alaska, Alabama, Arizona, Colorado, Georgia, Iowa, Kansas, Kentucky, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, and Texas. (from 538). There are also two special elections: one in Arizona and one in Georgia (both of Georgia’s seats are up). [SOURCE for special election? or do we wanna say more about it] Of these 18 races, Democrats will need to win 8 in order to reach 16 seats and flip the senate. Thus, we are primarily interested in modelling the outcomes of only these “battleground” races. 
-*mention somewhere that we are not using priors for vote shares, and this is because we don’t have a previous election that we can center our priors on. So, we stuck with 50*
+The Senate currently has 53 Republicans and 47 Democrats (including 2 Independents who caucus with the Democratic party). 35 seats are up in 2020 - thus, in order to reach 51 and “flip” the Senate, Democrats will need to win 16 of the 35 seats up for election. Of the 16 needed to flip the senate, several reputable sources confirm that the following8 states are very likely to vote for the Democratic candidate (Virginia, Oregon, Illinois, New Jersey, Delaware, Massachusetts, New Hampshire, and Rhode Island) and 9 states are very likely to vote Republican (Arkansas, Idaho, Louisiana, Nebraska, Oklahoma, Tennessee, South Dakota, West Virginia and Wyoming). However, 18 races in 17 states will be instrumental in determining if the senate flips: Alaska, Alabama, Arizona, Colorado, Georgia, Iowa, Kansas, Kentucky, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, and Texas. (from 538). There are also two special elections: one in Arizona and one in Georgia (both of Georgia’s seats are up). [SOURCE for special election? or do we wanna say more about it] Of these 18 races, Democrats will need to win 8 in order to reach 16 seats and flip the senate. Thus, we are primarily interested in modelling the outcomes of only these “battleground” races. *mention somewhere that we are not using priors for vote shares, and this is because we don’t have a previous election that we can center our priors on. So, we stuck with 50*
+
 This approach utilized polling data and a model similar to that of the presidential election [cite Linzer].  In this model, we predict the outcomes from 19 swing races. [4,SOURCE,  maybe list the swing states]We let these  races influence each other by placing a hierarchical prior on the model  parameters. Further, our final model estimates the correlation structure between races, so more similar races pull information from one another. 
 
 [insert model latex]
@@ -1017,7 +1017,6 @@ Extract the 19 values of  $\theta_{\cdot 1}$, the Democratic candidate’s estim
 For each $\theta_{i 1}$ value, if it is greater than 50%, that race is predicted to elect the Democratic candidate. 
 Based on [SOURCE], 7 races are very likely to elect the Democratic candidate. We then add this to the number of predicted races that will elect a Democratic candidate. If the total number of races that predict a Democratic candidate being elected is at least  16, the Senate is then predicted to flip. 
 
-
 Swing States Senate Election (from 538) : Alaska, Alabama, Arizona*, Colorado, Georgia*, Georgia, Iowa, Kansas, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, Texas (17 states)
 
 Out of the 18 remaining seats up for election: 
@@ -1026,7 +1025,6 @@ Solid Rep (>= 95): Kentucky, Louisiana, WV, OK, ID,  SD, TN, NE, WY, AR (10 stat
 currently there are 47 dems (counting independents) and 53 republicans 
 this means that, other than the 35 (23 Rep, 12 Dem) seats up, there are 35 democrats and 30 republicans in the senate
 to flip, democrats need to get up to 51. They need 16 seats. 8 are “guarenteed”,  they need 8 from the swing states.  
-
 
 # Results
 
@@ -1038,9 +1036,9 @@ to flip, democrats need to get up to 51. They need 16 seats. 8 are “guarenteed
 
 ## Discussion
 
-# # North Carolina Senate Election
+## North Carolina Senate Election
 
-#Congressional Elections
+# Congressional Elections
 
 ## Data
 
