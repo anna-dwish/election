@@ -32,10 +32,12 @@ nc_registered_voters <- subset(nc_registered_voters, registr_dt <= last_day_to_r
 ```
 
 
+
 ```{r setup, include=FALSE}
 nc_voters <- read.csv("ncvhis_Statewide_small_2016.csv") # voters in year
 
-voter_data <- inner_join(nc_registered_voters,nc_voters %>% filter(voted_party_desc != ""),by=c("voter_reg_num", "county_id", "county_desc"))
+voter_data <- left_join(nc_registered_voters,nc_voters %>% filter(voted_party_desc != ""),by=c("voter_reg_num", "county_id", "county_desc")) %>%
+  filter(!is.na(voted_party_desc))
 ```
 
 
@@ -90,6 +92,8 @@ grouped_voter_only_data <- grouped_voter_only_data %>% filter(!is.na(gender))
 grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Non-Hispanic Other")
 grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Non-Hispanic Pacific Islander")
 ```
+
+
 
 
 ```{r setup, include=FALSE}
@@ -187,6 +191,8 @@ for (m in multiple){
 ```{r setup, include=FALSE}
 grouped_voter_only_data <- grouped_voter_only_data %>% filter(!is.na(cong_dist_abbrv))
 ```
+
+
 
 
 ```{r setup, include=FALSE}
@@ -488,7 +494,6 @@ glmer.fit <- glmer(model.formula,
   
 glmer.probs <- predict(glmer.fit,  grouped_voter_only_data,  type = "response")
 
-#
 ```
 
 ```{r}
@@ -509,12 +514,14 @@ likely_2020_with_pred_prob <- inner_join(grouped_voter_only_data, only_likely, b
 ```{r}
 
 vote_shares_by_district <- function(district){
+  
   dem_vote_shares <- c()
   district_df <- likely_2020_with_pred_prob %>% filter(cong_dist_abbrv == district)
   totals <- district_df$predicted_likely
   probs <- district_df$pred_prob
 
-  for (j in 1:1000){
+  for (j in 1:500){
+    print(j)
     set.seed(j)
     n_likely_dem <- c()
     for (i in 1:length(totals)){
@@ -522,7 +529,7 @@ vote_shares_by_district <- function(district){
       total <- totals[i]
       prob <- probs[i]
       likely <- sum(rbinom(total,1,prob))
-     n_likely_dem[i] <- likely
+      n_likely_dem[i] <- likely
   }
 
   likely_2020_with_pred_prob$predicted_likely_dems <- n_likely_dem #likely democratic voters in each group
@@ -530,7 +537,7 @@ vote_shares_by_district <- function(district){
     group_by(cong_dist_abbrv) %>%
     summarize(total = sum(predicted_likely), dems = sum(predicted_likely_dems)) %>%
     mutate(dem_vote_share <- dems/total)
-  dem_vote_shares[i] <- by_district$dem_vote_share
+  dem_vote_shares[j] <- by_district$dem_vote_share
 
 
   }
@@ -540,10 +547,11 @@ vote_shares_by_district <- function(district){
 
 ```{r}
 districts <- unique(likely_2020_with_pred_prob$cong_dist_abbrv)
-df <- data.frame(matrix(ncol = length(districts), nrow = 1000))
+df <- data.frame(matrix(ncol = length(districts), nrow = 500))
 colnames(df) <- districts
 i = 1
 for (district in districts){
+  print(district)
   simulated_district_shares <- vote_shares_by_district(district)
   df[, i] <- simulated_district_shares
   
