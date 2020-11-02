@@ -23,7 +23,9 @@ nc_registered_voters <- readr::read_rds("ncvoter_Statewide_small_2016.rds")  # n
 
 nc_registered_voters <- nc_registered_voters %>% 
   filter(voter_status_reason_desc != "DECEASED") %>% 
+  #mutate(voter_reg_num = as.integer(voter_reg_num))
   mutate(voter_reg_num = as.integer(substr(voter_reg_num,6,12)))
+
 
 nc_registered_voters$registr_dt <- as.character(nc_registered_voters$registr_dt)
 nc_registered_voters$registr_dt<- as.Date(nc_registered_voters$registr_dt, format= "%m/%d/%Y")
@@ -37,7 +39,9 @@ nc_voters <- read.csv("ncvhis_Statewide_small_2016.csv") # voters in year
 
 voter_data <- left_join(nc_registered_voters,nc_voters %>% filter(voted_party_desc != ""),by=c("voter_reg_num", "county_id", "county_desc")) %>%
   filter(!is.na(voted_party_desc))
+
 ```
+
 
 
 ```{r setup, include=FALSE}
@@ -90,8 +94,6 @@ grouped_voter_data <- grouped_voter_data %>% filter(!is.na(gender))
 grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Non-Hispanic Other")
 grouped_voter_data <- grouped_voter_data %>% filter(race_ethnicity != "Non-Hispanic Pacific Islander")
 ```
-
-
 
 
 ```{r setup, include=FALSE}
@@ -188,130 +190,16 @@ for (m in multiple){
 
 ```{r setup, include=FALSE}
 grouped_voter_only_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv))
-```
 
-
-
-
-```{r setup, include=FALSE}
 grouped_voter_only_data %>% write_csv("grouped_voter_only_data_2016.csv")
 voter_data %>% filter(is.na(cong_dist_abbrv))
-```
 
-
-```{r}
-read_csv("grouped_voter_only_data_2016.csv")
-```
-
-```{r}
-#??? why can't it split into folds
+grouped_voter_only_data <- read_csv("grouped_voter_only_data_2016.csv")
 fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
 ```
 
 
 ```{r}
-smp_size <- floor(0.75 * nrow(grouped_voter_data))
-
-## set the seed to make your partition reproducible
-set.seed(123)
-train_ind <- sample
-(seq_len(nrow(grouped_voter_data)), size = smp_size)
-
-train <- grouped_voter_data[train_ind, ]
-test <- grouped_voter_data[-train_ind, ]
-```
-
-
-```{r}
-glmer.fit.congressional <- glmer(cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|county_desc) + (1|cong_dist_abbrv),
-                         data = train,
-                         family = binomial,
-                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-```
-
-```{r}
-test <- test %>%
-  mutate(vote = ifelse(Democrat/(Democrat+Republican) > 0.5, 1, 0),
-                vote = ifelse(is.nan(Democrat/(Democrat+Republican)), 0, vote),
-                vote = dplyr::case_when(
-                  Democrat == 0 & Republican == 0 ~ 0,
-                  TRUE ~ vote
-                ))
-
-```
-
-```{r}
-glmer.probs <- predict(glmer.fit.congressional,  test,  type = "response")
-glmer.pred <- rep(0, nrow(test))
-glmer.pred[glmer.probs > 0.5] <- 1
-  
-acc <-  mean(glmer.pred == test$vote)
-f1 <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
-```
-
-
-```{r cross validation, warning=FALSE, message=F, cache=TRUE}
-set.seed(5934512)
-fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  dplyr::mutate(vote = ifelse(Democrat/(Democrat+Republican) > 0.5, 1, 0),
-                vote = ifelse(is.nan(Democrat/(Democrat+Republican)), 0, vote),
-                vote = dplyr::case_when(
-                  Democrat == 0 & Republican == 0 ~ 0,
-                  TRUE ~ vote
-                ))
-
-round_perc = function(x) {
-  if (is.double(x)) {
-    round(x*100, digits = 2)
-  }
-}
-
-create_model <- function(model_formula, grouped_voter_data, perform_cv=TRUE){
-  model_results = list()
-  results_idx = 1
-  
-  # STEP 1: CROSS VALIDATION
-  if (perform_cv){
-    acc_list = c()
-    f1_list = c()
-    AUC_list = c()
-    for (i in 1:5) {
-      train <- grouped_voter_data %>% filter(.folds != i)
-      test <- grouped_voter_data %>% filter(.folds == i)
-  
-      glmer.fit <- glmer(model_formula,
-                     data = train,
-                     family = binomial,
-                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-  
-      glmer.probs <- predict(glmer.fit,  test,  type = "response")
-      glmer.pred <- rep(0, nrow(test))
-      glmer.pred[glmer.probs > 0.5] <- 1
-  
-      acc_list[i] <-  mean(glmer.pred == test$vote)
-      f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
-      AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
-    }
-    
-    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
-    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc()
-    f1_mean = f1_list %>% mean(na.rm=T)  %>% round_perc()
-    f1_sd = f1_list %>% sd(na.rm=T)  %>% round_perc()
-    AUC_mean = AUC_list %>% mean(na.rm=T)  %>% round_perc()
-    AUC_sd = AUC_list %>% sd(na.rm=T)  %>% round_perc()
-    
-    cv_df <- tibble(
-      Accuracy = paste0(acc_mean, "% ± ", acc_sd, "%"),
-      F1 = paste(f1_mean, "±", f1_sd),
-      AUC = paste(AUC_mean, "±", AUC_sd))
-    
-<<<<<<< HEAD
-  return(cv_df)
-}
-```
-
-```{r}
-
 # model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv)"
 # seed: 658392
 # accuracy: 60%
@@ -331,13 +219,9 @@ create_model <- function(model_formula, grouped_voter_data, perform_cv=TRUE){
 #seed: 658392
 #accuracy: 68.35
 
-model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * age_bin + (1|cong_dist_abbrv) + (1|county_desc)"
+#model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * age_bin + (1|cong_dist_abbrv) + (1|county_desc)"
 #seed: 658392
 # accuracy:68.9 
-
-
-
-df <- cross_validation(model.formula, fold_df)
 ```
 
 
@@ -356,6 +240,7 @@ glmer.probs <- predict(glmer.fit,  grouped_voter_only_data,  type = "response")
 
 ```
 
+
 ```{r}
 grouped_voter_only_data$pred_prob <- glmer.probs
 ```
@@ -370,6 +255,8 @@ only_likely <- likely_2020 %>%
 ```{r}
 likely_2020_with_pred_prob <- inner_join(grouped_voter_only_data, only_likely, by=c("age_bin", "race_ethnicity", "gender", "party_cd", "county_desc", "cong_dist_abbrv"))
 ```
+
+
 
 ```{r}
 
