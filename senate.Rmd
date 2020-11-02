@@ -190,10 +190,10 @@ senate <- senate_data %>%
          election_date = "2020-11-03" %>% as.Date(),
          days_to_election = election_date - end_date,
          y = pct_dem) %>%
-  #dplyr::filter(days_to_election <= 100) %>%
-  filter(state %in% c("Alaska", "Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", "Kentucky",
+  dplyr::filter(days_to_election <= 100) %>%
+  filter(state %in% c("Alaska", "Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", #"Kentucky",
                       "Maine", "Michigan", "Minnesota", "Mississippi",
-                      "Montana", "New Hampshire",
+                      "Montana", #"New Hampshire",
                       "New Mexico",
                       "North Carolina", "South Carolina", "Texas")) #THIS is 538 (Kentucky+NH are  kinda red and kinda blue)
 
@@ -226,21 +226,20 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
   likelihood_base_priors = "
   for(k in 1:N_polls){
     y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
-    p[k] = theta[r[k],t[k]]
+    p[k] = theta[r[k],t[k]] 
   }
   for(j in 2:N_days){
-    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Sigma)
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
   }
   
   Phi ~ dwish(I_states,N_states+1) 
   Sigma = inverse(Phi)
-  
-  
+  #hierarchical component
   for(j in 1:N_states){
-      sigma2_y[j] = 1/sigma2_y_inv[j]
-      sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
-      
-      theta[j,1] ~ dnorm(mu0, pow(sigma2_0),-1)
+    sigma2_y[j] = 1/sigma2_y_inv[j]
+    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
+    
+    theta[j,1] ~ dnorm(mu0, sigma2_0)
   }
   "
   
@@ -274,7 +273,7 @@ senate_gamma_2_2_mu_7.5.prior <- "
   mu0 ~ dnorm(50, pow(7.5,-1)) # CHANGE THIS
   
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(2,2) # CHANGE THIS
+  sigma2_0_inv ~ dgamma(2,1) # CHANGE THIS
   "
 
 model_file_senate_gamma_2_2_mu_7.5.prior <- generate_senate_model_text(senate_gamma_2_2_mu_7.5.prior) # CHANGE THIS
@@ -284,15 +283,15 @@ if (file.exists("senate_gamma_2_2_mu_7.5.prior.Rds")) { # CHANGE THIS
 } else {
   # CHANGE THIS
   senate_gamma_2_2_mu_7.5.prior_model <- jags(data = jags_data_senate,  
-                                 parameters.to.save = c("theta", "Sigma", 
-                                                        "p","sigma2_y", "sigma2_0"),
-                                 n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
-                                                # CHANGE THIS
-                                 model.file = model_file_senate_gamma_2_2_mu_7.5.prior)
-              # CHANGE THIS                                   # CHANGE THIS
+                                              parameters.to.save = c("theta", "Sigma", 
+                                                                     "p","sigma2_y", "sigma2_0"),
+                                              n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                              # CHANGE THIS
+                                              model.file = model_file_senate_gamma_2_2_mu_7.5.prior)
+  # CHANGE THIS                                   # CHANGE THIS
   saveRDS(senate_gamma_2_2_mu_7.5.prior_model, file = "senate_gamma_2_2_mu_7.5.prior.Rds")
 }
-                    # CHANGE THIS
+# CHANGE THIS
 n_iter <- dim(senate_gamma_2_2_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
 
 prediction_per_simulation_senate <- function(model_output, i){
@@ -309,7 +308,7 @@ prediction_per_simulation_senate <- function(model_output, i){
 final_results_senate <- c()
 
 for (i in 1:n_iter){
-                                                                      # CHANGE THIS
+  # CHANGE THIS
   final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_2_mu_7.5.prior_model, i)
 }
 
@@ -317,7 +316,16 @@ mean(final_results_senate >= 9)
 mean(final_results_senate)
 final_results_senate %>% hist()
 
+tidybayes::gather_draws(senate_gamma_2_2_mu_7.5.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+  filter(i == 1 & j == 1) %>%
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+  geom_line(alpha = 0.6) +
+  facet_grid(param~., scales = "free_y")
+```
 
+
+```{r}
 ###### NEW MODEL 
 senate_gamma_2_2_mu_10.prior <- "
   nu_y ~ dunif(0,100)
@@ -334,10 +342,10 @@ if (file.exists("senate_gamma_2_2_mu_10.prior.Rds")) {
   senate_gamma_2_2_mu_10.prior_model <- readRDS("senate_gamma_2_2_mu_10.prior.Rds")
 } else {
   senate_gamma_2_2_mu_10.prior_model <- jags(data = jags_data_senate,  
-                                 parameters.to.save = c("theta", "Sigma", 
-                                                        "p","sigma2_y", "sigma2_0"),
-                                 n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
-                                 model.file = model_file_senate_gamma_2_2_mu_10.prior)
+                                             parameters.to.save = c("theta", "Sigma", 
+                                                                    "p","sigma2_y", "sigma2_0"),
+                                             n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                             model.file = model_file_senate_gamma_2_2_mu_10.prior)
   
   saveRDS(senate_gamma_2_2_mu_10.prior_model, file = "senate_gamma_2_2_mu_10.prior.Rds")
 }
