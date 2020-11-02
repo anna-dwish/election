@@ -190,12 +190,18 @@ senate <- senate_data %>%
          election_date = "2020-11-03" %>% as.Date(),
          days_to_election = election_date - end_date,
          y = pct_dem) %>%
-  dplyr::filter(days_to_election <= 100) %>%
-  filter(state %in% c("Alaska", "Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", #"Kentucky", 
+  #dplyr::filter(days_to_election <= 100) %>%
+  filter(state %in% c("Alaska", "Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", "Kentucky",
                       "Maine", "Michigan", "Minnesota", "Mississippi",
-                      "Montana", #"New Hampshire", 
-                      "New Mexico", 
-                      "North Carolina", "South Carolina", "Texas"))
+                      "Montana", "New Hampshire",
+                      "New Mexico",
+                      "North Carolina", "South Carolina", "Texas")) #THIS is 538 (Kentucky+NH are  kinda red and kinda blue)
+
+# filter(state %in% c("Alabama", "Arizona*", "Colorado", "Georgia*", "Georgia", "Iowa", "Kansas", "Kentucky",
+#                     "Maine", "Michigan", "Minnesota", 
+#                     "Montana", "New Hampshire",
+#                     
+#                     "North Carolina", "South Carolina", "Texas")) #  THIS is ballotpedia states
 ```
 
 
@@ -215,35 +221,6 @@ jags_data_senate <- list(y=y_senate,t=t_senate,r=r_senate,
 ```
 
 ```{r}
-model_mv_senate <- function(){
-  for(k in 1:N_polls){
-    y[k] ~ dnorm(p[k],1/sigma2_y[r[k]]) #note no longer binomial
-    p[k] = theta[r[k],t[k]]
-  }
-  for(j in 2:N_days){
-    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
-  }
-  Phi ~ dwish(I_states,N_states+1) 
-  Sigma = inverse(Phi)
-  
-  
-  for(j in 1:N_states){
-    sigma2_y[j] = 1/sigma2_y_inv[j]
-    sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
-    
-    theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
-  }
-  nu_y ~ dunif(0,100)
-  tau_y ~ dunif(0,100)
-  
-  mu0 ~ dnorm(50,pow(7.5,-2))
-  sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(.5,.5)
-}
-```
-
-
-```{r}
 generate_senate_model_text = function(hierarchical_priors_senate) {
   model_file <- tempfile()
   likelihood_base_priors = "
@@ -252,8 +229,9 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
     p[k] = theta[r[k],t[k]]
   }
   for(j in 2:N_days){
-    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Sigma)
   }
+  
   Phi ~ dwish(I_states,N_states+1) 
   Sigma = inverse(Phi)
   
@@ -262,7 +240,7 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
       sigma2_y[j] = 1/sigma2_y_inv[j]
       sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
       
-      theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+      theta[j,1] ~ dnorm(mu0, pow(sigma2_0),-1)
   }
   "
   
@@ -271,33 +249,122 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
   return(model_file)
 }
 ```
+ETHAN
+sigma2_0_inv ~ dgamma(2,2), mu0 ~ dnorm(50, pow(7.5,-1))
+sigma2_0_inv ~ dgamma(2,2), mu0 ~ dnorm(50, pow(10,-1))
 
+STEVEN
+sigma2_0_inv ~ dgamma(2,0.5), mu0 ~ dnorm(50, pow(7.5,-1))
+sigma2_0_inv ~ dgamma(2,0.5), mu0 ~ dnorm(50, pow(10,-1))
+
+ANNA
+sigma2_0_inv ~ dgamma(5,5), mu0 ~ dnorm(50, pow(7.5,-1))
+sigma2_0_inv ~ dgamma(5,5), mu0 ~ dnorm(50, pow(10,-1))
+
+MALAVI
+sigma2_0_inv ~ dgamma(5,2.5), mu0 ~ dnorm(50, pow(7.5,-1))
+sigma2_0_inv ~ dgamma(5,2.5), mu0 ~ dnorm(50, pow(10,-1))
 
 ```{r}
-senate_gamma_4_2_prior <- "
+##  ETHAN 
+senate_gamma_2_2_mu_7.5.prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
   
-  mu0 ~ dnorm(50,pow(7.5,-1))
+  mu0 ~ dnorm(50, pow(7.5,-1)) # CHANGE THIS
   
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(4, 2)
+  sigma2_0_inv ~ dgamma(2,2) # CHANGE THIS
   "
 
-model_file <- generate_senate_model_text(senate_gamma_4_2_prior)
-if (file.exists("senate_gamma_4_2_prior.Rds")) {
-  senate_gamma_4_2_prior <- readRDS("senate_gamma_4_2_prior.Rds")
+model_file_senate_gamma_2_2_mu_7.5.prior <- generate_senate_model_text(senate_gamma_2_2_mu_7.5.prior) # CHANGE THIS
+if (file.exists("senate_gamma_2_2_mu_7.5.prior.Rds")) { # CHANGE THIS
+  # CHANGE THIS
+  senate_gamma_2_2_mu_7.5.prior_model <- readRDS("senate_gamma_2_2_mu_7.5.prior.Rds") # CHANGE THIS
 } else {
-  senate_gamma_4_2_prior <- jags(data = jags_data_senate,  
-                                     parameters.to.save = c("theta", "Sigma", 
-                                                            "p","sigma2_y", "sigma2_0"),
-                                     n.iter = 125000, n.burnin = 50000, n.thin = 75, n.chains = 2,
-                                     model.file = model_file)
-  
-  saveRDS(senate_gamma_4_2_prior, file = "senate_gamma_4_2_prior.Rds")
+  # CHANGE THIS
+  senate_gamma_2_2_mu_7.5.prior_model <- jags(data = jags_data_senate,  
+                                 parameters.to.save = c("theta", "Sigma", 
+                                                        "p","sigma2_y", "sigma2_0"),
+                                 n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                                # CHANGE THIS
+                                 model.file = model_file_senate_gamma_2_2_mu_7.5.prior)
+              # CHANGE THIS                                   # CHANGE THIS
+  saveRDS(senate_gamma_2_2_mu_7.5.prior_model, file = "senate_gamma_2_2_mu_7.5.prior.Rds")
 }
-```
+                    # CHANGE THIS
+n_iter <- dim(senate_gamma_2_2_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
 
+prediction_per_simulation_senate <- function(model_output, i){
+  elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states_senate, elec_sims)
+  
+  dem_states_df <- vote_share_by_state %>%
+    filter(elec_sims > 50)
+  dem_states <- dem_states_df$states_senate
+  num_dem_states <- length(dem_states)
+  return(num_dem_states)
+}
+
+final_results_senate <- c()
+
+for (i in 1:n_iter){
+                                                                      # CHANGE THIS
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_2_mu_7.5.prior_model, i)
+}
+
+mean(final_results_senate >= 9)
+mean(final_results_senate)
+final_results_senate %>% hist()
+
+
+###### NEW MODEL 
+senate_gamma_4_2_mu_10.prior <- "
+  nu_y ~ dunif(0,100)
+  tau_y ~ dunif(0,100)
+  
+  mu0 ~ dnorm(50, pow(10,-1))
+  
+  sigma2_0 = 1/sigma2_0_inv
+  sigma2_0_inv ~ dgamma(2,2)
+  "
+
+model_file_senate_gamma_4_2_mu_10.prior <- generate_senate_model_text(senate_gamma_4_2_mu_10.prior)
+if (file.exists("senate_gamma_4_2_mu_10.prior.Rds")) {
+  senate_gamma_4_2_mu_10.prior_model <- readRDS("senate_gamma_4_2_mu_10.prior.Rds")
+} else {
+  senate_gamma_4_2_mu_10.prior_model <- jags(data = jags_data_senate,  
+                                 parameters.to.save = c("theta", "Sigma", 
+                                                        "p","sigma2_y", "sigma2_0"),
+                                 n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                 model.file = model_file_senate_gamma_4_2_mu_10.prior)
+  
+  saveRDS(senate_gamma_4_2_mu_10.prior_model, file = "senate_gamma_4_2_mu_10.prior.Rds")
+}
+
+n_iter <- dim(senate_gamma_4_2_mu_10.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
+
+prediction_per_simulation_senate <- function(model_output, i){
+  elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states_senate, elec_sims)
+  
+  dem_states_df <- vote_share_by_state %>%
+    filter(elec_sims > 50)
+  dem_states <- dem_states_df$states_senate
+  num_dem_states <- length(dem_states)
+  return(num_dem_states)
+}
+
+final_results_senate <- c()
+
+for (i in 1:n_iter){
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_4_2_mu_10.prior_model, i)
+}
+
+mean(final_results_senate >= 9)
+mean(final_results_senate)
+final_results_senate %>% hist()
+```
 
 
 ```{r}
@@ -358,9 +425,9 @@ predictions_per_state_senate <- function(model_output, state){
 probs_voting_dem <- c()
 i = 1
 for (state in states_senate){
- # print(state)
+  # print(state)
   prob_voting_dem <- predictions_per_state_senate(senate_gamma_5_1_prior, state)
- # print(prob_voting_dem)
+  # print(prob_voting_dem)
   probs_voting_dem[i] <- prob_voting_dem
   i = i + 1
 }
@@ -395,21 +462,23 @@ IGNORE THIS
 
 
 ```{r}
-states <- senate$state %>% unique
-y <- senate$y
-r <- match(senate$state,states)
-t <- senate$days_to_election + 1 
-N_polls <- y %>% length
-N_states <- states %>% length
-N_days <- t %>% max
-I_states <- diag(N_states)
+states_senate <- senate$state %>% unique
+y_senate <- senate$y
+r_senate <- match(senate$state,states_senate)
+t_senate <- senate$days_to_election + 1 
+N_polls_senate <- y_senate %>% length
+N_states_senate <- states_senate %>% length
+N_days_senate <- t_senate %>% max
+I_states_senate <- diag(N_states_senate)
+jags_data_senate <- list(y=y_senate,t=t_senate,r=r_senate,
+                         N_polls=N_polls_senate,N_states=N_states_senate,N_days=N_days_senate, I_states=I_states_senate)
 ```
 
 
 ```{r}
 # swing states 
 vote_share_2016 <- data.frame(senate$state, number = r_senate)
-vote_share_2016 <- unique(vote_share_2016) %>%
+vote_share_2016 <- distinct(vote_share_2016) %>%
   mutate(clinton_percent = case_when(
     senate.state == "North Carolina" ~ 47/(47 + 51),
     senate.state == "Michigan" ~ 47/(47 + 48),
@@ -428,12 +497,12 @@ vote_share_2016 <- unique(vote_share_2016) %>%
     senate.state == "Alabama" ~ 35/(35 + 63),
     senate.state == "Montana" ~ 36/(36 + 57),
     senate.state == "Mississippi" ~ 46.4/(53.6 + 46.4),
+    senate.state == "Alaska" ~ 46.7/(53.3 + 46.7),
     senate.state == "New Mexico" ~ 54.1 / (54.1 + 30.5)
-
   )) %>%
   mutate(clinton_percent = 100*clinton_percent)
 h <- vote_share_2016$clinton_percent
-
+h
 ```
 
 ```{r}
@@ -453,28 +522,28 @@ model_mv_senate_adj_priors <- function(){
     sigma2_y[j] = 1/sigma2_y_inv[j]
     sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
     
-    theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-2))
-    #theta[j,1] ~ dnorm(mu0,pow(sigma2_0,-1))
+    #theta[j,1] ~ dnorm(h[j], pow(sigma2_0,-1))
+    theta[j,1] ~ dnorm(mu0,sigma2_0)
   }
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
   
-  mu0 ~ dnorm(50,pow(7.5,-2))
+  mu0 ~ dnorm(50,pow(7.5,-1))
   
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(5, 1)
+  sigma2_0_inv ~ dgamma(2,0.5)
 }
 ```
 
 ```{r}
-jags_data_senate_adj_prior <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
+#jags_data_senate_adj_prior <- list("y","t", "r", "N_polls", "N_states", "N_days", "h", "I_states")
 jags_data_senate_adj <- list(y=y_senate,t=t_senate,r=r_senate,
-                         N_polls=N_polls_senate,N_states=N_states_senate,N_days=N_days_senate, I_states=I_states_senate,h=h)
+                             N_polls=N_polls_senate,N_states=N_states_senate,N_days=N_days_senate, I_states=I_states_senate)
 jags_sims_mv_senate_adj_prior <- jags(data = jags_data_senate_adj,  model.file = model_mv_senate_adj_priors,parameters.to.save = c("theta","Sigma",
-                                                                                                                                       "p","sigma2_y"),
-                                      n.iter = 1500)
-                                      n.iter = 1000, #n.burnin = 50000, n.thin = 75, n.chains = 2
-                                      )
+                                                                                                                                   "p","sigma2_y"),
+                                      n.iter = 100000, n.burnin = 25000, n.thin = 75, 
+                                      n.chains = 2
+)
 
 ```
 
@@ -510,8 +579,15 @@ for (i in 1:n_iter[1]){
   final_results[i] = prediction_per_simulation_senate(i)
 }
 
-mean(final_results >= 9)
-mean(final_results)
+mean(final_results >= 8)
+(final_results) %>% hist()
+
+# tidybayes::gather_draws(jags_sims_mv_senate_adj_prior %>% coda::as.mcmc(), theta[i, j]) %>%
+#   filter(i == 1 & j == 1) %>%
+#   mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+#   ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+#   geom_line(alpha = 0.6) +
+#   facet_grid(param~., scales = "free_y")
 ```
 
 ```{r}
@@ -533,8 +609,8 @@ h1 %>%
   dplyr::group_by(variable) %>% 
   #mutate(variable = as.factor(variable)) %>%
   dplyr::summarize(median_val = median(value), 
-            lower = quantile(value, probs= 0.025),
-            high = quantile(value, probs= 0.975)) %>%
+                   lower = quantile(value, probs= 0.025),
+                   high = quantile(value, probs= 0.975)) %>%
   #dplyr::arrange(-row_number()) %>%
   cbind(rownames(.)) %>%
   mutate(diff = median_val - 50,
@@ -566,8 +642,8 @@ z1 %>%
   dplyr::group_by(variable) %>% 
   #mutate(variable = as.factor(variable)) %>%
   dplyr::summarize(median_val = median(value), 
-            lower = quantile(value, probs= 0.025),
-            high = quantile(value, probs= 0.975)) %>%
+                   lower = quantile(value, probs= 0.025),
+                   high = quantile(value, probs= 0.975)) %>%
   #dplyr::arrange(-row_number()) %>%
   cbind(rownames(.)) %>%
   mutate(diff = median_val - 50,
@@ -607,12 +683,12 @@ h1 %>%
   mutate(party = ifelse(mean > 0, "Democrat", "Republican")) %>%
   ggplot(mapping=aes(x=variable, y = mean)) +
   geom_errorbar(aes(ymin=lower, 
-                 ymax=upper,
-                 color=case_when(
-                   lower > 0 & upper > 0 ~ "red",
-                   lower < 0 & upper < 0 ~ "blue",
-                   TRUE ~ "grey"
-                 ))) +
+                    ymax=upper,
+                    color=case_when(
+                      lower > 0 & upper > 0 ~ "red",
+                      lower < 0 & upper < 0 ~ "blue",
+                      TRUE ~ "grey"
+                    ))) +
   geom_point() +
   guides(fill = FALSE) + 
   labs(title = "US Senate Win Gap in North Carolina Election",
@@ -624,5 +700,39 @@ h1 %>%
   #scale_color_manual(values = c("#000099", "#CC0000")) +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.25, hjust=0.25, size = 7)) +
   scale_x_reverse()
+```
+
+
+```{r}
+senate_gamma_5_1_prior_v2 <- readRDS("senate_gamma_5_1_prior_v3.Rds")
+n_iter <- dim(senate_gamma_5_1_prior_v2$BUGSoutput$sims.list$theta[,,1])[1]
+
+prediction_per_simulation_senate <- function(model_output, i){
+  elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+  vote_share_by_state <- data.frame(states_senate, elec_sims)
+  
+  dem_states_df <- vote_share_by_state %>%
+    filter(elec_sims > 50)
+  dem_states <- dem_states_df$states_senate
+  num_dem_states <- length(dem_states)
+  return(num_dem_states)
+}
+
+final_results_senate <- c()
+
+for (i in 1:n_iter){
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_5_1_prior_v2, i)
+}
+
+mean(final_results_senate >= 8)
+max(final_results_senate)
+sd(final_results_senate)
+final_results_senate %>% hist()
+senate_gamma_5_1_prior_v2$model
+```
+
+```{r}
+read_csv("house_polls.csv") %>% filter(state == "North Carolina" & cycle == 2020) %>% 
+  dplyr::group_by(seat_number) 
 ```
 
