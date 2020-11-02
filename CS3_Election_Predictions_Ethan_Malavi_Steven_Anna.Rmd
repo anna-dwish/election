@@ -465,7 +465,7 @@ if (file.exists("gamma_1_025.Rds")) {
 #   facet_grid(param~., scales = "free_y")
 ```
 
-```{r presidential model sensitivity plots, cache=TRUE, eval=FALSE}
+```{r presidential model sensitivity plots, cache=TRUE}
 sen_analysis_priors_names <- c("Ga(2, 0.5))",
                                "Ga(4, 1)",
                                "Ga(1, 0.25)",
