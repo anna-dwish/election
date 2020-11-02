@@ -319,7 +319,7 @@ final_results_senate %>% hist()
 
 
 ###### NEW MODEL 
-senate_gamma_4_2_mu_10.prior <- "
+senate_gamma_2_2_mu_10.prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
   
@@ -329,20 +329,20 @@ senate_gamma_4_2_mu_10.prior <- "
   sigma2_0_inv ~ dgamma(2,2)
   "
 
-model_file_senate_gamma_4_2_mu_10.prior <- generate_senate_model_text(senate_gamma_4_2_mu_10.prior)
-if (file.exists("senate_gamma_4_2_mu_10.prior.Rds")) {
-  senate_gamma_4_2_mu_10.prior_model <- readRDS("senate_gamma_4_2_mu_10.prior.Rds")
+model_file_senate_gamma_2_2_mu_10.prior <- generate_senate_model_text(senate_gamma_2_2_mu_10.prior)
+if (file.exists("senate_gamma_2_2_mu_10.prior.Rds")) {
+  senate_gamma_2_2_mu_10.prior_model <- readRDS("senate_gamma_2_2_mu_10.prior.Rds")
 } else {
-  senate_gamma_4_2_mu_10.prior_model <- jags(data = jags_data_senate,  
+  senate_gamma_2_2_mu_10.prior_model <- jags(data = jags_data_senate,  
                                  parameters.to.save = c("theta", "Sigma", 
                                                         "p","sigma2_y", "sigma2_0"),
                                  n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
-                                 model.file = model_file_senate_gamma_4_2_mu_10.prior)
+                                 model.file = model_file_senate_gamma_2_2_mu_10.prior)
   
-  saveRDS(senate_gamma_4_2_mu_10.prior_model, file = "senate_gamma_4_2_mu_10.prior.Rds")
+  saveRDS(senate_gamma_2_2_mu_10.prior_model, file = "senate_gamma_2_2_mu_10.prior.Rds")
 }
 
-n_iter <- dim(senate_gamma_4_2_mu_10.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
+n_iter <- dim(senate_gamma_2_2_mu_10.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
 
 prediction_per_simulation_senate <- function(model_output, i){
   elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
@@ -358,7 +358,7 @@ prediction_per_simulation_senate <- function(model_output, i){
 final_results_senate <- c()
 
 for (i in 1:n_iter){
-  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_4_2_mu_10.prior_model, i)
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_2_mu_10.prior_model, i)
 }
 
 mean(final_results_senate >= 9)
