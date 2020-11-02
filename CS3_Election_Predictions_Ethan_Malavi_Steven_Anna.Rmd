@@ -42,8 +42,6 @@ library(kableExtra)
 library(matrixStats)
 ```
 
-## Presidential Election
-
 ```{r Read in Presidential Polls Data}
 president_polls <- read_csv("2020 US presidential election polls - all_polls.csv") %>% 
   filter(population %in% c("lv","rv")) %>% 
@@ -946,3 +944,131 @@ do.call(bind_rows, senate_sen_tbl_list) %>%
   facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
 ```
 
+# Introduction
+
+The 2020 U.S. elections, coupled with the unique social and economic turmoil corroborated by COVID-19, is documented to have globally political implications [[1]][Bibliography],[[2]][Bibliography]. Researchers have thus used prediction models to determine election outcomes. But often, with the unique voting patterns of certain demographics, making conclusive results requires additional focus on who votes and where. Therefore, in an attempt to predict the US presidential, senate-majority, electoral college, NC congressional, and NC senate election outcomes, our study explores the voting patterns of certain demographics and the characterization of uncertainty in our predicted results. In addition to determining the likely voters, when modeling how certain demographics vote, our findings illuminate the groups in a swing state like North Carolina that are hindered from civic engagement, whether by implicit or explicit means. This information can be instrumental to campaigns and activist groups that are seeking to bolster support and foster more politically minded communities. 
+
+# Presidential Election
+
+## Data
+
+## Methods
+
+To model the outcome of the presidential election, we used an extension of the Linzer model, which takes a dynamic Bayesian approach to forecasting election results [[3]][Bibliography]. Our motivation for selecting this model is its ability to compound polling information over time and account for evolving preferences. While the Linzer model incorrectly predicted the results of the 2016 presidential election due to polling information inaccuracies, we hope to balance this reliance on the polling information by adjusting our priors to rely mo  re heavily on the 2016 election [[5]][Bibliography]. By June 9th, Biden had enough delegates to secure his nomination as the Democratic candidate, so we only included polls whose start date was after June 1st. These data were used to predict the outcomes of 15 swing states: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, Minnesota,  New Hampshire, Nevada, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin [[4]][Bibliography], with a hierarchical prior on our model parameters. Further, our final model estimates the correlation structure between states, so more similar states pull information from one another.
+
+$$
+\begin{aligned}
+Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
+\theta_{i 1} \sim N(h_i, \sigma^2_0) , \ \mathbf{\theta_{\mathbf{ \cdot} t}} \sim MVN&(\mathbf{\theta_{\mathbf{\cdot} t-1}},\mathbf{\Sigma}) \\ 
+\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16&) &  (1) \\
+\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim & \ Ga(2, 0.5)\\
+\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
+\end{aligned}
+$$
+
+Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Hilary Clinton’s 2016 vote share from swing state $i$, with variance $\sigma^2_0$. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$
+
+Using JAGS, we ran Model 1 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
+
+Extract the 15 values of  $\theta_{\cdot 1}$, Biden’s estimated vote share on the day of the election from each swing state $i \in (1 \dots 15)$.
+Initialize a variable, swing_electoral_votes, to 0. (electoral_votes = 0)
+For each $\theta_{i 1}$ value
+If it is greater than 50%, record the number of electoral votes from swing state $i$. add the number of electoral votes from that state to swing_electoral_votes.
+Otherwise, don’t add to swing_electoral_votes.
+
+Based on [SOURCE], Biden is expected to safely win 200 electoral votes from __ states. The sum of his expected electoral votes with the predicted electoral votes from the 15 swing states indicates the total number of estimated electoral votes he would win. Now, let electoral votes = 200 + swing_electoral_votes. These 200 votes come from states that Biden will safely win, as noted by several political experts (citation). Thus, electoral_votes represents the predicted number of electoral votes going to Joe Biden in the sample. If the number of estimated electoral votes is greater than 270, we predict that Biden wins the electoral college vote. Thus, from this model, we are able to predict the electoral college vote and the outcome of the presidential election.
+
+## Results
+
+From the algorithm above, we obtain, for each sample, the predicted number of electoral votes going to Biden. Computing the mean, 2.5% quantile, and 95% quantile of the predicted electoral votes across the 2000 samples, we see that Biden is predicted to win ____ (mean) electoral votes with a 95% confidence interval of (lower, upper). We further find that in __% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win with ___% probability. 
+
+### Model Diagnostics
+
+Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. $R_hat$ values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the 𝑅̂ value to 1, the better the model has converged. The traceplots show the chains have mixed well and $R_hat$ values close to 1, indicating that our model has sufficiently converged. 
+
+### Sensitivity Analysis
+
+In Figure XXXX,  We explore the posterior distributions of  $\theta_{1 1}$  and $\theta_{51}$, which are the posterior parameters that indicate Biden’s predicted two-party vote share on the day of the election in North Carolina  and Pennsylvania, resulting from various priors. The red lines indicate our posterior mean estimate from our final model. The posterior distributions are roughly the same for the four different priors on  $\frac{1}{\sigma^2_0}$. Thus, we can verify our results are not as sensitive to prior choice [[6]][Bibliography].
+
+### External Validation
+
+We perform validation on this model by predicting the winner of the 2012 presidential election and the electoral college vote. In this model, we predict the outcomes from 9 swing states [ https://www.politico.com/2012-election/swing-state/,  maybe list the swing states] We used the same priors from the previous presidential model, with the exception of the normal priors on $\theta_{\cdot 1}$. This time, we centered on President Obama’s  2008  vote share from swing state $i in (1 \dots 9)$.  
+
+We applied the same prediction method to estimate the election outcome and the electoral college vote from 2012. Based on https://www.politico.com/2012-election/swing-state/, Obama  gained 237 electoral votes from ____ states. This was  summed up with the total number of electoral votes he was predicted to win from  the 9 swing states.  Similarly, if Obama gained more than 270 electoral votes, that meant that the model predicts he would win the 2012 election (which he did :)). 
+
+## Discussion
+
+# Senate
+
+## Data
+
+## Methods
+
+#The Senate currently has 53 Republicans and 47 Democrats (including 2 Independents who caucus with the Democratic party). 35 seats are up in 2020 - thus, in order to reach 51 and “flip” the Senate, Democrats will need to win 16 of the 35 seats up for election. Of the 16 needed to flip the senate, several reputable sources confirm that the following8 states are very likely to vote for the Democratic candidate (Virginia, Oregon, Illinois, New Jersey, Delaware, Massachusetts, New Hampshire, and Rhode Island) and 9 states are very likely to vote Republican (Arkansas, Idaho, Louisiana, Nebraska, Oklahoma, Tennessee, South Dakota, West Virginia and Wyoming). However, 18 races in 17 states will be instrumental in determining if the senate flips: Alaska, Alabama, Arizona, Colorado, Georgia, Iowa, Kansas, Kentucky, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, and Texas. (from 538). There are also two special elections: one in Arizona and one in Georgia (both of Georgia’s seats are up). [SOURCE for special election? or do we wanna say more about it] Of these 18 races, Democrats will need to win 8 in order to reach 16 seats and flip the senate. Thus, we are primarily interested in modelling the outcomes of only these “battleground” races. 
+*mention somewhere that we are not using priors for vote shares, and this is because we don’t have a previous election that we can center our priors on. So, we stuck with 50*
+This approach utilized polling data and a model similar to that of the presidential election [cite Linzer].  In this model, we predict the outcomes from 19 swing races. [4,SOURCE,  maybe list the swing states]We let these  races influence each other by placing a hierarchical prior on the model  parameters. Further, our final model estimates the correlation structure between races, so more similar races pull information from one another. 
+
+[insert model latex]
+
+Let $Y_k$, the Democratic candidate’s share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in battleground race $i \in (1 \dots 19)$. Each race has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each race We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered about 50 with variance $\sigma^2_0$. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{19}}, 20)$
+
+Using JAGS, we ran Model 2 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
+Extract the 19 values of  $\theta_{\cdot 1}$, the Democratic candidate’s estimated vote share on the day of the election from each battleground race $i \in (1 \dots 19)$.
+For each $\theta_{i 1}$ value, if it is greater than 50%, that race is predicted to elect the Democratic candidate. 
+Based on [SOURCE], 7 races are very likely to elect the Democratic candidate. We then add this to the number of predicted races that will elect a Democratic candidate. If the total number of races that predict a Democratic candidate being elected is at least  16, the Senate is then predicted to flip. 
+
+
+Swing States Senate Election (from 538) : Alaska, Alabama, Arizona*, Colorado, Georgia*, Georgia, Iowa, Kansas, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, Texas (17 states)
+
+Out of the 18 remaining seats up for election: 
+Solid Dem (>= 95): New  Hampshire, Virginia, Oregon, Illinois, New Jersey, DE, MA,  RI (8 states solid Dem)
+Solid Rep (>= 95): Kentucky, Louisiana, WV, OK, ID,  SD, TN, NE, WY, AR (10 states solid Rep)
+currently there are 47 dems (counting independents) and 53 republicans 
+this means that, other than the 35 (23 Rep, 12 Dem) seats up, there are 35 democrats and 30 republicans in the senate
+to flip, democrats need to get up to 51. They need 16 seats. 8 are “guarenteed”,  they need 8 from the swing states.  
+
+
+# Results
+
+### Model Diagnostics
+
+### Sensitivity Analysis
+
+### External Validation
+
+## Discussion
+
+# # North Carolina Senate Election
+
+#Congressional Elections
+
+## Data
+
+## Methods
+
+## Results
+
+### Model Diagnostics
+
+### Sensitivity Analysis
+
+### External Validation
+
+## Discussion
+
+# Conclusion
+
+# Appendix A
+
+# Appendix B
+
+# Bibliography
+
+1). “Braced for impact; America's presidential election." The Economist, 10 Oct. 2020, p. 66(US). Gale OneFile: CPI.Q, https://link.gale.com/apps/doc/A637802159/CPI?u=duke_perkins&sid=CPI&xid=e45fed0d. Accessed 28 Oct. 2020.
+2). Martin, Susan F. “Commentary: The 2020 U.S. Presidential Election and Immigration.” International Migration, vol. 58, no. 5, 2020, pp. 274–276., doi:10.1111/imig.12772. 
+3). Drew A. Linzer (2013) Dynamic Bayesian Forecasting of Presidential Elections in the States, Journal of the American Statistical Association, 108:501, 124-134, DOI: 10.1080/01621459.2012.737735
+4). Linge, M. (2020, October 31). Inside the nine swing states the 2020 presidential election hinges on. Retrieved November 01, 2020, from https://nypost.com/2020/10/31/the-9-swing-states-the-2020-presidential-election-hinges-on/
+5). Tamman, M., & Faulconbridge, G. (2016, November 09). How the polls, including ours, missed Trump's victory. Retrieved November 01, 2020, from https://www.reuters.com/article/us-usa-election-polls/how-the-polls-including-ours-missed-trumps-victory-idUSKBN1343O6
+6). Hoff, P. D. (2010). Chapter 1: Introduction and examples. In A first course in bayesian statistical methods (pp. 5-7). Dordrecht: Springer.
+
+>
