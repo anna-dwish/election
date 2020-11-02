@@ -179,21 +179,27 @@ for (m in multiple){
   print(nrow(grouped_voter_data))
 
 }
+```
 
-grouped_voter_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv))
 
-grouped_voter_data %>% write_csv("grouped_voter_only_data_2016.csv")
+```{r setup, include=FALSE}
+grouped_voter_only_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv))
+```
+
+
+```{r setup, include=FALSE}
+grouped_voter_only_data %>% write_csv("grouped_voter_only_data_2016.csv")
 voter_data %>% filter(is.na(cong_dist_abbrv))
 ```
 
 
 ```{r}
-grouped_voter_data
+read_csv("grouped_voter_only_data_2016.csv")
 ```
 
 ```{r}
 #??? why can't it split into folds
-fold_df <- groupdata2::fold(grouped_voter_data, k = 2, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) 
+fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
 ```
 
 
