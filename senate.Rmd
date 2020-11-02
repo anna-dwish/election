@@ -223,7 +223,7 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
     p[k] = theta[r[k],t[k]]
   }
   for(j in 2:N_days){
-    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Phi)
+    theta[1:N_states,j] ~ dmnorm(theta[1:N_states,j-1],Sigma)
   }
   
   Phi ~ dwish(I_states,N_states+1) 
@@ -234,7 +234,7 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
       sigma2_y[j] = 1/sigma2_y_inv[j]
       sigma2_y_inv[j] ~ dgamma(nu_y,nu_y*tau_y) 
       
-      theta[j,1] ~ dnorm(mu0, pow(sigma2_0,-1))
+      theta[j,1] ~ dnorm(mu0, pow(sigma2_0),-1)
   }
   "
   
@@ -261,29 +261,29 @@ sigma2_0_inv ~ dgamma(5,2.5), mu0 ~ dnorm(50, pow(10,-1))
 
 ```{r}
 ##  ETHAN 
-senate_gamma_5_2.5_mu_7.5.prior <- "
+senate_gamma_2_2_mu_7.5.prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
   
   mu0 ~ dnorm(50, pow(7.5,-1)) # CHANGE THIS
   
   sigma2_0 = 1/sigma2_0_inv
-  sigma2_0_inv ~ dgamma(5,2.5) # CHANGE THIS
+  sigma2_0_inv ~ dgamma(2,2) # CHANGE THIS
   "
-model_file_senate_gamma_5_2.5_mu_7.5.prior <- generate_senate_model_text(senate_gamma_5_2.5_mu_7.5.prior) # CHANGE THIS
-if (file.exists("senate_gamma_5_2.5_mu_7.5.prior.Rds")) { # CHANGE THIS
+model_file_senate_gamma_2_2_mu_7.5.prior <- generate_senate_model_text(senate_gamma_2_2_mu_7.5.prior) # CHANGE THIS
+if (file.exists("senate_gamma_2_2_mu_7.5.prior.Rds")) { # CHANGE THIS
   # CHANGE THIS
-  senate_gamma_5_2.5_mu_7.5.prior_model <- readRDS("senate_gamma_5_2.5_mu_7.5.prior.Rds") # CHANGE THIS
+  senate_gamma_2_2_mu_7.5.prior_model <- readRDS("senate_gamma_2_2_mu_7.5.prior.Rds") # CHANGE THIS
 } else {
   # CHANGE THIS
-  senate_gamma_5_2.5_mu_7.5.prior_model <- jags(data = jags_data_senate,  
+  senate_gamma_2_2_mu_7.5.prior_model <- jags(data = jags_data_senate,  
                                  parameters.to.save = c("theta", "Sigma", 
                                                         "p","sigma2_y", "sigma2_0"),
                                  n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
                                                 # CHANGE THIS
-                                 model.file = model_file_senate_gamma_5_2.5_mu_7.5.prior)
+                                 model.file = model_file_senate_gamma_2_2_mu_7.5.prior)
               # CHANGE THIS                                   # CHANGE THIS
-  saveRDS(senate_gamma_5_2.5_mu_7.5.prior_model, file = "senate_gamma_5_2.5_mu_7.5.prior.Rds")
+  saveRDS(senate_gamma_2_2_mu_7.5.prior_model, file = "senate_gamma_2_2_mu_7.5.prior.Rds")
 }
                     # CHANGE THIS
 n_iter <- dim(senate_gamma_2_2_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
