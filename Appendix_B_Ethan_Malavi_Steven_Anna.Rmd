@@ -67,9 +67,9 @@ pander(data.frame(Data, Variables , Notes), caption = "Data: Congressional Elect
 
 ```{r}
 model_num = c(
-  rep("Model 1 - 2020 Presidential", 8),
-  rep("Model 2 - 2012 Presidential", 8),
-  rep("Model 3 - 2020 U.S. Senate", 8)
+  rep("Model 1.1 - 2020 Presidential", 8),
+  rep("Model 1.2 - 2012 Presidential", 8),
+  rep("Model 2 - 2020 U.S. Senate", 8)
 )
 datasources = c(
   rep("2020 Presidential Polls (from 538)", 8),
