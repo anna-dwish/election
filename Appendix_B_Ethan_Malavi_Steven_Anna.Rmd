@@ -8,7 +8,11 @@ output:
      number_sections: true
 ---
 
-# Presidential Election & Electoral College Vote
+```{r}
+library(pander)
+```
+
+# 2020 Presidential Election & Electoral College Vote
 
 The Presidential Election & Electoral College Vote model (Model 1 from Appendix A) used the following dataset: `2020 US presidential election polls - all_polls.csv`.
 
@@ -29,10 +33,38 @@ table of datasources, aech row is a datasource,  the variables you get from it, 
 i.e. presidential poll  csv,  x y z variables, Model  1
 hilary's election results, x  y z  variables,  Model 1
 
-# US Senate Election & NC Senate Election
+# US Senate Election & NC Senate Election (2)
 
 
-# NC Congressional Election
+# Who Votes (Interim Report)
+
+Our "Who Votes" model utilizes the following datasets. These datasets were both located on the cluster, and originally come from https://dl.ncsbe.gov/?prefix=data/. Note that they were joined by a covariate, voter_reg_num, that appeared in both and represented an individual's unique registration number. 
+
+```{r}
+Data <- c("NC Voter Registration Data", "NC Voter History Data")
+Variables <- c("County, Congressional District, Race Code, Ethnic Code, Age, Party, Gender", "voted_party_cd")
+Notes <- c("Age was rebinned into age_bin, and 'Race Code' and 'Ethnic Code' were combined into a singular race_ethnicity variable", "This variable was not directly used in the model, but was used to determine if an individual actually voted. Individuals who were registered but did not vote would not have information regarding the party that they voted for in 2016")
+pander(data.frame(Data, Variables, Notes), caption = "Data: Who Votes (Interim Report)")
+```
+
+
+# Congressional Elections Prediction
+
+Our Congressional Election models utilize the same two datasets. Again, these datasets were both located on the cluster, and originally come from https://dl.ncsbe.gov/?prefix=data/. Note that they were joined by a covariate, voter_reg_num, that appeared in both and represented an individual's unique registration number. 
+
+```{r}
+Data <- c("NC Voter Registration Data", "NC Voter History Data")
+Variables <- c("County, Congressional District, Race Code, Ethnic Code, Age, Party, Gender", "Voted Party Code")
+Notes <- c("Age was rebinned into age_bin, and 'Race Code' and 'Ethnic Code' were combined into a singular race_ethnicity variable", "We use this as our outcome variable, as we are interested in predicting whether or not voters in NC will vote for the Democratic or Republican candidates")
+pander(data.frame(Data, Variables , Notes), caption = "Data: Congressional Elections Prediction")
+```
+
+* NC Voter Registration Data: County, Congressional District, Race Code, Ethnic Code, Age, Party Affiliation (Note that in our model, "Age" was rebinned into age_bin, and "Race Code" and "Ethnic Code" were combined into a singular race_ethnicity variable)
+
+* Note that they were joined by a covariate, voter_reg_num, that appeared in both and represented an individual's unique registration number. 
+
+
+
 
 ```{r}
 model_num = c(
