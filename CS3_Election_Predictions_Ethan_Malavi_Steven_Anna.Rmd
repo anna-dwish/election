@@ -669,16 +669,16 @@ $$
 \begin{aligned}
 Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
 \theta_{i 1} \sim N(h_i, \sigma^2_0) , \ \mathbf{\theta_{\mathbf{ \cdot} t}} \sim MVN&(\mathbf{\theta_{\mathbf{\cdot} t-1}},\mathbf{\Sigma}) \\ 
-\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16&) &  (1) \\
+\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16&) &  (1.1) \\
 \frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim & \ Ga(2, 0.5)\\
 \nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
 \end{aligned}
 $$
 
 \noindent
-(1) represents the final model we use to predict the presidential election. Denote $Y_k$ as Biden's share of the two-party vote from each poll $k$. $Y_k$ is normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Clinton’s vote share from swing state $i$ in 2016, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$ and $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$. This allows for more similar states to pull information from one another.
+(1.1) represents the final model we use to predict the presidential election. Denote $Y_k$ as Biden's share of the two-party vote from each poll $k$. $Y_k$ is normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Clinton’s vote share from swing state $i$ in 2016, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$ and $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$. This allows for more similar states to pull information from one another.
 
-Using JAGS, we run (1) with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This leaves us with 2,000 samples. Then, for each sample, we perform the following:
+Using JAGS, we run (1.1) with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This leaves us with 2,000 samples. Then, for each sample, we perform the following:
 
 1. Extract the 15 values of  $\theta_{\cdot 1}$, Biden’s estimated vote share on the day of the election from swing state $i \in (1 \dots 15)$.
 
@@ -725,7 +725,7 @@ gridExtra::grid.arrange(p5,p6,ncol=2,
 
 Traceplots for select parameters and quantiles for values can be found in Appendix C. The traceplots show the chains have mixed well and $\hat{R}$  values close to 1, indicating that our model has sufficiently converged. 
 
-In Figure 4 in Appendix C, we explore the posterior predictive distributions of Biden’s electoral votes across different priors on $\frac{1}{\sigma^2_{0}}$. The solid purple lines indicate the posterior mean of `r mean_electoral` electoral votes from (1). The distribution of Biden's predicted electoral votes appears to be roughly consistent across different priors. Thus, our results are relatively insensitive to prior choice [[7]][Bibliography].
+In Figure 4 in Appendix C, we explore the posterior predictive distributions of Biden’s electoral votes across different priors on $\frac{1}{\sigma^2_{0}}$. The solid purple lines indicate the posterior mean of `r mean_electoral` electoral votes from (1.1). The distribution of Biden's predicted electoral votes appears to be roughly consistent across different priors. Thus, our results are relatively insensitive to prior choice [[7]][Bibliography].
 
 ### External Validation
 
@@ -851,8 +851,7 @@ ggplot(data = tibble(final_results2012),  aes(x = final_results2012)) +
   theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
 
-For external validation, we estimate Obama’s electoral vote share in 2012 using (1). We only keep polls that sample populations of registered and likely voters and polls that begin in August, since the Republican National Convention was near the end of the month. We predict the outcomes from 9 swing states: Colorado, Florida, Iowa, Nevada, New Hampshire, North Carolina, Ohio, Virginia, and Wisconsin [[8]][Bibliography]. The one difference from the parametrization in (1) is the prior on $\theta_{i 1}$, which now follows a $N(o_i, \sigma^2_0)$ distribution, where $o_i$ represents Obama’s vote share in 2008 from swing state $i \in (1 \dots 9)$. We assume he would win 237 electoral votes from solid blue states [[8]][Bibliography]. Using the prediction methodology outlined in Section 2.2, our 95% credible interval for President Obama’s 2012 electoral vote share is (`r lower_q_obama`, `r upper_q_obama`). This captures the true number of electoral votes he won, 332. Additionally, we also predict in 100% of our samples that Obama will win. Therefore, there is reasonable evidence that our model may generalize well to the 2020 election, given the evidence that it is able to balance prior election results and polling information. 
-
+For external validation, we estimate Obama’s electoral vote share in 2012 using (1.2) - the model is detailed in Appendix A. We only keep polls that sample populations of registered and likely voters and polls that begin in August, since the Republican National Convention was near the end of the month. We predict the outcomes from 9 swing states: Colorado, Florida, Iowa, Nevada, New Hampshire, North Carolina, Ohio, Virginia, and Wisconsin [[8]][Bibliography]. The one difference from the parametrization in (1) is the prior on $\theta_{i 1}$, which now follows a $N(o_i, \sigma^2_0)$ distribution, where $o_i$ represents Obama’s vote share in 2008 from swing state $i \in (1 \dots 9)$. We assume he would win 237 electoral votes from solid blue states [[8]][Bibliography]. Using the prediction methodology outlined in Section 2.2, our 95% credible interval for President Obama’s 2012 electoral vote share is (`r lower_q_obama`, `r upper_q_obama`). This captures the true number of electoral votes he won, 332. Additionally, we also predict in 100% of our samples that Obama will win. Therefore, there is reasonable evidence that our model may generalize well to the 2020 election, given the evidence that it is able to balance prior election results and polling information. 
 
 
 # US Senate Election
@@ -1510,70 +1509,7 @@ We joined North Carolina voter registration and voter history datasets by the un
 
 ## Exploratory Data Analysis
 
-```{r, fig.width=8, fig.align="center",warning=F, message=F, cache=TRUE}
-# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
-grouped_voter_only_data %>% 
-  filter(gender %in% c("F", "M")) %>%
-  mutate(sums = Democrat + Republican) %>%
-  mutate(race_ethnicity = case_when(
-    race_ethnicity == "Hispanic Any Race" ~  paste0("Hispanic Any Race (n=",
-                                                    grouped_voter_only_data %>%
-                                                      mutate(sums = Democrat + Republican) %>%
-                                                      filter(race_ethnicity == "Hispanic Any Race") %>%
-                                                      summarise(sum(sums)),
-                                                    ")"),
-    race_ethnicity == "Non-Hispanic American Indian" ~  paste0("Non-Hispanic American Indian (n=",
-                                                               grouped_voter_only_data %>%
-                                                                 mutate(sums = Democrat + Republican) %>%
-                                                                 filter(race_ethnicity == "Non-Hispanic American Indian") %>%
-                                                                 summarise(sum(sums)),
-                                                               ")"),
-    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
-                                                    grouped_voter_only_data %>%
-                                                      mutate(sums = Democrat + Republican) %>%
-                                                      filter(race_ethnicity == "Non-Hispanic Asian") %>%
-                                                      summarise(sum(sums)),
-                                                    ")"),
-    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
-                                                    grouped_voter_only_data %>%
-                                                      mutate(sums = Democrat + Republican)  %>%
-                                                      filter(race_ethnicity == "Non-Hispanic Black") %>%
-                                                      summarise(sum(sums)),
-                                                    ")"),
-    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
-                                                    grouped_voter_only_data %>%
-                                                      mutate(sums = Democrat + Republican)  %>%
-                                                      filter(race_ethnicity == "Non-Hispanic Mixed") %>%
-                                                      summarise(sum(sums)),
-                                                    ")"),
-    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
-                                                    grouped_voter_only_data %>%
-                                                      mutate(sums = Democrat + Republican)  %>%
-                                                      filter(race_ethnicity == "Non-Hispanic White") %>%
-                                                      summarise(sum(sums)),
-                                                    ")")
-  )) %>%
-  dplyr::select(race_ethnicity, age_bin, gender, Democrat, Republican) %>%
-  dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
-  dplyr::summarize(Democrat = sum(Democrat), 
-                   Republican = sum(Republican), 
-                   proportion = Democrat/(Democrat+Republican)) %>% ungroup()%>% 
-  ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
-  geom_bar(stat = "identity", position = "dodge") + 
-  facet_wrap(~race_ethnicity, nrow = 2) + 
-  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
-            position = position_dodge(width = 1),  
-            colour="Black", 
-            size = 2.2) + 
-  labs(x = expression("Age Group"), 
-       y= ("Proportion of Democratic Voters"), 
-       title = "Democratic Voters Across Age Groups, Race/Ethnicity, and Sex", 
-       caption="Figure 13") +
-  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
-  guides(fill=guide_legend(title="Sex"))
-```
-
-Figure 13 shows the proportion of Democratic voters in North Carolina across age groups, race/ethnicity, and sex. We see that as age increases, the proportion Non-Hispanic, American Indian, and Non-Hispanic Multi-Racial voters who vote democratically tends to increase. Conversely, for Hispanic Any Race individuals, Non-Hispanic Asians, and Non-Hispanic Whites, the proportion of democratic voters among total voters does not have any obvious increase with age.
+Figure ASLKDJFHALSF in Appendix C shows the proportion of Democratic voters in North Carolina across age groups, race/ethnicity, and sex. We see that as age increases, the proportion Non-Hispanic, American Indian, and Non-Hispanic Multi-Racial voters who vote democratically tends to increase. Conversely, for Hispanic Any Race individuals, Non-Hispanic Asians, and Non-Hispanic Whites, the proportion of democratic voters among total voters does not have any obvious increase with age.
 
 Furthermore, this figure indicates that women are more likely to vote democratically relative to men for the majority of race/ethnicity and age combinations. As age increases, this discrepancy becomes less notable for Hispanic Any Race individuals and Non-Hispanic American Indians, but remains relatively constant for Non-Hispanic Black, Non-Hispanic Multi-Racial, and Non-Hispanic Black individuals.
 
@@ -2193,9 +2129,8 @@ This paper utilized both Bayesian forecasting and multilevel logistic regression
 
 4. Within the 12 Congressional elections in North Carolina (barring district 12), we predict that districts 1, 2, 3, 4, 6, 7, and 11 will vote for their respective democratic candidates. The remaining 5 districts are predicted to vote Republican. 
 
+Although we extracted meaningful outcomes from our analysis, there were several limitations to our methodology and available data. Firstly, although there is no strict definition of a swing state, our Linzer models for the Presidential and Senate elections assume these. Further, it is difficult to understand how our unique socio-political environment, exacerbated by the Coronavirus pandemic, will interfere with the various 2020 elections. It would be noteworthy to examine, for example, how voting methods, such as mail-in ballots, relate to the likelihood of voting Democratic or Republican- especially given the rising popularity of such options due to Covid-19. Unfortunately, sufficient data does not currently exist in order to perform such an analysis. 
 
-
-# Conclusion
 
 # Appendix A
 
@@ -2435,6 +2370,70 @@ kable(model_performances, escape=F, booktabs = T, align = "lllcc", caption = "Mo
   kableExtra::kable_styling(latex_options = c("hold_position"))
 ```
 
+```{r, fig.width=8, fig.align="center",warning=F, message=F, cache=TRUE, fig.show="hide"}
+# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
+grouped_voter_only_data %>% 
+  filter(gender %in% c("F", "M")) %>%
+  mutate(sums = Democrat + Republican) %>%
+  mutate(race_ethnicity = case_when(
+    race_ethnicity == "Hispanic Any Race" ~  paste0("Hispanic Any Race (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican) %>%
+                                                      filter(race_ethnicity == "Hispanic Any Race") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic American Indian" ~  paste0("Non-Hispanic American Indian (n=",
+                                                               grouped_voter_only_data %>%
+                                                                 mutate(sums = Democrat + Republican) %>%
+                                                                 filter(race_ethnicity == "Non-Hispanic American Indian") %>%
+                                                                 summarise(sum(sums)),
+                                                               ")"),
+    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican) %>%
+                                                      filter(race_ethnicity == "Non-Hispanic Asian") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican)  %>%
+                                                      filter(race_ethnicity == "Non-Hispanic Black") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican)  %>%
+                                                      filter(race_ethnicity == "Non-Hispanic Mixed") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican)  %>%
+                                                      filter(race_ethnicity == "Non-Hispanic White") %>%
+                                                      summarise(sum(sums)),
+                                                    ")")
+  )) %>%
+  dplyr::select(race_ethnicity, age_bin, gender, Democrat, Republican) %>%
+  dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
+  dplyr::summarize(Democrat = sum(Democrat), 
+                   Republican = sum(Republican), 
+                   proportion = Democrat/(Democrat+Republican)) %>% ungroup()%>% 
+  ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  facet_wrap(~race_ethnicity, nrow = 2) + 
+  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
+            position = position_dodge(width = 1),  
+            colour="Black", 
+            size = 2.2) + 
+  labs(x = expression("Age Group"), 
+       y= ("Proportion of Democratic Voters"), 
+       title = "Democratic Voters Across Age Groups, Race/Ethnicity, and Sex", 
+       caption="Figure 13") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill=guide_legend(title="Sex"))
+```
+
+
 ```{r, fig.height=3,fig.align="center", cache=TRUE}
 arm::binnedplot(x=cv_plot(glmer.fit, grouped_voter_only_data)[[4]],
                 y=residuals(glmer.fit, "pearson"),
@@ -2488,3 +2487,20 @@ reaged_results <- create_model(model.intrx.age.party.ri.cty.dst.text,
                                grouped_voter_only_data_reaged, perform_cv=F)
 pander(reaged_results[[3]], caption="Age Bin Sensitivity")
 ```
+
+```{r}
+tidybayes::gather_draws(presidential_model_gamma_2_0.5_prior %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+  filter(i %in% (1:5) & j == 1) %>%
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+  geom_line(alpha = 0.6) +
+  facet_grid(param~., scales = "free_y")
+
+tidybayes::gather_draws(senate_gamma_2_1_mu_7.5.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+  filter(i %in% (1:5) & j == 1) %>%
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+  geom_line(alpha = 0.6) +
+  facet_grid(param~., scales = "free_y")
+```
+
