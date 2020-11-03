@@ -31,6 +31,7 @@ pkgTest("glmnet")
 pkgTest("grid")
 pkgTest("gridExtra")
 pkgTest("groupdata2")
+pkgTest("kableExtra")
 pkgTest("knitr")
 pkgTest("lme4")
 pkgTest("lmerTest")
@@ -55,6 +56,7 @@ library(glmnet)
 library(grid)
 library(gridExtra)
 library(groupdata2)
+library(kableExtra)
 library(knitr)
 library(lme4)
 library(lmerTest)
@@ -444,7 +446,6 @@ cv_df <- final.model.results[[1]]
 glmer.fit.final <- final.model.results[[2]]
 final.model.fixed.results <- final.model.results[[4]]
 ```
-
 
 ```{r intercept heatmap, fig.width=5.5, fig.height=2.5, fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
 county.intercepts <- as.data.frame(coef(glmer.fit.final)[1])
@@ -939,7 +940,7 @@ pander(final.model.fixed.results, caption="Final Model Results")
 model_label <- function(model_text){
   return(substr(model_text,26,nchar(model_text)))
 }
-library(kableExtra)
+
 model_performances <- data.frame(Interactions = c("None",
                                           "None",
                                           "None",
