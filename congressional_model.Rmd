@@ -193,35 +193,200 @@ grouped_voter_only_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv)
 
 grouped_voter_only_data %>% write_csv("grouped_voter_only_data_2016.csv")
 voter_data %>% filter(is.na(cong_dist_abbrv))
+```
 
+```{r read in voter only data, include=FALSE}
 grouped_voter_only_data <- read_csv("grouped_voter_only_data_2016.csv")
-fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
+fold_df <- groupdata2::fold(grouped_voter_only_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
+```
+
+```{r}
+round_perc = function(x) {
+  if (is.double(x)) {
+    round(x*100, digits = 2)
+  }
+}
+
+# DEPENDING ON perform_cv FLAG, RETURNS LIST WITH OF CROSS VALIDATION, GLMER MODEL OBJECT ON ENTIRE DATASET, RANDOM RESULTS, FIXED EFFECT RESULTS
+create_model <- function(model_formula_text, election_data, perform_cv=TRUE){
+  model_results = list()
+  results_idx = 1
+  
+  model_formula <- formula(model_formula_text)
+  
+  # STEP 1: CROSS VALIDATION
+  if (perform_cv){
+    acc_list = c()
+    f1_list = c()
+    AUC_list = c()
+    for (i in 1:5) {
+      train <- election_data %>% filter(.folds != i)
+      test <- election_data %>% filter(.folds == i)
+  
+      glmer.fit <- glmer(model_formula,
+                     data = train,
+                     family = binomial,
+                     control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  
+      glmer.probs <- predict(glmer.fit,  test,  type = "response")
+      glmer.pred <- rep(0, nrow(test))
+      glmer.pred[glmer.probs > 0.5] <- 1
+  
+      acc_list[i] <-  mean(glmer.pred == test$vote)
+      f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
+      AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
+    }
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
+    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc()
+    f1_mean = f1_list %>% mean(na.rm=T)  %>% round_perc()
+    f1_sd = f1_list %>% sd(na.rm=T)  %>% round_perc()
+    AUC_mean = AUC_list %>% mean(na.rm=T)  %>% round_perc()
+    AUC_sd = AUC_list %>% sd(na.rm=T)  %>% round_perc()
+    
+    cv_df <- tibble(
+      Accuracy = paste0(acc_mean, "% ± ", acc_sd, "%"),
+      F1 = paste(f1_mean, "±", f1_sd),
+      AUC = paste(AUC_mean, "±", AUC_sd))
+    
+    model_results[[results_idx]] = cv_df
+    results_idx = results_idx + 1
+  }
+  
+  # STEP 2: FIT FULL MODEL WITH ALL DATA
+  glmer.fit.final <- glmer(model_formula,
+                         data = election_data,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  model_results[[results_idx]] = glmer.fit.final
+  results_idx = results_idx + 1
+  
+  # STEP 3: CREATE FORMATTED DATAFRAME WITH RANDOM MODEL RESULTS
+  results <- data.frame(VarCorr(glmer.fit.final))
+  final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
+  model_results[[results_idx]] = final.model.random.results
+  results_idx = results_idx + 1
+  
+  # STEP 4: CREATE FORMATTED DATAFRAME WITH FIXED MODEL RESULTS
+  final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
+                                       Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
+                                       P.Value=summary(glmer.fit.final)$coefficients[, 4])
+  model_results[[results_idx]] = final.model.fixed.results
+  return(model_results)
+}
+
+```
+
+```{r cv function for model performance, warning=F,message=F,echo=FALSE,results='hide',fig.keep='all'}
+# Returns list(accuracy, F1-score, plot of confusion matrix)
+cv_plot <- function(mod, election_data,base_level="Republican",positive_level="Democrat"){
+  fit_results = list()
+  test.glmer.probs = predict(mod, election_data,type="response")
+  test.glmer.preds = ifelse(test.glmer.probs <= 0.5, base_level, positive_level)
+  test.actual.cm = ifelse(election_data$vote == 0, base_level, positive_level)
+  
+  for (i in 1:length(test.glmer.preds)){
+    if(is.na(test.glmer.preds[i])){
+      test.glmer.preds[i] = positive_level
+    }
+  }
+  
+  fit_results[[1]] = mean(test.glmer.preds == test.actual.cm)
+  fit_results[[2]] = (caret::confusionMatrix(test.glmer.preds %>% as.factor(), test.actual.cm %>% as.factor()))$byClass["F1"]
+  fit_results[[3]] = plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
+  fit_results[[4]] = test.glmer.probs
+  
+  cv.table <- caret::confusionMatrix(test.glmer.preds %>% as.factor(), test.actual.cm %>% as.factor(), positive=positive_level)$table
+  fit_results[[5]] = cv.table[1,2]/(cv.table[1,1] + cv.table[1,2] + cv.table[2,1] + cv.table[2,2])
+  return(fit_results)
+}
 ```
 
 
-```{r}
-# model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv)"
-# seed: 658392
-# accuracy: 60%
+```{r create models, cache=TRUE}
+set.seed(658392)
+grouped_voter_only_data$age_bin <- relevel(grouped_voter_only_data$age_bin %>% as.factor(), ref = "65+")
+grouped_voter_only_data$vote <- ifelse(grouped_voter_only_data$Democrat > grouped_voter_only_data$Republican,1,0)
 
-#model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv) + (1|county_desc)"
-#seed: 658392
-# accuracy: 70% => i like this one!!!
+model.no.intrx.party.race.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + (1|cong_dist_abbrv) + (1|county_desc)"
+model.no.intrx.party.race.ri.cty.dst.res <- create_model(model.no.intrx.party.race.ri.cty.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.no.intrx.party.race.ri.cty.dst.cm <- cv_plot(model.no.intrx.party.race.ri.cty.dst.res[[1]], grouped_voter_only_data)
 
-#model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv) + (1+age_bin|county_desc)"
-#BAD
+model.intrx.age.party.ri.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * party_cd + (1|cong_dist_abbrv)"
+model.intrx.age.party.ri.dst.res <- create_model(model.intrx.age.party.ri.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.party.ri.dst.cm <- cv_plot(model.intrx.age.party.ri.dst.res[[1]], grouped_voter_only_data)
 
-#model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|cong_dist_abbrv) + (1|county_desc)"
-#seed: 658392
-# accuracy: 68% => ALSO GOOD!
 
-#model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + (1|cong_dist_abbrv) + (1|county_desc)"
-#seed: 658392
-#accuracy: 68.35
+model.intrx.age.race.ri.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv)"
+model.intrx.age.race.ri.dst.res <- create_model(model.intrx.age.race.ri.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.race.ri.dst.cm <- cv_plot(model.intrx.age.race.ri.dst.res[[1]], grouped_voter_only_data)
 
-#model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * age_bin + (1|cong_dist_abbrv) + (1|county_desc)"
-#seed: 658392
-# accuracy:68.9 
+# final model, perform cross validation
+model.intrx.age.party.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * age_bin + (1|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.party.ri.cty.dst.res <- create_model(model.intrx.age.party.ri.cty.dst.text,grouped_voter_only_data,perform_cv=TRUE)
+# first index is results of cross validation so take one step forward
+model.intrx.age.party.ri.cty.dst.cm <- cv_plot(model.intrx.age.party.ri.cty.dst.res[[2]], grouped_voter_only_data)
+
+
+model.intrx.age.race.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.race.ri.cty.dst.res <- create_model(model.intrx.age.race.ri.cty.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.race.ri.cty.dst.cm <- cv_plot(model.intrx.age.race.ri.cty.dst.res[[1]], grouped_voter_only_data)
+
+model.intrx.party.race.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.party.race.ri.cty.dst.res <- create_model(model.intrx.party.race.ri.cty.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.party.race.ri.cty.dst.cm <- cv_plot(model.intrx.party.race.ri.cty.dst.res[[1]], grouped_voter_only_data)
+
+model.intrx.age.race.ri.cty.rs.dst.party.text <- "cbind(Democrat, Republican) ~ age_bin * race_ethnicity + gender + party_cd + (1 + party_cd|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.race.ri.cty.rs.dst.party.res <- create_model(model.intrx.age.race.ri.cty.rs.dst.party.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.race.ri.cty.rs.dst.party.cm <- cv_plot(model.intrx.age.race.ri.cty.rs.dst.party.res[[1]], grouped_voter_only_data)
+
+model.intrx.age.party.ri.cty.rs.dst.party.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + age_bin * party_cd + (1 + party_cd|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.party..ri.cty.rs.dst.party.res <- create_model(model.intrx.age.party.ri.cty.rs.dst.party.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.party.ri.cty.rs.dst.party.cm <- cv_plot(model.intrx.age.party..ri.cty.rs.dst.party.res[[1]], grouped_voter_only_data)
+
+model_performances <- data.frame(Interactions = c("None",
+                                          "Age * Party",        
+                                          "Age * Race",
+                                          "Age * Party",
+                                          "Age * Race",
+                                          "Party * Race",
+                                          "Age * Race",
+                                          "Age * Party"),
+                               Random.Intercept = c("District, County",
+                                                    "District",
+                                                    "District",
+                                                    "District, County",
+                                                    "District, County",
+                                                    "District, County",
+                                                    "District, County",
+                                                    "District, County"),
+                               Random.Slope=c("None",
+                                              "None",
+                                              "None",
+                                              "None",
+                                              "None",
+                                              "None",
+                                              "Party | District",
+                                              "Party | District"),
+                         In.F1=c(round(model.no.intrx.party.race.ri.cty.dst.cm[[2]],3),
+                                        round(model.intrx.age.party.ri.dst.cm[[2]],3),
+                                        round(model.intrx.age.race.ri.dst.cm[[2]],3),
+                                        round(model.intrx.age.party.ri.cty.dst.cm[[2]],3),
+                                        round(model.intrx.age.race.ri.cty.dst.cm[[2]],3),
+                                        round(model.intrx.party.race.ri.cty.dst.cm[[2]],3),
+                                        round(model.intrx.age.race.ri.cty.rs.dst.party.cm[[2]],3),
+                                        round(model.intrx.age.party.ri.cty.rs.dst.party.cm[[2]],3)),
+                         False.Negative=c(round(model.no.intrx.party.race.ri.cty.dst.cm[[5]],3),
+                                        round(model.intrx.age.party.ri.dst.cm[[5]],3),
+                                        round(model.intrx.age.race.ri.dst.cm[[5]],3),
+                                        round(model.intrx.age.party.ri.cty.dst.cm[[5]],3),
+                                        round(model.intrx.age.race.ri.cty.dst.cm[[5]],3),
+                                        round(model.intrx.party.race.ri.cty.dst.cm[[5]],3),
+                                        round(model.intrx.age.race.ri.cty.rs.dst.party.cm[[5]],3),
+                                        round(model.intrx.age.party.ri.cty.rs.dst.party.cm[[5]],3)))
+
+kable(model_performances, escape=F, booktabs = T, align = "lllcc", caption = "Model Performances") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"))
 ```
 
 
