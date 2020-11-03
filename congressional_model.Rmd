@@ -3,8 +3,6 @@ title: "Which party wins in each NC district?"
 output: pdf_document
 ---
 
-https://www.pewresearch.org/politics/2020/10/21/large-shares-of-voters-plan-to-vote-a-straight-party-ticket-for-president-senate-and-house/ => resource to justify using the presidential predictions for congressional elections!
-
 ```{r, function checking for installed packages, include=FALSE}
 # Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
 pkgTest <- function(x)
@@ -419,10 +417,10 @@ random.effects.plots <- plot_model(glmer.fit, type = "re", facet.grid=FALSE)
 random.effects.plots[[1]] <- random.effects.plots[[1]] + scale_x_discrete(breaks=c(), labels=c())
 
 random.effects.plots[[1]] <- random.effects.plots[[1]] + geom_text(x=10, y=-0.5, label="Avery") +
-  geom_text(x=33, y=-0.45, label="Davie") +
-  geom_text(x=7, y=0.49, label="Anson",color="#117fbd") + 
+  geom_text(x=34, y=-0.45, label="Davie") +
+  geom_text(x=4, y=0.7, label="Anson",color="#117fbd") + 
   geom_text(x=12, y=0.75, label="Bladen",color="#117fbd") + 
-  geom_text(x=27, y=0.75, label="Columbus",color="#117fbd") + 
+  geom_text(x=27, y=0.85, label="Columbus",color="#117fbd") + 
   geom_text(x=18, y=0.49, label="Camden",color="#117fbd")
 
 grid.arrange(random.effects.plots[[1]], 
@@ -727,7 +725,7 @@ likely_2020_with_pred_prob <- inner_join(grouped_voter_only_data, only_likely, b
 ```
 
 
-```{r}
+```{r, cache=T}
 vote_shares_by_district <- function(district, j){
   district_df <- likely_2020_with_pred_prob %>% filter(cong_dist_abbrv == district)
   totals <- district_df$predicted_likely
@@ -756,7 +754,7 @@ vote_shares_by_district <- function(district, j){
 ```
 
 
-```{r}
+```{r, cache=T}
 districts <- unique(likely_2020_with_pred_prob$cong_dist_abbrv)
 lowers <- c()
 means <- c()
@@ -764,7 +762,6 @@ uppers <- c()
 
 i = 1
 for (district in districts){
-  print(district)
   district_sims <- c()
   for (j in 1:500){
     prop_dem_in_district <- vote_shares_by_district(district, j)
@@ -787,23 +784,6 @@ vote_shares_by_district <- vote_shares_by_district %>%
   arrange(District)
 
 pander(vote_shares_by_district, caption = "Predicted Vote Share in North Carolina Congressional Elections")
-
-#DO THESE RESULTS MAKE ANY SENSE??
-
-#District 1: BLUE! RIGHT
-#2: Blue leaning RIGHT
-#3: Red EHH
-#4: blue! RIGHT
-#5: RED RIGHT
-#6: BLUE RIGHT
-#7: RED EHH
-#8: RED RIGHT
-#9: RED RIGHT
-#10: RED RIGHT!
-#11: RED EHH
-#13: RED
-
-#Analysis: republican leaning districts we voted to be more in the middle. We'll just talk about what we got right and talk about swing states. BRIEFLY mention what we got wrong
 ```
 
 For Districts 1, 2, 4, and 6, which historically lean heavily Democratic, our model predicts both counties will elect Emily Nicholson (D), Cindy Deporter (D), Christopher Shulte (D), and Tommy Fulcher (D), respectively [[17]][Bibliography]. 
@@ -811,6 +791,13 @@ For Districts 1, 2, 4, and 6, which historically lean heavily Democratic, our mo
 For Districts 5, 8, 9, 10, and 13, our model predicts that voters will support the Republican candidate in their respective districts. This is unsurprising given that all five of these counties heavily lean red.
 
 For Districts 3, 7, and 11, our model predicts Democratic wins despite these districts leaning Republican. It is worth noting however that congressional districts 7 and 11 are not excessively conservative and have been termed as "long shots" for a potential flip in 2020 [[18]][Bibliography].
+
+## Final Model
+
+```{r}
+pander(model.intrx.age.party.ri.cty.dst.res[[4]], caption="Congressional Model Results")
+```
+
 
 ## Age Bin Sensitivity
 
@@ -828,22 +815,14 @@ grouped_voter_only_data_reaged <- grouped_voter_only_data_reaged %>% mutate(age_
   age_bin == "65+" ~ "65+",
   TRUE ~ age_bin))
 
-grouped_voter_only_data_reaged <- grouped_voter_only_data_reaged %>% 
-  dplyr::select(everything()) %>% 
-  dplyr::group_by(county_desc,age_bin,race_ethnicity,gender,party_cd,cong_dist_abbrv) %>% 
-  dplyr::summarise(Likely=sum(Likely),Unlikely=sum(Unlikely)) %>% ungroup() 
-who_votes_data_reaged$age_bin <- relevel(who_votes_data_reaged$age_bin %>% as.factor(), ref = "65+")
-who_votes_data_reaged$prop = who_votes_data_reaged$Likely/(who_votes_data_reaged$Likely + who_votes_data_reaged$Unlikely)
+grouped_voter_only_data_reaged_reaged<-grouped_voter_only_data_reaged %>% ungroup()
+grouped_voter_only_data_reaged$age_bin <- relevel(grouped_voter_only_data_reaged$age_bin %>% as.factor(), ref = "65+")
+grouped_voter_only_data_reaged$vote <- ifelse(grouped_voter_only_data_reaged$Democrat > grouped_voter_only_data_reaged$Republican,1,0)
 
-fold_df_reaged <- groupdata2::fold(who_votes_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc")) %>%
-  dplyr::mutate(vote = ifelse(Likely/(Unlikely+Likely) > 0.5, 1, 0),
-                vote = ifelse(is.nan(Likely/(Unlikely+Likely)), 0, vote),
-                vote = dplyr::case_when(
-                  Likely == 0 & Unlikely == 0 ~ 0,
-                  TRUE ~ vote
-                ))
-reaged_results <- create_model(mod.ri.county.district.intrxn.age.race.party.race.text, 
-                               fold_df_reaged, perform_cv=F)
+grouped_voter_only_data_reaged <- groupdata2::fold(grouped_voter_only_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv"))  
+
+reaged_results <- create_model(model.intrx.age.party.ri.cty.dst.text, 
+                               grouped_voter_only_data_reaged, perform_cv=F)
 pander(reaged_results[[3]], caption="Age Bin Sensitivity")
 ```
 
