@@ -42,7 +42,7 @@ library(kableExtra)
 library(matrixStats)
 ```
 
-```{r}
+```{r include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       warning = FALSE)
@@ -273,10 +273,11 @@ lower_q_presidential_electoral_college <- quantile(final_results_presidential, p
 upper_q_presidential_electoral_college <- quantile(final_results_presidential, probs = c(0.975))
 
 
-ggplot(data = tibble(final_results_presidential),  aes(x = final_results_presidential)) + 
-  geom_histogram(bins = 20) + 
-  geom_vline(xintercept = mean_electoral, color = "blue") + 
-  geom_vline(xintercept = c(lower_q_presidential_electoral_college,upper_q_presidential_electoral_college), color = "red", linetype = 2) + 
+presidential_results_plot <- ggplot(data = tibble(final_results_presidential),  aes(x = final_results_presidential)) + 
+  geom_histogram(bins = 20, colour="black",fill = "#4d4d4d") + 
+  geom_vline(xintercept = 270, color = "#1b7837", size = 1.1) + 
+  geom_vline(xintercept = mean_electoral, color = "#542788", size = 1.1) + 
+  geom_vline(xintercept = c(lower_q_presidential_electoral_college,upper_q_presidential_electoral_college), color = "#542788", linetype = 2, size = 0.7) + 
   labs(title = "Predicted Number of Biden's Electoral Votes",
        subtitle = paste0("Predicted Probability of Biden Winning: ", prob_of_biden_winning, "%"),
        x = "Number of Biden's Electoral Votes",
@@ -335,9 +336,9 @@ kable(vote_share_by_state, caption = "Presidential Elections: Predicted Democrat
 
 ```{r}
 
-ggplot() + 
-  geom_density(aes(x = presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,1,1])) + 
-  geom_vline(xintercept = theta_1_1_mean)
+# ggplot() + 
+#   geom_density(aes(x = presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,1,1])) + 
+#   geom_vline(xintercept = theta_1_1_mean)
 
 # tidybayes::gather_draws(presidential_model_gamma_2_0.5_prior %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>% 
 #   filter(i == 1 & j == 1) %>% 
@@ -508,10 +509,16 @@ sen_analysis_priors <- list(presidential_model_gamma_2_0.5_prior,
                             presidential_model_exp_0.25_prior,
                             presidential_model_gamma_1_0.25_prior)     
 
+
+
 sen_tbl_list <- list()
 for (i in 1:4) {
-  sen_tbl_list[[i]] <- tidybayes::gather_draws(sen_analysis_priors[[i]] %>% coda::as.mcmc(), theta[i, j]) %>% 
-    filter(i == 5 & j == 1)
+  final_results_presidential_sensitivity <- c()
+  for (sim in 1:iterations) {
+    
+    final_results_presidential_sensitivity[sim] = prediction_per_simulation(sen_analysis_priors[[i]], sim)
+  }
+  sen_tbl_list[[i]] <- as_tibble(final_results_presidential_sensitivity)
 }
 
 theta_1_1_mean <- presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,5,1] %>% mean()
@@ -520,35 +527,41 @@ sensitivity_plot_presidential <- do.call(bind_rows, sen_tbl_list) %>%
   dplyr::mutate(model = rep(sen_analysis_priors_names, each=2000),
                 model = factor(model,
                                levels = sen_analysis_priors_names,
-                               labels = c(expression(paste(sigma[0]^2, " ~ Ga(2, 0.5)")),
-                                          expression(paste(sigma[0]^2, " ~ Ga(4, 1)")),
-                                          expression(paste(sigma[0]^2, " ~ Ga(1, 0.25)")),
-                                          expression(paste(sigma[0]^2, " ~ Exp(0.25)"))))) %>% 
-  #mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+                               labels = c(expression(paste("1/", sigma[0]^2, " ~ Ga(2, 0.5)")),
+                                          expression(paste("1/", sigma[0]^2, " ~ Ga(4, 1)")),
+                                          expression(paste("1/", sigma[0]^2, " ~ Ga(1, 0.25)")),
+                                          expression(paste("1/", sigma[0]^2, " ~ Exp(0.25)"))))) %>% 
   ggplot() + 
-  geom_density(aes(x = .value)) + 
-  geom_vline(xintercept = theta_1_1_mean) +  
-  facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
+  geom_density(aes(x = value)) + 
+  #geom_histogram(aes(x = value), bins = 18) + 
+  geom_vline(xintercept = mean_electoral, color = "#542788") + 
+  geom_vline(xintercept = c(lower_q_presidential_electoral_college,upper_q_presidential_electoral_college), color = "#542788", linetype = 2) + 
+  facet_wrap(model~., labeller = "label_parsed") + 
+  labs(title = "Sensitivity Analysis",
+       subtitle = "Predicted Number of Biden's Electoral Votes",
+       x = "Number of Biden's Electoral Votes",
+       y = "Density")
 ```
 
 # Introduction
 
-The 2020 U.S. elections, coupled with the unique social and economic turmoil corroborated by COVID-19, is documented to have globally political implications [[1]][Bibliography],[[2]][Bibliography]. Predicting the results of these elections is of critical interest to small businesses, health professionals, racial minorities, and many others. In this case study, we seek to predict the results of the US presidential, senate-majority, electoral college, NC congressional, and NC senate election outcomes. Our specific research objectives include the following:
+In the wake of the social and economic turmoil from the COVID-19 pandemic, the 2020 U.S. elections are expected to have far-reaching political implications [[1]][Bibliography][[2]][Bibliography]. Predicting the results of these elections is of critical interest to small businesses, health professionals, racial minorities, and many others. Our specific research objectives include the following:
 
-1. Predict the outcome of the presidential election as well as the electoral college vote
-2. Predict whether the US Senate remains in Republican control, and the outcome of the North Carolina senate election
-3. Predict the outcomes of all North Carolina Congressional elections (the 13 federal Representatives to Congress)
+1. Predict the outcome of the presidential election and the Electoral College vote
+2. Predict whether the U.S. Senate remains in Republican control and the outcome of the North Carolina Senate election
+3. Predict the outcomes of all 13 North Carolina Congressional elections 
 
-We seek to provide not only predictions of winners and estimated vote shares, but also meaningful quantifications of uncertainty surrounding estimates. In order to model presidential and senate outcomes, we will be utilizing publicly available polling data with an extension of the Linzer model, which takes a dynamic Bayesian approach to forecasting election results. To predict the outcomes of all North Carolina Congressional elections, we will first explore voting patterns of different demographics within the state to determine who is likely to vote, and then build on these results by predicting *how* these individuals will vote in the 13 Congressional elections. In doing so, we hope to offer insight to campaign managers and activist groups so they may better understand likelihood and access to voting.
+We seek to provide not only predictions of winners and estimated vote shares, but also meaningful quantifications of uncertainty surrounding our estimates. We use a variant of the Linzer model [[3]][Bibliography] to predict the presidential and senate outcomes. To estimate the outcomes of the 13 North Carolina Congressional elections, we first explore voting patterns of different demographics within the state to determine who is likely to vote. We then utilize a multilevel logistic regression model to predict *how* these individuals will vote in their respective district. This analysis can offer insight to campaign managers and activist groups so they may better understand voting patterns in North Carolina.
 
 # Presidential Election
 
 ## Data
 
+We utilize state-wide presidential election polls from 2020 to predict the outcome of the presidential election and the electoral college vote. Each sample in the dataset includes the start date of the poll, the percentages of people who would vote for Biden or Trump, and whether the sampled population were “likely” voters, registered voters, or simply adults. We only keep polls that sample populations of registered and likely voters, and we filter the polls to only include those after June 1st, which is right before Biden secured the Democratic candidate nomination [[6]][Bibliography]. For each poll, we calculate Biden’s share of the two-party vote by dividing Biden’s percentage by the sum of Trump’s and Biden’s percentages.
 
 ## Methods
 
-We employ a dynamic Bayesian approach to forecast presidential election outcomes, similar to that in Linzer [[3]][Bibliography]. Our motivation in selecting this model stems from its ability to compound polling data *over time* (i.e., rather than using a naive model that is heavily influenced by an inaccurate poll, we account for several polls with evolving preferences). Instead of basing our priors on vote shares that are centered about 50, like in Linzer [[3]][Bibliography], we innovate the approach by relying more heavily on 2016 election vote shares, suggesting that those voters vote similarly in this election [[5]][Bibliography]. With this data, we predict the outcomes of 15 swing states: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, Minnesota, New Hampshire, Nevada, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin [[4]][Bibliography], with a hierarchical prior on our model parameters. Further, our final model estimates the correlation IS IT CORRELATION OR COVARIANCE ASLKDFGHALSKFHAKFH structure between states, so more similar states pull information from one another.
+We employ a dynamic Bayesian approach to forecast presidential election outcomes, similar to that of Linzer [[3]][Bibliography]. Our motivation in selecting this model stems from its ability to compound polling data *over time*. Rather than using a naive model that is heavily influenced by an inaccurate poll, this model accounts for several polls with evolving preferences. While the Linzer model incorrectly predicted the results of the 2016 presidential election due to polling information inaccuracies, we balance this reliance on the polling information by adjusting our priors to rely on the 2016 election [[5]][Bibliography]. With this data, we predict the outcomes of 15 swing states, which hold a total of 212 electoral votes: Arizona, Colorado, Florida, Georgia, Iowa, Maine, Michigan, Minnesota, New Hampshire, Nevada, North Carolina, Ohio, Pennsylvania, Texas, and Wisconsin [[4]][Bibliography]. 
 
 $$
 \begin{aligned}
@@ -560,19 +573,32 @@ Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\
 \end{aligned}
 $$
 
-Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Hilary Clinton’s 2016 vote share from swing state $i$, with variance $\sigma^2_0$. While the Linzer model incorrectly predicted the results of the 2016 presidential election due to polling information inaccuracies, we hope to balance this reliance on the polling information by adjusting our priors to rely more heavily on the 2016 election [5]. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$.
+(1) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Clinton’s vote share from swing state $i$ in 2016, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$, so more similar states can pull information from one another.
 
-Using JAGS, we ran Model 1 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
+Using JAGS, we run (1) with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This leaves us with 2,000 samples. Then, for each sample, we perform the following:
 
-1. Extract the 15 values of  $\theta_{\cdot 1}$, Biden’s estimated vote share on the day of the election from each swing state $i \in (1 \dots 15)$.
+1. Extract the 15 values of  $\theta_{\cdot 1}$, Biden’s estimated vote share on the day of the election from swing state $i \in (1 \dots 15)$.
 
-2. For each $\theta_{i 1}$ value, if it is greater than 50%, record the number of electoral votes from swing state $i$.
+2. If $\theta_{i 1}$ > 50%, the model predicts Biden will win the electoral votes from swing state $i$. Then sum the total number of predicted electoral votes Biden will gain from swing states.
 
-Based on [SOURCE], Biden is expected to safely win 200 electoral votes from __ states. The sum of the 200 expected electoral votes with the predicted electoral votes from the 15 swing states indicates the total number of estimated electoral votes he would win. If the number of estimated electoral votes is greater than 270, we predict that Biden wins the electoral college vote. Thus, from this model, we are able to predict the electoral college vote and the outcome of the presidential election.
+3. Add 200 to the previous sum, as Biden is expected to safely win 200 electoral votes from 16 states [SOURCE]. Biden is predicted to win the election if this value is greater than 270.
+
+We iterate this process for each of the 2,000 samples to predict the electoral college vote and the outcome of the presidential election.
 
 ## Results
 
-Our model predicts that Biden will win `r mean_electoral` (`r lower_q_presidential_electoral_college`, `r upper_q_presidential_electoral_college`) electoral college votes. Additionally, the model estimates that in `r round(prob_of_biden_winning*100, 4)`% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win with probability `r round(prob_of_biden_winning*100)`. 
+```{r fig.align="center"}
+presidential_results_plot + labs(caption = "Figure 1") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+Figure 1 displays the posterior predictions for Biden's number of electoral votes. The green line is drawn at 270 and the solid and dashed purple lines indicate the mean and 95% credible interval, respectively. The posterior predictions indicate that Biden will win an average of `r mean_electoral` electoral college votes, with a 95% credible interval of (`r lower_q_presidential_electoral_college`, `r upper_q_presidential_electoral_college`). In `r prob_of_biden_winning`% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win the election with probability `r prob_of_biden_winning/100`. 
+
+**STICK TABLE 1 ND STVEN'S PLOTS elifuahslkdfjaweifuaskldfjalwLWEIAUFHSLKDFJHAWELIFUHASKDLFJAWEIUAKLSDJFHALWIUEFALKSDJFAWOIEUFKL
+
+Table XXXXX shows the probability of Democratic victory in each swing state. To obtain this probability for each state, we count the number of samples in which Biden's predicted vote share is greater than 50% and divide by 2,000, the total number of samples. We note that there is a low chance of Biden winning in Texas, Ohio and Iowa. However, Colorado, New Hampshire and Maine show promising results for Biden. 
+
+Biden's probabilities of winning Pennsylvania and Wisconsin are the closest to 50%. Figure XXX displays the change in voter preferences in these states since June 1st. ADD ONE-TWO  SENTENCES ABOUT PLOT.
 
 ### Model Diagnostics
 
@@ -580,21 +606,14 @@ Traceplots for select parameters and quantiles for values can be found in the Ap
 
 ### Sensitivity Analysis
 
-```{r}
-sensitivity_plot_presidential
+```{r fig.align="center"}
+sensitivity_plot_presidential + labs(caption = "Figure 2") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ``` 
 
-In Figure XXXX,  We explore the posterior distributions of  $\theta_{1 1}$  and $\theta_{51}$, which are the posterior parameters that indicate Biden’s predicted two-party vote share on the day of the election in North Carolina  and Pennsylvania, resulting from various priors. The red lines indicate our posterior mean estimate from our final model. The posterior distributions are roughly the same for the four different priors on  $\frac{1}{\sigma^2_0}$. Thus, we can verify our results are not as sensitive to prior choice [[6]][Bibliography].
-
+In Figure 2, we explore the posterior predictive distributions of Biden’s electoral votes across different priors on $\frac{1}{\sigma^2_{0}}$. The solid purple lines indicate the posterior mean of `r mean_electoral` electoral votes from (1). The distribution of Biden's predicted electoral votes appears to be roughly consistent across different priors. Thus, our results are relatively insensitive to prior choice [[7]][Bibliography].
 
 ### External Validation
-
-We perform validation on this model by predicting the winner of the 2012 presidential election and the electoral college vote. In this model, we predict the outcomes from 9 swing states [ https://www.politico.com/2012-election/swing-state/,  maybe list the swing states] We used the same priors from the previous presidential model, with the exception of the normal priors on $\theta_{\cdot 1}$. This time, we centered on President Obama’s  2008  vote share from swing state $i in (1 \dots 9)$.  
-
-We applied the same prediction method to estimate the election outcome and the electoral college vote from 2012. Based on https://www.politico.com/2012-election/swing-state/, Obama  gained 237 electoral votes from ____ states. This was  summed up with the total number of electoral votes he was predicted to win from  the 9 swing states.  Similarly, if Obama gained more than 270 electoral votes, that meant that the model predicts he would win the 2012 election (which he did :)). 
-
-
-## Predicting 2012 Elections Using this Model 
 
 ```{r}
 # https://www.politico.com/2012-election/swing-state/  used to determine swing states 
@@ -608,10 +627,8 @@ polls2012 <- polls2012 %>%
          end.date = mdy(end.date),
          election_date = "2012-11-06" %>% as.Date(),
          days_to_election = election_date - end.date) %>%
-  filter(state %in% c("CO", "FL", "IA", "NV", "NH", "NC", "OH", "VA", "WI"))
-```
+  filter(state %in% c("CO", "FL", "IA", "NV", "NH", "NC", "OH", "VA", "WI") & start.date >= "2012-08-01")
 
-```{r}
 obama_votes <- 237
 states_2012 <- polls2012$state %>% unique
 y_2012 <- polls2012$pct
@@ -621,9 +638,7 @@ N_polls_2012 <- y_2012 %>% length
 N_states_2012 <- states_2012 %>% length
 N_days_2012 <- t_2012 %>% max
 I_states_2012 <- diag(N_states_2012)
-```
 
-```{r}
 # obama's vote share in 2008: https://www.nytimes.com/elections/2008/results/president/votes.html
 vote_share_2008 <- data.frame(polls2012$state) 
 vote_share_2008 <- distinct(vote_share_2008) %>%
@@ -641,9 +656,7 @@ vote_share_2008 <- distinct(vote_share_2008) %>%
   )) %>%
   mutate(obama_percent = 100*obama_percent)
 obama2008 <- vote_share_2008$obama_percent
-```
 
-```{r}
 # final model 
 gamma_2_0.5_prior <- "
   nu_y ~ dunif(0,100)
@@ -661,14 +674,12 @@ if (file.exists("gamma_2_0.5_2012.Rds")) {
                                                                N_states=N_states_2012, N_days=N_days_2012, h=obama2008, I_states=I_states_2012),  
                                                    parameters.to.save = c("theta", "Sigma", 
                                                                           "p","sigma2_y", "sigma2_0"),
-                                                   n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
+                                                   n.iter = 15000, n.burnin = 5000, n.thin = 10, n.chains = 2,
                                                    model.file = model_file)
   
   saveRDS(presidential2012_model_gamma_2_0.5_prior, file = "gamma_2_0.5_2012.Rds")
 }
-```
 
-```{r}
 iterations = presidential2012_model_gamma_2_0.5_prior$BUGSoutput$n.keep * presidential2012_model_gamma_2_0.5_prior$BUGSoutput$n.chains 
 
 electoral_data <- read.csv("Electoral_College.csv") %>%
@@ -683,7 +694,7 @@ electoral_data$states_2012 <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
 #returns number of electoral votes biden wins for each iteration of the sampler
 #we need to add to this the votes that he is guaranteed from other states
 
-prediction_per_simulation <- function(model_output, i){
+prediction_per_simulation_obama <- function(model_output, i){
   elec_sims <- presidential2012_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[i,,1]
   vote_share_by_state <- data.frame(states_2012, elec_sims)
   
@@ -692,7 +703,7 @@ prediction_per_simulation <- function(model_output, i){
     dplyr::select(-c(Year)) 
   obama_wins <- results %>%
     filter(elec_sims > 50) 
-  obama_electoral_votes <- sum(obama_wins$Votes)
+  obama_electoral_votes <- sum(obama_wins$Votes) 
   
   #add in the number of guaranteed votes from other states!
   biden_votes = obama_votes + obama_electoral_votes
@@ -702,22 +713,30 @@ prediction_per_simulation <- function(model_output, i){
 final_results2012 <- c()
 
 for (i in 1:iterations){
-  final_results2012[i] = prediction_per_simulation(presidential2012_model_gamma_2_0.5_prior, i)
+  final_results2012[i] = prediction_per_simulation_obama(presidential2012_model_gamma_2_0.5_prior, i)
 }
 
-hist(final_results2012)
-mean(final_results2012 >=1)
-mean(final_results2012)
+prob_of_obama_winning <- mean(final_results2012 > 270) * 100
+mean_electoral <- mean(final_results2012)
+lower_q_obama <- quantile(final_results2012, probs = c(0.025))
+upper_q_obama <- quantile(final_results2012, probs = c(0.975)) + 4
 
-final_results2012 %>% quantile()
+ggplot(data = tibble(final_results2012),  aes(x = final_results2012)) + 
+  geom_histogram(bins = 16, colour="black",fill = "#4d4d4d") + 
+  geom_vline(xintercept = 332, color = "#1b7837", size = 1.1) + 
+  geom_vline(xintercept = mean_electoral, color = "#542788", size = 1.1) + 
+  geom_vline(xintercept = c(lower_q_obama,upper_q_obama), color = "#542788", linetype = 2, size = 0.7) + 
+  labs(title = "Predicted Number of Obama's Electoral Votes",
+       subtitle = paste0("Predicted Probability of Obama Winning: ", prob_of_obama_winning, "%"),
+       x = "Number of Obama's Electoral Votes",
+       y = "Count",
+       caption = "Figure XXXXXx") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
 
+For external validation, we estimate Obama’s electoral vote share in 2012 using (1). We predict the outcomes from 9 swing states: Colorado, Florida, Iowa, Nevada, New Hampshire, North Carolina, Ohio, Virginia, and Wisconsin [SOURCE]. The one difference from the parametrization in (1) is the prior on $\theta_{i 1}$, which now follows a $N(o_i, \sigma^2_0)$ distribution, where $o_i$ represents Obama’s vote share in 2008 from swing state $i \in (1 \dots 9)$. We assume he would win 237 electoral votes from solid blue states [[8]][Bibliography]. Using the prediction methodology outlined in Section 2.2, our 95% credible interval for President Obama’s 2012 electoral vote share is (`r lower_q_obama`, `r upper_q_obama`). This captures the true number of electoral votes he won, 332. Despite President Obama winning in a landslide, this result was uncertain at the time due to misrepresentation of voter sentiment in the polls. Therefore, there is reasonable evidence that our model may generalize well to the 2020 election, given the evidence that it is able to balance prior election results and polling information. 
 
-```{r}
-knitr::opts_chunk$set(eval = FALSE,
-                      message = FALSE,
-                      warning = FALSE)
-```
+
 # US Senate Election
 
 ```{r Read in Data}
@@ -852,7 +871,7 @@ generate_senate_model_text = function(hierarchical_priors_senate) {
 }
 ```
 
-```{r}
+```{r final senate model}
 senate_gamma_2_1_mu_7.5.prior <- "
   nu_y ~ dunif(0,100)
   tau_y ~ dunif(0,100)
@@ -875,7 +894,10 @@ if (file.exists("senate_gamma_2_1_mu_7.5.prior.Rds")) {
   
   saveRDS(senate_gamma_2_1_mu_7.5.prior_model, file = "senate_gamma_2_1_mu_7.5.prior.Rds")
 }
+```
 
+
+```{r}
 n_iter <- dim(senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,,1])[1]
 
 prediction_per_simulation_senate <- function(model_output, i){
@@ -892,20 +914,24 @@ prediction_per_simulation_senate <- function(model_output, i){
 final_results_senate <- c()
 
 for (i in 1:n_iter){
-  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_1_mu_7.5.prior_model, i)
+  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_1_mu_7.5.prior_model, i) 
 }
 
-mean(final_results_senate >= 9)
-mean(final_results_senate)
-final_results_senate %>% hist()
+mean_senate <- mean(final_results_senate) 
+lower_q_senate <- quantile(final_results_senate, probs = c(0.025)) 
+upper_q_senate <- quantile(final_results_senate, probs = c(0.975)) 
 
-tidybayes::gather_draws(senate_gamma_2_1_mu_7.5.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
-  filter(i == 1 & j == 1) %>%
-  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
-  geom_line(alpha = 0.6) +
-  facet_grid(param~., scales = "free_y")
+senate_results_plot <- ggplot(data = tibble(final_results_senate),  aes(x = final_results_senate)) + 
+  geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
+  geom_vline(xintercept = 8, color = "#1b7837", size = 1.1) + 
+  geom_vline(xintercept = mean_senate, color = "#542788", size = 1.1) + 
+  geom_vline(xintercept = c(lower_q_senate,upper_q_senate), color = "#542788", linetype = 2, size = 0.7) + 
+  labs(title = "Predicted Number Battleground Races Going Democrat",
+       subtitle = paste0("Predicted Probability of Senate Flipping: ", mean(final_results_senate >= 8) * 100, "%"),
+       x = "Number Battleground Races Going Democrat",
+       y = "Count")
 ```
+
 
 ```{r}
 senate_gamma_5_2_mu_7.5.prior <- "
@@ -931,24 +957,23 @@ if (file.exists("senate_gamma_5_2_mu_7.5.prior.Rds")) {
   saveRDS(senate_gamma_5_2_mu_7.5.prior_model, file = "senate_gamma_5_2_mu_7.5.prior.Rds")
 }
 
-final_results_senate <- c()
-
-for (i in 1:n_iter){
-  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_5_2_mu_7.5.prior_model, i)
-}
-
-mean(final_results_senate >= 9)
-mean(final_results_senate)
-final_results_senate %>% hist()
-
-tidybayes::gather_draws(senate_gamma_5_2_mu_7.5.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
-  filter(i == 1 & j == 1) %>%
-  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
-  geom_line(alpha = 0.6) +
-  facet_grid(param~., scales = "free_y")
+# final_results_senate <- c()
+# 
+# for (i in 1:n_iter){
+#   final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_5_2_mu_7.5.prior_model, i)
+# }
+# 
+# mean(final_results_senate >= 9)
+# mean(final_results_senate)
+# final_results_senate %>% hist()
+# 
+# tidybayes::gather_draws(senate_gamma_5_2_mu_7.5.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+#   filter(i == 1 & j == 1) %>%
+#   mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+#   ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+#   geom_line(alpha = 0.6) +
+#   facet_grid(param~., scales = "free_y")
 ```
-
 
 ```{r}
 senate_gamma_2_2_mu_10.prior <- "
@@ -974,22 +999,22 @@ if (file.exists("senate_gamma_2_2_mu_10.prior.Rds")) {
   saveRDS(senate_gamma_2_2_mu_10.prior_model, file = "senate_gamma_2_2_mu_10.prior.Rds")
 }
 
-final_results_senate <- c()
-
-for (i in 1:n_iter){
-  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_2_mu_10.prior_model, i)
-}
-
-mean(final_results_senate >= 9)
-mean(final_results_senate)
-final_results_senate %>% hist()
-
-tidybayes::gather_draws(senate_gamma_2_2_mu_10.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
-  filter(i == 1 & j == 1) %>%
-  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
-  geom_line(alpha = 0.6) +
-  facet_grid(param~., scales = "free_y")
+# final_results_senate <- c()
+# 
+# for (i in 1:n_iter){
+#   final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_2_2_mu_10.prior_model, i)
+# }
+# 
+# mean(final_results_senate >= 9)
+# mean(final_results_senate)
+# final_results_senate %>% hist()
+# 
+# tidybayes::gather_draws(senate_gamma_2_2_mu_10.prior_model %>% as.mcmc() %>% mcmc.list() , theta[i, j]) %>%
+#   filter(i == 1 & j == 1) %>%
+#   mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
+#   ggplot(aes(x = .iteration, y = .value, color = as.factor(.chain))) +
+#   geom_line(alpha = 0.6) +
+#   facet_grid(param~., scales = "free_y")
 ```
 
 ```{r}
@@ -1016,87 +1041,209 @@ if (file.exists("senate_gamma_0.5_0.5_mu_10.prior.Rds")) {
   saveRDS(senate_gamma_0.5_0.5_mu_10.prior_model, file = "senate_gamma_0.5_0.5_mu_10.prior.Rds")
 }
 
-final_results_senate <- c()
-
-for (i in 1:n_iter){
-  final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_0.5_0.5_mu_10.prior_model, i)
-}
-
-mean(final_results_senate >= 9)
-mean(final_results_senate)
-final_results_senate %>% hist()
+# final_results_senate <- c()
+# 
+# for (i in 1:n_iter){
+#   final_results_senate[i] = prediction_per_simulation_senate(senate_gamma_0.5_0.5_mu_10.prior_model, i)
+# }
+# 
+# mean(final_results_senate >= 9)
+# mean(final_results_senate)
+# final_results_senate %>% hist()
 ```
 
-
-```{r cache=TRUE, include=FALSE}
-senate_sen_analysis_priors_names <- c("Ga(2, 0.5))",
-                                      "Ga(4, 1)",
-                                      "Ga(1, 0.25)",
-                                      "Exp(1/4)")   
+```{r senate model sensitivity plots, cache=TRUE}
+senate_sen_analysis_priors_names <- c("Ga(2, 1), Mu(50, 1/7.5)",
+                                      "Ga(5, 2), Mu(50, 1/7.5)",
+                                      "Ga(2, 2), Mu(50, 1/10)",
+                                      "Ga(0.5, 0.5), Mu(50, 1/10)")   
 senate_sen_analysis_priors <- list(senate_gamma_2_1_mu_7.5.prior_model,
                                    senate_gamma_5_2_mu_7.5.prior_model,
                                    senate_gamma_2_2_mu_10.prior_model,
-                                   senate_gamma_0.5_0.5_mu_10.prior_model)     
-senate_theta_1_1_mean <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,5,1] %>% mean()
+                                   senate_gamma_0.5_0.5_mu_10.prior_model)   
+
+
+
 senate_sen_tbl_list <- list()
 for (i in 1:4) {
-  senate_sen_tbl_list[[i]] <- tidybayes::gather_draws(senate_sen_analysis_priors[[i]] %>% coda::as.mcmc(), theta[i, j]) %>% 
-    filter(i == 1 & j == 1)
+  final_results_senate_sensitivity <- c()
+  for (sim in 1:iterations) {
+    
+    final_results_senate_sensitivity[sim] = prediction_per_simulation_senate(senate_sen_analysis_priors[[i]], sim)
+  }
+  senate_sen_tbl_list[[i]] <- as_tibble(final_results_senate_sensitivity)
 }
-do.call(bind_rows, senate_sen_tbl_list) %>% 
-  dplyr::mutate(model = rep(senate_sen_analysis_priors_names, each=2000),
-                model = factor(model,
-                               levels = senate_sen_analysis_priors_names,
-                               labels = c(expression(paste(sigma[0]^2, " ~ Ga(2, 0.5)")),
-                                          expression(paste(sigma[0]^2, " ~ Ga(4, 1)")),
-                                          expression(paste(sigma[0]^2, " ~ Ga(1, 0.25)")),
-                                          expression(paste(sigma[0]^2, " ~ Exp(0.25)"))))) %>% 
-  #mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[", i,", ", j, "]"))) %>%
-  ggplot() + 
-  geom_density(aes(x = .value)) + 
-  geom_vline(xintercept = senate_theta_1_1_mean) +  
-  facet_wrap(model~., scales = "free_y", labeller = "label_parsed")
-```
 
-## Discussion
+
+sensitivity_plot_senate <- do.call(bind_rows, senate_sen_tbl_list) %>% 
+  dplyr::mutate(model = rep(sen_analysis_priors_names, each=2000),
+                model = factor(model,
+                               levels = sen_analysis_priors_names,
+                               labels = c(expression(paste(sigma[0]^2, " ~ Ga(2, 1), ", mu[0], " ~ (50, 1/7.5)")),
+                                          expression(paste(sigma[0]^2, " ~ Ga(5, 2), ", mu[0]," ~ (50, 1/7.5)")),
+                                          expression(paste(sigma[0]^2, " ~ Ga(2, 2), ", mu[0]," ~ (50, 1/10)",)),
+                                          expression(paste(sigma[0]^2, " ~ Ga(0.5, 0.5), ", mu[0]," ~ (50, 1/10"))))) %>% 
+  ggplot() + 
+  geom_density(aes(x = value)) + 
+  #geom_histogram(aes(x = value), bins = 10) + 
+  geom_vline(xintercept = mean_senate, color = "blue") + 
+  geom_vline(xintercept = c(lower_q_senate,upper_q_senate), color = "red", linetype = 2) + 
+  facet_wrap(model~., scales = "free_y", labeller = "label_parsed") + 
+  labs(title = "Predicted Number of Biden's Electoral Votes",
+       x = "Number of Biden's Electoral Votes",
+       y = "Density") 
+```
 
 # Senate
 
+The Senate currently has 53 Republicans and 47 Democrats (including 2 Independents who caucus with the Democratic party). 35 Democrats and 30 Republicans are *not* up for election in 2020, while the 35 remaining seats are up. Thus, in order to reach 51 and “flip” the Senate, Democrats will need to win 16 of the 35 seats up for election. Of the 35 seats up, 8 are in states that are very likely to vote for the Democratic candidate (Virginia, Oregon, Illinois, New Jersey, Delaware, Massachusetts, New Hampshire, and Rhode Island) while 9 states are very likely to vote Republican (Arkansas, Idaho, Louisiana, Nebraska, Oklahoma, Tennessee, South Dakota, West Virginia and Wyoming) [[15]][Bibliography]. The remaining 18 races (in 17 states) will be instrumental in determining if the senate flips: Alaska, Alabama, Arizona, Colorado, Georgia, Iowa, Kansas, Kentucky, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, and Texas [[15]][Bibliography]. These include two special elections [[13]][Bibliography]: one in Arizona and one in Georgia (where both seats are up). Of these 18 races, Democrats need to win 8 in order to reach 16 seats and flip the senate. For this reason, we are primarily interested in modelling the outcomes in only these 18 “battleground” races. 
+
 ## Data
+
+To predict the outcomes of US senate races, we utilize state-wide 2020 senate election polls. Each sample in the dataset includes the start date of the poll, the percentages of people who would vote for the Democratic or Republican candidate, and whether the sampled population were “likely” voters, registered voters, or simply adults. In Arizona and Georgia’s special elections, multiple candidates from each party are facing off on Election Day. For this reason, we collapse all Democratic candidates into one group and all Republican candidates into another, and aggregate their polling numbers. For example, Arizona’s Democratic candidates are classified as a single candidate with one overall percentage. 
+
+We only kept polls that sample populations of registered and likely voters. We further filtered the data to only include polls from 100 days before Election Day, which is around most states’ primary election dates [[14]][Bibliography]. Furthermore, we designated special elections in Georgia and Arizona as Georgia* and Arizona*, respectively, in order to avoid confusing these elections with their main counterparts. For each poll, we calculated the Democratic candidate’s share of the two-party vote by dividing the Democratic candidate’s percentage by the sum of the Republican’s and Democratic’s percentages.
+
 
 ## Methods
 
-The Senate currently has 53 Republicans and 47 Democrats (including 2 Independents who caucus with the Democratic party). 35 seats are up in 2020 - thus, in order to reach 51 and “flip” the Senate, Democrats will need to win 16 of the 35 seats up for election. Of the 16 needed to flip the senate, several reputable sources confirm that the following8 states are very likely to vote for the Democratic candidate (Virginia, Oregon, Illinois, New Jersey, Delaware, Massachusetts, New Hampshire, and Rhode Island) and 9 states are very likely to vote Republican (Arkansas, Idaho, Louisiana, Nebraska, Oklahoma, Tennessee, South Dakota, West Virginia and Wyoming). However, 18 races in 17 states will be instrumental in determining if the senate flips: Alaska, Alabama, Arizona, Colorado, Georgia, Iowa, Kansas, Kentucky, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, and Texas. (from 538). There are also two special elections: one in Arizona and one in Georgia (both of Georgia’s seats are up). [SOURCE for special election? or do we wanna say more about it] Of these 18 races, Democrats will need to win 8 in order to reach 16 seats and flip the senate. Thus, we are primarily interested in modelling the outcomes of only these “battleground” races. *mention somewhere that we are not using priors for vote shares, and this is because we don’t have a previous election that we can center our priors on. So, we stuck with 50*
+We utilize the polling data in a model similar to that of the presidential election.  
 
-This approach utilized polling data and a model similar to that of the presidential election [cite Linzer].  In this model, we predict the outcomes from 19 swing races. [4,SOURCE,  maybe list the swing states]We let these  races influence each other by placing a hierarchical prior on the model  parameters. Further, our final model estimates the correlation structure between races, so more similar races pull information from one another. 
+$$
+\begin{aligned}
+Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
+\theta_{i 1} \sim N(\mu_0, \sigma^2_0) , \ \boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN&(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma}) \\ 
+\mu_0 \sim N(50, \frac{2}{15}), \ \mathbf{\Sigma}^{-1} \sim Wis&h(\mathbf{I_{18}}, 19) &  (2) \\
+\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim  \ &Ga(2, 1)\\
+\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
+\end{aligned}
+$$
 
-[insert model latex]
+(2) represents the final model we use to predict the presidential election. Let $Y_k$, the Democratic candidate’s share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in battleground race $i \in (1 \dots 18)$. Each race $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each race. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered about 50 with variance $\sigma^2_0$. Note that, unlike the model for the Presidential election, we did not center $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$ around vote shares from previous senate elections in each state. This was due to the fact that, barring special elections, the last senate elections for this group of states occurred six years ago. As this is a considerable amount of time, we did not believe it sensible to strongly center our priors on the previous election.  Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{18}}, 19)$. 
 
-Let $Y_k$, the Democratic candidate’s share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in battleground race $i \in (1 \dots 19)$. Each race has its own observation variance, $\sigma^2_{yi}$ - the indice $y$ indicates that it is the observation variance from each race We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered about 50 with variance $\sigma^2_0$. Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{19}}, 20)$
+Using JAGS, we run (2) with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This leaves us with 2,000 samples. Then, for each sample, we performed the following:
 
-Using JAGS, we ran Model 2 with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This left us with 2,000 samples. Then, for each sample, we performed the following:
-Extract the 19 values of  $\theta_{\cdot 1}$, the Democratic candidate’s estimated vote share on the day of the election from each battleground race $i \in (1 \dots 19)$.
-For each $\theta_{i 1}$ value, if it is greater than 50%, that race is predicted to elect the Democratic candidate. 
-Based on [SOURCE], 7 races are very likely to elect the Democratic candidate. We then add this to the number of predicted races that will elect a Democratic candidate. If the total number of races that predict a Democratic candidate being elected is at least  16, the Senate is then predicted to flip. 
+1. Extract the 18 values of  $\theta_{\cdot 1}$, the Democratic candidate’s estimated vote share on the day of the election from each battleground race $i \in (1 \dots 18)$.
+2. If $\theta_{i 1}$ > 50%, the model predicts the Democratic candidate will win in race $i$.  
+3. 8 races are very likely to elect the Democratic candidate [[15]][Bibliography]. If Democratic candidates win in at least 8 swing races, the Senate will flip.  
 
-Swing States Senate Election (from 538) : Alaska, Alabama, Arizona*, Colorado, Georgia*, Georgia, Iowa, Kansas, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, Texas (17 states)
+We iterate this process for each of the 2,000 samples to predict the outcome of the U.S. Senate election.
 
-Out of the 18 remaining seats up for election: 
-Solid Dem (>= 95): New  Hampshire, Virginia, Oregon, Illinois, New Jersey, DE, MA,  RI (8 states solid Dem)
-Solid Rep (>= 95): Kentucky, Louisiana, WV, OK, ID,  SD, TN, NE, WY, AR (10 states solid Rep)
-currently there are 47 dems (counting independents) and 53 republicans 
-this means that, other than the 35 (23 Rep, 12 Dem) seats up, there are 35 democrats and 30 republicans in the senate
-to flip, democrats need to get up to 51. They need 16 seats. 8 are “guarenteed”,  they need 8 from the swing states.  
+## Results
 
-# Results
+```{r}
+senate_results_plot + labs(caption = "Figure XXXX") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+Figure XXXXX displays the posterior predictions for the number of senate seats Democrats will win, out of the 18 seats up for reelection which we deemed “battleground.” The green line is drawn at 8 and the solid and dashed purple lines indicate the mean and 95% credible interval, respectively. The posterior predictions indicate Democrats will win an average of `r mean_senate` of the 18 battleground seats, with a 95% credible interval of (`r lower_q_senate`, `r upper_q_senate`). In `r mean(final_results_senate >= 8) * 100`% of our samples, Democrats are predicted to win at least 8 battleground senate seats. Thus, adding this number to the 8 already guaranteed to Democrats, we predict that Democrats will win 16 seats and “flip” the senate with probability `r mean(final_results_senate >= 8)`. 
+
+
+**STICK TABLE 1 ND STVEN'S PLOTS elifuahslkdfjaweifuaskldfjalwLWEIAUFHSLKDFJHAWELIFUHASKDLFJAWEIUAKLSDJFHALWIUEFALKSDJFAWOIEUFKL
+
+```{r}
+predictions_per_state_senate <- function(model_output, state){
+  win_dem <- c()
+  for (i in 1:iterations){
+    
+    elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
+    vote_share_for_state <- data.frame(states_senate, elec_sims) %>%
+      filter(states_senate == state)
+    vote_share_val <- vote_share_for_state$elec_sims
+    if (vote_share_val > 50){
+      win_dem[i] <- 1
+    }
+    if (vote_share_val < 50){
+      win_dem[i] <- 0
+    }
+  }
+  probability_voting_dem <- round(100*sum(win_dem)/iterations, 3)
+  return(probability_voting_dem)
+}
+probs_voting_dem <- c()
+i = 1
+for (state in states_senate){
+  # print(state)
+  prob_voting_dem <- predictions_per_state_senate(senate_gamma_2_1_mu_7.5.prior_model, state)
+  # print(prob_voting_dem)
+  probs_voting_dem[i] <- prob_voting_dem
+  i = i + 1
+}
+prob_voting_dem_table <- data.frame(states_senate, probs_voting_dem) %>%
+  mutate(State = states_senate) %>%
+  mutate(Probability = probs_voting_dem/100) %>%
+  select(State, Probability)
+kable(prob_voting_dem_table, caption = "Senate Elections: Probability of Democratic Victory in each Swing State")
+```
+
+Table XXXXX shows the probability of a Democratic senate victory for each battleground race. To obtain this probability for each state, we count the number of samples in which the predicted vote share is greater than 50% and divide by 2,000, the total number of samples. There is a low probability of Democrats winning senate seats in Alabama and Kentucky, while Colorado and Michigan show promising results for Democrats. 
+
+Biden's probabilities of winning Pennsylvania and Wisconsin are the closest to 50%. Figure XXX displays the change in voter preferences in these states since June 1st. ADD ONE-TWO  SENTENCES ABOUT PLOT. FIX THIS PLS
 
 ### Model Diagnostics
 
+Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. RHAT values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the RHAT value to 1, the better the model has converged. The traceplots show the chains have mixed well and RHAT values close to 1, indicating that our model has sufficiently converged. 
+
 ### Sensitivity Analysis
+
+```{r}
+sensitivity_plot_senate  + labs(caption = "Figure XXXX") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+
+In Figure XXXX, we explore the posterior predictive distributions of number of seats Democrats will win across different priors on $\frac{1}{\sigma^2_{0}}$ and $\mu_0$. The solid purple lines indicate the posterior mean of `r mean_electoral` number of seats from (2). The distribution of the number of seats Democrats will win does not appear to be roughly consistent across different priors. Thus, our results are slightly sensitive to prior choice [[7]][Bibliography].
 
 ### External Validation
 
+```{r}
+AZ_senate_vote_shares <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,3,1]
+
+mean_AZ_senate_vote_shares <- mean(AZ_senate_vote_shares) 
+lower_AZ_senate_vote_shares <- quantile(AZ_senate_vote_shares, probs = c(0.025)) 
+upper_AZ_senate_vote_shares <- quantile(AZ_senate_vote_shares, probs = c(0.975)) 
+
+AZsenate_results_plot <- ggplot(data = tibble(AZ_senate_vote_shares),  aes(x = AZ_senate_vote_shares)) + 
+  geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
+  geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
+  geom_vline(xintercept = 51.2295, color = "#bf812d", size = 1.1) + 
+  geom_vline(xintercept = mean_AZ_senate_vote_shares, color = "#542788", size = 1.1) + 
+  geom_vline(xintercept = c(lower_AZ_senate_vote_shares,upper_AZ_senate_vote_shares), color = "#542788", linetype = 2, size = 0.7) + 
+  labs(title = "Predicted Democratic Vote Share in Arizona (Special Election)",
+       subtitle = paste0("Predicted Probability of Mark Kelly (Dem) Winning: ", (prob_voting_dem_table %>% filter(State == "Arizona*") %>% pull(Probability)) * 100, "%"),
+       x = "Predicted Vote Share",
+       y = "Count")
+AZsenate_results_plot + labs(caption = "Figure XXXX") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+```{r}
+GA_senate_vote_shares <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,6,1]
+
+mean_GA_senate_vote_shares <- mean(GA_senate_vote_shares) 
+lower_GA_senate_vote_shares <- quantile(GA_senate_vote_shares, probs = c(0.025)) 
+upper_GA_senate_vote_shares <- quantile(GA_senate_vote_shares, probs = c(0.975)) 
+
+GAsenate_results_plot <- ggplot(data = tibble(GA_senate_vote_shares),  aes(x = GA_senate_vote_shares)) + 
+  geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
+  geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
+  geom_vline(xintercept = 42.797, color = "#bf812d", size = 1.1) + 
+  geom_vline(xintercept = mean_GA_senate_vote_shares, color = "#542788", size = 1.1) + 
+  geom_vline(xintercept = c(lower_GA_senate_vote_shares,upper_GA_senate_vote_shares), color = "#542788", linetype = 2, size = 0.7) + 
+  labs(title = "Predicted Democratic Vote Share in Georgia (Special Election)",
+       subtitle = paste0("Predicted Probability of Democratic Candidate Winning: ", (prob_voting_dem_table %>% filter(State == "Georgia*") %>% pull(Probability)) * 100, "%"),
+       x = "Predicted Vote Share",
+       y = "Count")
+GAsenate_results_plot + labs(caption = "Figure XXXX") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+
 ## Discussion
+
+## Discussion PRESIDENTIAL
+
+One strength of our model is the covariance estimates that pull information of voter preferences between similar states. In this manner, we can capture interstate trends in our model. On the other hand, a limitation to this model is the necessity to classify swing states. There is no strict definition of what defines a swing state, so our model is reliant on these choices. This limitation leads to an assumption of the minimal number of electoral college votes Biden would earn. Further, this influences the covariance matrix, as it pulls information from other swing states involved in the model. 
 
 ## North Carolina Senate Election
 
@@ -1131,4 +1278,35 @@ to flip, democrats need to get up to 51. They need 16 seats. 8 are “guarenteed
 5). Tamman, M., & Faulconbridge, G. (2016, November 09). How the polls, including ours, missed Trump's victory. Retrieved November 01, 2020, from https://www.reuters.com/article/us-usa-election-polls/how-the-polls-including-ours-missed-trumps-victory-idUSKBN1343O6
 6). Hoff, P. D. (2010). Chapter 1: Introduction and examples. In A first course in bayesian statistical methods (pp. 5-7). Dordrecht: Springer.
 
->
+
+
+
+
+
+# NC Senate
+
+## Results 
+
+```{r}
+NC_senate_vote_shares <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,16,1]
+
+mean_NC_senate_vote_shares <- mean(NC_senate_vote_shares) 
+lower_NC_senate_vote_shares <- quantile(NC_senate_vote_shares, probs = c(0.025)) 
+upper_NC_senate_vote_shares <- quantile(NC_senate_vote_shares, probs = c(0.975)) 
+
+NCsenate_results_plot <- ggplot(data = tibble(NC_senate_vote_shares),  aes(x = NC_senate_vote_shares)) + 
+  geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
+  geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
+  geom_vline(xintercept = mean_NC_senate_vote_shares, color = "#542788", size = 1.1) + 
+  geom_vline(xintercept = c(lower_NC_senate_vote_shares,upper_NC_senate_vote_shares), color = "#542788", linetype = 2, size = 0.7) + 
+  labs(title = "Cunningham's Predicted Vote Share",
+       subtitle = paste0("Predicted Probability of Cunningham Winning: ", (prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)) * 100, "%"),
+       x = "Predicted Vote Share",
+       y = "Count")
+NCsenate_results_plot + labs(caption = "Figure XXXX") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+We can further use (2) to examine the results of the North Carolina Senate election more closely, a hotly contested election between Republican Thom Tillis and Democrat Cal Cunningham. Figure  XXX displays the posterior predictive distribution of Cunningham's vote share. Our posterior mean vote share going to Cunningham is `r mean_NC_senate_vote_shares`, with a 95% credible interval of (`r lower_NC_senate_vote_shares`, `r upper_NC_senate_vote_shares`). We further note that in `r prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)) * 100`% of the posterior samples, the predicted vote share for Cunningham was above 50%. Thus, we predict that Cunningham will win the North Carolina senate race with probability `r (prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability))`, which is promising for the Democratic party. 
+
+
