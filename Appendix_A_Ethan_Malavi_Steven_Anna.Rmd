@@ -5,7 +5,7 @@ geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
 fontsize: 12pt
 output: 
   pdf_document:
-     number_sections: true
+
 ---
 
 ```{r}
