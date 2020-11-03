@@ -6,6 +6,7 @@ output: html_document
 https://www.pewresearch.org/politics/2020/10/21/large-shares-of-voters-plan-to-vote-a-straight-party-ticket-for-president-senate-and-house/ => resource to justify using the presidential predictions for congressional elections!
 
 
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(dplyr)
@@ -13,6 +14,8 @@ library(lubridate)
 library(readr)
 library(groupdata2)
 library(lme4)
+library(knitr)
+library(pander)
 ```
 
 
@@ -23,8 +26,7 @@ nc_registered_voters <- readr::read_rds("ncvoter_Statewide_small_2016.rds")  # n
 
 nc_registered_voters <- nc_registered_voters %>% 
   filter(voter_status_reason_desc != "DECEASED") %>% 
-  #mutate(voter_reg_num = as.integer(voter_reg_num))
-  mutate(voter_reg_num = as.integer(substr(voter_reg_num,6,12)))
+  mutate(voter_reg_num = as.integer(substr(voter_reg_num,6,12))) 
 
 
 nc_registered_voters$registr_dt <- as.character(nc_registered_voters$registr_dt)
@@ -33,16 +35,19 @@ nc_registered_voters <- subset(nc_registered_voters, registr_dt <= last_day_to_r
 ```
 
 
-
 ```{r setup, include=FALSE}
-nc_voters <- read.csv("ncvhis_Statewide_small_2016.csv") # voters in year
+nc_voters <- read.csv("ncvhis_Statewide_small_2016.csv") %>%
+  mutate(voter_reg_num = as.character(voter_reg_num)) %>%
+  mutate(voter_reg_num = case_when(
+    county_desc == "WAKE" ~ substr(voter_reg_num, 4, length(voter_reg_num)), 
+    TRUE ~ voter_reg_num
+  )) %>%
+  mutate(voter_reg_num = as.integer(voter_reg_num))
 
 voter_data <- left_join(nc_registered_voters,nc_voters %>% filter(voted_party_desc != ""),by=c("voter_reg_num", "county_id", "county_desc")) %>%
   filter(!is.na(voted_party_desc))
 
 ```
-
-
 
 ```{r setup, include=FALSE}
 voter_data <- voter_data %>% 
@@ -189,13 +194,89 @@ for (m in multiple){
 
 
 ```{r setup, include=FALSE}
-grouped_voter_only_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv))
+grouped_voter_only_data <- grouped_voter_data %>% filter(!is.na(cong_dist_abbrv)) 
 
 grouped_voter_only_data %>% write_csv("grouped_voter_only_data_2016.csv")
 voter_data %>% filter(is.na(cong_dist_abbrv))
 
-grouped_voter_only_data <- read_csv("grouped_voter_only_data_2016.csv")
-fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
+grouped_voter_only_data <- read_csv("grouped_voter_only_data_2016.csv") %>% ungroup()
+fold_df <- groupdata2::fold(grouped_voter_only_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
+```
+
+# EDA
+
+
+```{r}
+grouped_voter_only_data  <- grouped_voter_only_data %>% filter(!is.na(gender))
+grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Non-Hispanic Other")
+```
+
+```{r}
+grouped_voter_only_data <-grouped_voter_only_data %>% ungroup() 
+grouped_voter_only_data$age_bin <- relevel(grouped_voter_only_data$age_bin %>% as.factor(), ref = "65+")
+```
+
+```{r}
+# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
+grouped_voter_only_data %>% 
+  filter(gender %in% c("F", "M")) %>%
+  mutate(sums = Democrat + Republican) %>%
+  mutate(race_ethnicity = case_when(
+    race_ethnicity == "Hispanic Any Race" ~  paste0("Hispanic Any Race (n=",
+                                                   grouped_voter_only_data %>%
+                                                     mutate(sums = Democrat + Republican) %>%
+                                                     filter(race_ethnicity == "Hispanic Any Race") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic American Indian" ~  paste0("Non-Hispanic American Indian (n=",
+                                                   grouped_voter_only_data %>%
+                                                     mutate(sums = Democrat + Republican) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic American Indian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
+                                                   grouped_voter_only_data %>%
+                                                     mutate(sums = Democrat + Republican) %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Asian") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
+                                                   grouped_voter_only_data %>%
+                                                     mutate(sums = Democrat + Republican)  %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Black") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
+                                                   grouped_voter_only_data %>%
+                                                     mutate(sums = Democrat + Republican)  %>%
+                                                     filter(race_ethnicity == "Non-Hispanic Mixed") %>%
+                                                     summarise(sum(sums)),
+                                                   ")"),
+    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
+                                                   grouped_voter_only_data %>%
+                                                     mutate(sums = Democrat + Republican)  %>%
+                                                     filter(race_ethnicity == "Non-Hispanic White") %>%
+                                                     summarise(sum(sums)),
+                                                   ")")
+  )) %>%
+  dplyr::select(race_ethnicity, age_bin, gender, Democrat, Republican) %>%
+  dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
+  dplyr::summarize(Democrat = sum(Democrat), 
+                   Republican = sum(Republican), 
+                   proportion = Democrat/(Democrat+Republican)) %>% ungroup()%>% 
+  ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  facet_wrap(~race_ethnicity, nrow = 2) + 
+  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
+            position = position_dodge(width = 1),  
+            colour="Black", 
+            size = 2.2) + 
+  labs(x = expression("Age Group"), 
+       y= ("Proportion of Democratic Voters"), 
+       title = "Democratic Voters Across Age Groups, Race/Ethnicity, and Sex", 
+       caption="Figure 1a") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill=guide_legend(title="Sex"))
 ```
 
 
@@ -228,7 +309,7 @@ fold_df <- groupdata2::fold(grouped_voter_data, k = 5, cat_col = c("age_bin", "r
 
 ```{r}
 #best model is: 
-model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv) + (1|county_desc)"
+model.formula <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * party_cd + (1|cong_dist_abbrv) + (1|county_desc)"
 
 #train on everything!
 glmer.fit <- glmer(model.formula,
@@ -239,6 +320,274 @@ glmer.fit <- glmer(model.formula,
 glmer.probs <- predict(glmer.fit,  grouped_voter_only_data,  type = "response")
 
 ```
+
+## Interpretation
+```{r}
+final.model.fixed.results <- data.frame(Estimates=summary(glmer.fit)$coefficients[, 1:4])
+final.model.fixed.results$id <- rownames(final.model.fixed.results) 
+final.model.fixed.results <- final.model.fixed.results %>%
+  mutate(Estimate = Estimates.Estimate, Std.Err = Estimates.Std..Error) %>%
+  select(id, Estimate, Std.Err)  %>%
+  mutate(lower = Estimate - 1.96*Std.Err) %>%
+  mutate(upper = Estimate + 1.96*Std.Err)
+```
+
+
+```{r}
+#gender interpretation 
+gender <- final.model.fixed.results%>% 
+  filter(id == "genderM")
+gender_estimate <- gender$Estimate
+gender_lower <- gender$lower
+gender_upper <- gender$upper
+
+gender_multiplicative <- round(exp(gender_estimate), 3)
+gender_multiplicative_CI <- paste0("(", round(exp(gender_lower), 3), ", ", round(exp(gender_upper), 3), ")")
+```
+Having addressed assumptions and validated our model with in sample  predictions, we now interpret the results. 
+
+Table __ in the Appendix shows that, with all else held constant, we are 95% confident that the odds of a male voting for a democratic candidate is expected to be `r gender_multiplicative` times that of a female, with a ninety-five percent confidence interval of `r gender_multiplicative_CI`.
+ 
+```{r}
+#race/ethnicity interpretation
+
+am_ind <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic American Indian")
+
+am_ind_estimate <- am_ind$Estimate
+am_ind_lower <- am_ind_estimate- 1.96*am_ind$Std.Err
+am_ind_upper <- am_ind_estimate + 1.96*am_ind$Std.Err
+
+am_ind_multiplicative <- round(exp(am_ind_estimate), 4)
+am_ind_multiplicative_CI <- paste0("(", round(exp(am_ind_lower), 4), ", ", round(exp(am_ind_upper), 4), ")")
+
+
+asian <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic Asian")
+
+asian_estimate <- asian$Estimate
+asian_lower <- asian_estimate- 1.96*asian$Std.Err
+asian_upper <- asian_estimate + 1.96*asian$Std.Err
+
+asian_multiplicative <- round(exp(asian_estimate), 4)
+asian_multiplicative_CI <- paste0("(", round(exp(asian_lower), 4), ", ", round(exp(asian_upper), 4), ")")
+
+black <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic Black")
+
+black_estimate <- black$Estimate
+black_lower <- black_estimate- 1.96*black$Std.Err
+black_upper <- black_estimate + 1.96*black$Std.Err
+
+black_multiplicative <- round(exp(black_estimate), 4)
+black_multiplicative_CI <- paste0("(", round(exp(black_lower), 4), ", ", round(exp(black_upper), 4), ")")
+
+mixed <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic Mixed")
+mixed_estimate <- mixed$Estimate
+mixed_lower <- mixed_estimate- 1.96*mixed$Std.Err
+mixed_upper <- mixed_estimate + 1.96*mixed$Std.Err
+
+mixed_multiplicative <- round(exp(mixed_estimate), 4)
+mixed_multiplicative_CI <- paste0("(", round(exp(mixed_lower), 4), ", ", round(exp(mixed_upper), 4), ")")
+
+white <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic White")
+white_estimate <- white$Estimate
+white_lower <- white_estimate- 1.96*white$Std.Err
+white_upper <- white_estimate + 1.96*white$Std.Err
+
+white_multiplicative <- round(exp(white_estimate), 4)
+white_multiplicative_CI <- paste0("(", round(exp(white_lower), 4), ", ", round(exp(white_upper), 4), ")")
+
+race_eth <- c("American Indian", "Asian", "Black", "Multi-Race", "White")
+mult_odds <- c(am_ind_multiplicative, asian_multiplicative, black_multiplicative, mixed_multiplicative, white_multiplicative)
+mult_odds_ci <- c(am_ind_multiplicative_CI, asian_multiplicative_CI, black_multiplicative_CI, mixed_multiplicative_CI, white_multiplicative_CI)
+
+multiplicative_odds <- data.frame(race_eth, mult_odds, mult_odds_ci) %>%
+  mutate(`Race/Ethnicity` = race_eth, `Multiplicative Odds` = mult_odds, `95% CI` = mult_odds_ci) %>%
+  select(`Race/Ethnicity`, `Multiplicative Odds`, `95% CI`)
+
+pander(multiplicative_odds, caption="Multiplicative Odds of Voting Democrat relative to Hispanic Any Race Voters")
+
+```
+
+Table ____ displays the multiplicative odds of voting for a democratic candidate for various race/ethnic groups, relative to the Hispanic (Any Race) baseline group. We see that the odds of American Indians and Black voters voting for a democratic candidate are, respectively, `r am_ind_multiplicative` and `r_asian_multiplicative` times that of a Hispanic voter, with all else held constant. Conversely, holding all else constant, the odds of a White voter voting for a democratic candidate are `r white_multiplicative` times less than that of a Hispanic voter Estimates for Asian and Multi-Racial individuals appear to be insignificant, 
+
+
+```{r}
+#Democrats 
+age_18_29  <- final.model.fixed.results%>% 
+  filter(id == "age_bin18-29")
+
+age_18_29_estimate <- age_18_29$Estimate
+age_18_29_lower <- age_18_29$lower
+age_18_29_upper <- age_18_29$upper
+
+age_18_29_estimate_multiplicative <- round(exp(age_18_29_estimate), 4)
+age_18_29_estimate_multiplicative_CI <- paste0("(", round(exp(age_18_29_lower), 4), ", ", round(exp(age_18_29_upper), 4), ")")
+
+
+age_30_39  <- final.model.fixed.results%>% 
+  filter(id == "age_bin30-39")
+
+age_30_39_estimate <- age_30_39$Estimate
+age_30_39_lower <- age_30_39$lower
+age_30_39_upper <- age_30_39$upper
+
+age_30_39_estimate_multiplicative <- round(exp(age_30_39_estimate), 4)
+age_30_39_estimate_multiplicative_CI <- paste0("(", round(exp(age_30_39_lower), 4), ", ", round(exp(age_30_39_upper), 4), ")")
+
+age_40_49  <- final.model.fixed.results%>% 
+  filter(id == "age_bin40-49")
+
+age_40_49_estimate <- age_40_49$Estimate
+age_40_49_lower <- age_40_49$lower
+age_40_49_upper <- age_40_49$upper
+
+age_40_49_estimate_multiplicative <- round(exp(age_40_49_estimate), 4)
+age_40_49_estimate_multiplicative_CI <- paste0("(", round(exp(age_40_49_lower), 4), ", ", round(exp(age_40_49_upper), 4), ")")
+
+age_50_64  <- final.model.fixed.results%>% 
+  filter(id == "age_bin50-64")
+
+age_50_64_estimate <- age_50_64$Estimate
+age_50_64_lower <- age_50_64$lower
+age_50_64_upper <- age_50_64$upper
+
+age_50_64_estimate_multiplicative <- round(exp(age_50_64_estimate), 4)
+age_50_64_estimate_multiplicative_CI <- paste0("(", round(exp(age_50_64_lower), 4), ", ", round(exp(age_50_64_upper), 4), ")")
+
+Age <- c("18-29", "30-39", "40-49", "50-64")
+Mult_Odds <- c(age_18_29_estimate_multiplicative, age_30_39_estimate_multiplicative, age_40_49_estimate_multiplicative, age_50_64_estimate_multiplicative)
+Mult_Odds_CI <- c(age_18_29_estimate_multiplicative_CI, age_30_39_estimate_multiplicative_CI, age_40_49_estimate_multiplicative_CI, age_50_64_estimate_multiplicative_CI)
+
+multiplicative_odds_dem <- data.frame(Age, Mult_Odds, Mult_Odds_CI) %>%
+  mutate(`Multiplicative Odds` = Mult_Odds, `95% CI` = Mult_Odds_CI) %>%
+  select(Age, `Multiplicative Odds`, `95% CI`)
+pander(multiplicative_odds_dem, caption="Multiplicative Odds of Voting Democrat (relative to 65+) for Registered Democrats")
+```
+
+Tables ___ through ______ display the relationship between age and voting party by party of registration. Table ___ indicates that, among registered Democrats, the odds of a voter younger than 65 voting for a democratic candidate is lower than than that of a registered democrat aged 65 or older (with all else being held constant). Specifically, the odds of registered democrats aged 18-29, 30-39, 40-49, and 50-64 voting for a democratic candidate are, respectively, `r age_18_29_estimate_multiplicative`, `r age_30_39_estimate_multiplicative` , `r age_40_49_estimate_multiplicative`, and `r age_50_64_estimate_multiplicative` times smaller than that of their more senior counterparts.  
+
+```{r}
+#Republicans
+
+age_18_29_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin18-29:party_cdREP")
+
+age_18_29_estimate_rep <- age_18_29$Estimate + age_18_29_rep$Estimate
+age_18_29_lower_rep <- age_18_29$lower + age_18_29_rep$lower
+age_18_29_upper_rep <- age_18_29$upper + age_18_29_rep$upper
+
+age_18_29_estimate_multiplicative_rep <- round(exp(age_18_29_estimate_rep), 4)
+age_18_29_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_18_29_lower_rep), 4), ", ", round(exp(age_18_29_upper_rep), 4), ")")
+
+
+age_30_39_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin30-39:party_cdREP")
+
+age_30_39_estimate_rep <- age_30_39$Estimate + age_30_39_rep$Estimate
+age_30_39_lower_rep <- age_30_39$lower + age_30_39_rep$lower
+age_30_39_upper_rep <- age_30_39$upper + age_30_39_rep$upper
+
+age_30_39_estimate_multiplicative_rep <- round(exp(age_30_39_estimate_rep), 4)
+age_30_39_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_30_39_lower_rep), 4), ", ", round(exp(age_30_39_upper_rep), 4), ")")
+
+age_40_49_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin40-49:party_cdREP")
+
+age_40_49_estimate_rep <- age_40_49$Estimate + age_40_49_rep$Estimate
+age_40_49_lower_rep <- age_40_49$lower + age_40_49_rep$lower
+age_40_49_upper_rep <- age_40_49$upper + age_40_49_rep$upper
+
+age_40_49_estimate_multiplicative_rep <- round(exp(age_40_49_estimate_rep), 4)
+age_40_49_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_40_49_lower_rep), 4), ", ", round(exp(age_40_49_upper_rep), 4), ")")
+
+age_50_64_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin50-64:party_cdREP")
+
+age_50_64_estimate_rep <- age_50_64$Estimate + age_50_64_rep$Estimate
+age_50_64_lower_rep <- age_50_64$lower + age_50_64_rep$lower
+age_50_64_upper_rep <- age_50_64$upper + age_50_64_rep$upper
+
+age_50_64_estimate_multiplicative_rep <- round(exp(age_50_64_estimate_rep), 4)
+age_50_64_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_50_64_lower_rep), 4), ", ", round(exp(age_50_64_upper_rep), 4), ")")
+
+Mult_Odds_rep <- c(age_18_29_estimate_multiplicative_rep, age_30_39_estimate_multiplicative_rep, age_40_49_estimate_multiplicative_rep, age_50_64_estimate_multiplicative_rep)
+
+Mult_Odds_CI_rep <- c(age_18_29_estimate_multiplicative_CI_rep, age_30_39_estimate_multiplicative_CI_rep, age_40_49_estimate_multiplicative_CI_rep, age_50_64_estimate_multiplicative_CI_rep)
+
+multiplicative_odds_rep <- data.frame(Age, Mult_Odds_rep, Mult_Odds_CI_rep) %>%
+  mutate(`Multiplicative Odds` = Mult_Odds_rep, `95% CI` = Mult_Odds_CI_rep) %>%
+  select(Age, `Multiplicative Odds`, `95% CI`)
+pander(multiplicative_odds_rep, caption="Multiplicative Odds of Voting Democrat (relative to 65+) for Registered Republicans")
+
+```
+
+Table ___ shows an increasing trend with age in the multiplicative odds of voting for a democratic candidate among registered Republicans. For example, with all else held constant, the odds of a 18-29 year old registered Republicans voting for a democratic candidate is `r age_18_29_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. For a registered Republican of 50-64 years, however, we see that the odds of voting for a democratic candidate is `r age_50_64_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. This is not as stark a difference as was seen between 18-29 year old and 65+ year old registered Republicans. 
+
+```{r}
+#Unafilliated
+
+age_18_29_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin18-29:party_cdUNA")
+
+age_18_29_estimate_una <- age_18_29$Estimate + age_18_29_una$Estimate
+age_18_29_lower_una <- age_18_29$lower + age_18_29_una$lower
+age_18_29_upper_una <- age_18_29$upper + age_18_29_una$upper
+
+age_18_29_estimate_multiplicative_una <- round(exp(age_18_29_estimate_una), 4)
+age_18_29_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_18_29_lower_una), 4), ", ", round(exp(age_18_29_upper_una), 4), ")")
+
+
+age_30_39_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin30-39:party_cdUNA")
+
+age_30_39_estimate_una <- age_30_39$Estimate + age_30_39_una$Estimate
+age_30_39_lower_una <- age_30_39$lower + age_30_39_una$lower
+age_30_39_upper_una <- age_30_39$upper + age_30_39_una$upper
+
+age_30_39_estimate_multiplicative_una <- round(exp(age_30_39_estimate_una), 4)
+age_30_39_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_30_39_lower_una), 4), ", ", round(exp(age_30_39_upper_una), 4), ")")
+
+age_40_49_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin40-49:party_cdUNA")
+
+age_40_49_estimate_una <- age_40_49$Estimate + age_40_49_una$Estimate
+age_40_49_lower_una <- age_40_49$lower + age_40_49_una$lower
+age_40_49_upper_una <- age_40_49$upper + age_40_49_una$upper
+
+age_40_49_estimate_multiplicative_una <- round(exp(age_40_49_estimate_una), 4)
+age_40_49_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_40_49_lower_una), 4), ", ", round(exp(age_40_49_upper_una), 4), ")")
+
+age_50_64_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin50-64:party_cdUNA")
+
+age_50_64_estimate_una <- age_50_64$Estimate + age_50_64_una$Estimate
+age_50_64_lower_una <- age_50_64$lower + age_50_64_una$lower
+age_50_64_upper_una <- age_50_64$upper + age_50_64_una$upper
+
+age_50_64_estimate_multiplicative_una <- round(exp(age_50_64_estimate_una), 4)
+age_50_64_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_50_64_lower_una), 4), ", ", round(exp(age_50_64_upper_una), 4), ")")
+
+Mult_Odds_una <- c(age_18_29_estimate_multiplicative_una, age_30_39_estimate_multiplicative_una, age_40_49_estimate_multiplicative_una, age_50_64_estimate_multiplicative_una)
+
+Mult_Odds_CI_una <- c(age_18_29_estimate_multiplicative_CI_una, age_30_39_estimate_multiplicative_CI_una, age_40_49_estimate_multiplicative_CI_una, age_50_64_estimate_multiplicative_CI_una)
+
+multiplicative_odds_una <- data.frame(Age, Mult_Odds_una, Mult_Odds_CI_una) %>%
+  mutate(`Multiplicative Odds` = Mult_Odds_una, `95% CI` = Mult_Odds_CI_una) %>%
+  select(Age, `Multiplicative Odds`, `95% CI`)
+pander(multiplicative_odds_una, caption="Multiplicative Odds of Voting Democrat (relative to 65+) for Unafilliated Voters")
+
+```
+
+Similar trends can be discerned among unafilliated voters, with the odds of voters aged 18-29, 20-29, 40-49, and 50-64 voting for a democratic candidate being `r age_18_29_estimate_multiplicative_una`, `r age_30_39_estimate_multiplicative_una`, `r age_40_49_estimate_multiplicative_una`, and `r age_50_64_estimate_multiplicative_una` times that of their more senior counterparts. 
+These trends indicate that, across party lines, the likelihood of voting for a democratic candidate increase as age increases. This phenomenon can potentially be  explained by the fact that a large number of older individuals with preconditions  rely on Obamacare. Furthermore, the Republican push to shrink welfare and the growing retirement crisis can pose significant threat to older voters, even those registered as Republican. In contrast, Democrats are making strong efforts to expand welfare for senior citizens-- a potential source of attraction among older voters. 
+
+ https://www.aarp.org/content/dam/aarp/ppi/2017-01/ACA-Protects-Millions-of-Older-Adults-with-Preexisting-Health-Conditions-PPI-AARP.pdf
+
+https://nymag.com/intelligencer/2019/03/the-republican-party-has-an-older-voters-problem.html
 
 
 ```{r}
@@ -252,82 +601,89 @@ only_likely <- likely_2020 %>%
   select(-c(pred_prob, total))
 ```
 
+
 ```{r}
 likely_2020_with_pred_prob <- inner_join(grouped_voter_only_data, only_likely, by=c("age_bin", "race_ethnicity", "gender", "party_cd", "county_desc", "cong_dist_abbrv"))
 ```
 
 
-
 ```{r}
-
-vote_shares_by_district <- function(district){
-  
-  dem_vote_shares <- c()
+vote_shares_by_district <- function(district, j){
   district_df <- likely_2020_with_pred_prob %>% filter(cong_dist_abbrv == district)
   totals <- district_df$predicted_likely
   probs <- district_df$pred_prob
-
-  for (j in 1:500){
-    print(j)
-    set.seed(j)
-    n_likely_dem <- c()
+  set.seed(j)
+  n_likely_dem <- c()
     for (i in 1:length(totals)){
-  #binomial parameters
       total <- totals[i]
       prob <- probs[i]
-      likely <- sum(rbinom(total,1,prob))
+      jittered_prob <- rnorm(1, prob, 0.15)
+      if (jittered_prob >= 1 | jittered_prob <= 0){
+        jittered_prob = prob
+      }
+      likely <- sum(rbinom(total,1,jittered_prob))
       n_likely_dem[i] <- likely
   }
 
-  likely_2020_with_pred_prob$predicted_likely_dems <- n_likely_dem #likely democratic voters in each group
-  by_district <- likely_2020_with_pred_prob %>% 
-    group_by(cong_dist_abbrv) %>%
-    summarize(total = sum(predicted_likely), dems = sum(predicted_likely_dems)) %>%
-    mutate(dem_vote_share <- dems/total)
-  dem_vote_shares[j] <- by_district$dem_vote_share
+  district_df$predicted_likely_dems <- n_likely_dem #likely democratic voters in each group
 
+  
+  total_voters <- sum(district_df$predicted_likely)
+  dem_voters <- sum(district_df$predicted_likely_dems)
+  return(dem_voters/total_voters)
 
   }
-  return(dem_vote_shares)
-}
 ```
+
 
 ```{r}
 districts <- unique(likely_2020_with_pred_prob$cong_dist_abbrv)
-df <- data.frame(matrix(ncol = length(districts), nrow = 500))
-colnames(df) <- districts
+lowers <- c()
+means <- c()
+uppers <- c()
+
 i = 1
 for (district in districts){
   print(district)
-  simulated_district_shares <- vote_shares_by_district(district)
-  df[, i] <- simulated_district_shares
-
-    model_results[[results_idx]] = cv_df
-    results_idx = results_idx + 1
+  district_sims <- c()
+  for (j in 1:500){
+    prop_dem_in_district <- vote_shares_by_district(district, j)
+    district_sims[j] <- prop_dem_in_district
   }
-
-  # STEP 2: FIT FULL MODEL WITH ALL DATA
-  glmer.fit.final <- glmer(model_formula,
-                         data = grouped_voter_data,
-                         family = binomial,
-                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
-  model_results[[results_idx]] = glmer.fit.final
-  results_idx = results_idx + 1
-  
-  # results <- data.frame(VarCorr(glmer.fit.final))
-  # final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
-  
-  # STEP 3: CREATE FORMATTED DATAFRAME WITH MODEL RESULTS
-  final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
-                                       Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
-                                       P.Value=summary(glmer.fit.final)$coefficients[, 4])
-  model_results[[results_idx]] = final.model.fixed.results
-  return(model_results)
+  lower <- quantile(district_sims,  probs = c(0.025))
+  mean <- mean(district_sims)
+  upper <- quantile(district_sims,  probs = c(0.975))
+  lowers[i] <- lower
+  means[i] <- mean
+  uppers[i] <- upper
+  i = i + 1
 }
-```
+
+#output results
+vote_shares_by_district <- data.frame(districts, lowers, means, uppers)
+vote_shares_by_district <- vote_shares_by_district %>%
+  mutate(District = districts, `2.5%` = round(lowers, 2), Mean = round(means, 2), `97.5%` = round(uppers, 2)) %>%
+  select(District, `2.5%`, Mean, `97.5%`) %>%
+  arrange(District)
+
+pander(vote_shares_by_district, caption = "Predicted Vote Share in North Carolina Congressional Elections")
+
+#DO THESE RESULTS MAKE ANY SENSE??
+
+#District 1: BLUE! RIGHT
+#2: Blue leaning RIGHT
+#3: Red EHH
+#4: blue! RIGHT
+#5: RED RIGHT
+#6: BLUE RIGHT
+#7: RED EHH
+#8: RED RIGHT
+#9: RED RIGHT
+#10: RED RIGHT!
+#11: RED EHH
+#13: RED
+
+#Analysis: republican leaning districts we voted to be more in the middle. We'll just talk about what we got right and talk about swing states. BRIEFLY mention what we got wrong
 
 
-```{r cross validation, warning=FALSE, message=F, cache=TRUE}
-model.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|county_desc) + (1|cong_dist_abbrv)"
-create_model(model.text, grouped_voter_data)
 ```
