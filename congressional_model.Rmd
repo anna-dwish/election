@@ -58,7 +58,7 @@ grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != 
 
 # Congressional Elections in North Carolina
 
-Sufficient polling data was not readily available for the 13 congressional elections in North Carolina. Thus, in order to predict the outcomes of the congressional elections, we utilized North Carolina registration and voting history data. Note that we will not be specifying any predictions for congressional district 12, as Alma Adams is running unopposed [[11]][Bibliography]. In order to make these predictions, we will 1) estimate who among registered individuals is likely to vote, and then 2) predict whether they are more likely to support the Democratic or Republican candidate.
+Sufficient polling data was not readily available for the 13 congressional elections in North Carolina. Thus, in order to predict the outcomes of the congressional elections, we utilized North Carolina registration and voting history data. Note that we will not be specifying any predictions for congressional district 12, as Alma Adams is running unopposed [[11]][Bibliography]. In order to make these predictions, we will 1) estimate *who* among registered individuals is likely to vote, and then 2) predict whether they are more likely to support the Democratic or Republican candidate.
 
 ## Data
 
@@ -66,23 +66,19 @@ Sufficient polling data was not readily available for the 13 congressional elect
 
 In order to address the first step, we utilized the North Carolina voter registration dataset, which contains all legally available information for eligible voters in the state. Information provided for each voter includes their county and congressional district of residence, unique voter registration number, race, ethnicity, gender, registered party affiliation, and age. In this dataset, race could take on one of the following categories: Asian, Black or African American, American Indian or Alaska Native, Two or more races, Other, Native Hawaiian or Pacific Islander, Undesignated, and White. Ethnicity was one of the following: Hispanic or Latino, Not Hispanic or Not Latino, and Undesignated. Gender belonged to one of: Male, Female, and Undetermined. Finally, party affiliation included Democrat, Republican, Unaffiliated, Libertarian, Green, and Constitution. 
 
-Next, certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, age bin, which belonged to one of five categories: 18-29, 30-39, 40-49, 50-64, and 65+. In addition, the individual race and ethnic identities were combined into a race/ethnicity variable with the following categories: Hispanic any race, Non Hispanic White, Non Hispanic Black, Non Hispanic Other, Non Hispanic Asian, Non Hispanic Multi-Racial, Non Hispanic American Indian or Alaska Native, Non Hispanic Native Hawaiian or Pacific Islander, and Undetermined. For gender, we chose to limit our analysis to include Female and Male as most of the subgroups did not include Undetermined gender groups. We additionally only included registered Democrats, Republicans, and Unaffiliated groups. 
+Certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, age bin, which belonged to one of five categories: 18-29, 30-39, 40-49, 50-64, and 65+. In addition, the individual race and ethnic identities were combined into a race/ethnicity variable with the following categories: Hispanic any race, Non Hispanic White, Non Hispanic Black, Non Hispanic Other, Non Hispanic Asian, Non Hispanic Multi-Racial, Non Hispanic American Indian or Alaska Native, Non Hispanic Native Hawaiian or Pacific Islander, and Undetermined. For gender, we chose to limit our analysis to include Female and Male as there was not sufficient data for undetermined gender groups. We additionally only included registered Democrats, Republicans, and Unaffiliated individuals.
 
-Finally, while congressional district lines have changed over the course of the past few presidential election years, we maintained the 2020 congressional district lines for our final dataset so we could better understand who votes within these boundaries for the upcoming congressional elections. However, given that some voters had registered in areas that were redistricted later on, there were some missing values for districts in the dataset. For those individuals whose counties reside wholly in one district, we simply assigned them to their 2020 congressional district. For counties that were split between two districts, we allocated registered voters evenly between the two. 
+While congressional district lines have changed in recent presidential election years, we maintained the 2020 congressional district lines for our final dataset so we could better understand who votes within these boundaries for the upcoming congressional elections. However, given that some voters were registered in areas that were redistricted later on, there were some missing values for districts in the dataset. For those individuals whose counties reside wholly in one district, we simply assigned them to their 2020 congressional district. For counties that were split between two districts, we allocated registered voters evenly between the two. 
 
-Note that all individuals of Hispanic ethnicity were grouped into one category, regardless of racial identity. Once these modifications were made, the data was grouped by $district$, $county$, $race/ethnicity$, $age \ bin$, $gender$, and $party$. The size of each group, which was synonymous with the number of registered voters in that group, was included in the data frame as well. For example, one row of the grouped data frame would report the number of registered voters among 18-29 year old, Democratic, Hispanic women in Alamance county. This dataset will be referred to as *Registered*.
+Once these modifications were made, the data was grouped by $district$, $county$, $race/ethnicity$, $age \ bin$, $gender$, and $party$. The size of each group, which was synonymous with the number of registered voters in that group, was included in the data frame as well. For example, one row of the grouped data frame would report the number of registered voters among 18-29 year old, Democratic, Hispanic women in Alamance county. This dataset will be referred to as *Registered*.
 
-Our next step was to predict who of these registered voters will vote. We utilized a random effects logistic regression model from our previous paper, “Who Votes in North Carolina” [[19]][Bibliography], which is described more thoroughly in Appendix A and in our interim report. In summary, this model provides us with the likelihood a registered individual of a certain gender, race/ethnic identity, age bin, party affiliation, congressional district, and county will vote in an election. We performed the following steps in order to obtain a prediction for the number of likely voters of all the registered voters in each group. 
-
-For each group *i* in *Registered*, we sampled from a $Binomial(n, p)$, where *n* is the number of individuals in group *i* and *p* is the predicted probability that group will vote. This provides us with the number of likely voters in group *i*. 
-
-We then create a new dataset, *2020 Voters*, that is formatted identically to *Registered*, but with a column representing the number of likely voters in each group.
+Our next step was to predict who of these registered voters will vote. We utilized a random effects logistic regression model from our previous paper, “Who Votes in North Carolina” [[19]][Bibliography], which is described more thoroughly in Appendix A and in our interim report. 
 
 ### 2016 Voters
 
-Our next step will be to construct a dataset to help us predict who expected voters will support in the upcoming election. We utilized the North Carolina voter history dataset, which shows how each registered voter in North Carolina voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we considered only those who voted in 2016. This decision was made because both 2016 and 2020 are presidential election years, and there is generally lower turnout for midterm elections [[8]][Bibliography]. 
+Our next step was to construct a dataset to help us predict how expected voters will vote in the upcoming election. We utilized the North Carolina voter history dataset, which shows how each registered voter in North Carolina voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we considered only those who voted in 2016. This decision was made because both 2016 and 2020 are presidential election years, and there is generally lower turnout for midterm elections [[8]][Bibliography]. 
 
-We then joined North Carolina voter registration and voter history datasets by the unique voter registration number. During this process, only those individuals who were both registered and voted in the 2016 election were kept. We then utilized an identical process as described in the *Registered Individuals* section to group voters by demographic identities. Finally, we counted the number of Democratic and Republican votes in 2016 for each group. This dataset will be referred to as *2016 Voters*. We will utilize this data to model the probability that a specific group of likely voters would vote for the Democratic candidate in the upcoming election.  
+We joined North Carolina voter registration and voter history datasets by the unique voter registration number. During this process, only those individuals who were both registered and voted in the 2016 election were kept. We then utilized an identical process as described in the *Registered Individuals* section to group voters by demographic identities. Finally, we counted the number of Democratic and Republican voters in 2016 for each group. This dataset will be referred to as *2016 Voters*. We will utilize this data to model the probability that a specific group of likely voters vote for the Democratic candidate in the upcoming election.  
 
 ## Exploratory Data Analysis
 
@@ -149,11 +145,11 @@ grouped_voter_only_data %>%
   guides(fill=guide_legend(title="Sex"))
 ```
 
-Figure INSERT shows the proportion of Democratic voters in North Carolina across age groups, race/ethnicity, and sex. We see that as age increases, the proportion Nnon-Hhispanic, American Indian, and Nnon-Hispanic Multi-Racial voters who vote democratically tends to increase. Conversely, for Hispanic Any Race individuals, Non-Hispanic Asians, and Non-Hispanic Whites, the proportion of democratic voters among total voters does not have any obvious increase with age. This trend points to a potential interaction effect between race and age.
+Figure INSERT shows the proportion of Democratic voters in North Carolina across age groups, race/ethnicity, and sex. We see that as age increases, the proportion Non-Hispanic, American Indian, and Non-Hispanic Multi-Racial voters who vote democratically tends to increase. Conversely, for Hispanic Any Race individuals, Non-Hispanic Asians, and Non-Hispanic Whites, the proportion of democratic voters among total voters does not have any obvious increase with age.
 
-Furthermore, this figure indicates that women were notably more likely to vote Democratically relative to men for the majority of race/ethnicity and age combinations. As age increases, this discrepancy becomes less notable for Hispanic Any Race individuals and Non-Hispanic American Indians, but remains relatively constant for Non-Hispanic Black, Non-Hispanic Multi-Racial, and Non-Hispanic Black individuals.
+Furthermore, this figure indicates that women are more likely to vote democratically relative to men for the majority of race/ethnicity and age combinations. As age increases, this discrepancy becomes less notable for Hispanic Any Race individuals and Non-Hispanic American Indians, but remains relatively constant for Non-Hispanic Black, Non-Hispanic Multi-Racial, and Non-Hispanic Black individuals.
 
-Figure INSERT shows a distribution of the percent of Democratic voters in 2016 (IS THIS TRUE?).
+Figure INSERT shows the proportion of Democratic voters in each of the congressional districts in 2016. The heterogeneity in this figure necessitates a consideration of random effects in district and county.
 
 ```{r EDA district map, fig.width=5.5, fig.height=2.5,fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=T}
 # https://beanumber.github.io/mdsr2e/ch-spatial.html#congressional-districts
@@ -176,7 +172,7 @@ nc_merged <- nc_shp %>%
 eda2 <- ggplot(data = nc_merged, aes(fill = Prop)) + 
   geom_sf(alpha = 0.5) +
   scale_fill_gradient2(midpoint = 0.6, mid="#ffffff", high="#0000ff", low="#ff0803", 
-                       "% Democrat Voters") +
+                       "Proportion of Democrat Voters") +
   geom_sf_label(aes(label = DISTRICT), fill = "white") + 
   theme_void()
 eda2  + labs(caption="Figure INSERT")
@@ -184,7 +180,7 @@ eda2  + labs(caption="Figure INSERT")
 
 ## Methods
 
-To begin with our model development, we conducted exploratory data analysis to get a sense of which covariates were influential in determining likelihood to vote democratically, along with any possible interactions. This led to an exploration of models with main effects for gender, age, party, and race/ethnicity, various interaction effects between these, random intercepts for county and congressional districts, and a random slope for party affiliation. A full summary of each model we explored, along with their in-sample F1-scores and false negative scores are in Table INSERT. In this context, a false negative is when our model incorrectly predicts that a group will vote conservatively when the majority of them actually voted democratically.
+To begin with our model development, we conducted exploratory data analysis to get a sense of which covariates were influential in determining likelihood to vote democratically, along with any possible interactions. This led to an exploration of models with main effects for gender, age, party, and race/ethnicity, various interaction effects between these, random intercepts for county and congressional districts, and a random slope for party affiliation. A full summary of each model explored, along with their in-sample F1-scores and false negative scores, are in Table INSERT. In this context, a false negative occuts when our model incorrectly predicts that a group will vote conservatively when the majority of them actually voted democratically.
 
 In order to compare different models, we began by examining their in-sample F1-scores. This provided us with an overview of each model’s fit. We also examined their confusion matrices and noticed that our models had a slight predisposition to committing false negatives. Despite exploring a multitude of different models, we could not find one that notably mitigated this issue. After this initial look into the models’ performances, we observed that a model with a race/ethnicity and age interaction, along with a party affiliation random slope across congressional districts, had the highest F1-score. However, this model, along with a similar performing one without a random party slope, had inflated standard errors that led to unstable estimates. This motivated us to select a similar performing model with a slightly lower F1-score:
 
@@ -198,7 +194,7 @@ $$
 
 As can be seen, this model has the aforementioned main effects, an interaction effect between age bin and party affiliation, and random intercepts for district and county. In the above formulation, $P_{ijk}$ is the probability that individual $i$ from county $j$ in district $k$ voted Democratic in the 2016 election. $\alpha_j$j represents the random intercept term for county $j$, and $\alpha_k$ represents the random intercept term for district $k$. For the Age term, $a = 1$ represents our baseline, which is 65+ year olds. For our Race/Ethnicity term, $r = 1$, our baseline group, was Hispanic Any Race. Finally, there are three party groups and five age groups, yielding fifteen possible combinations. Seven of these involve the baseline terms, leaving eight other combinations to appear as evaluated terms in our model. 
 
-In order to conduct sensitivity analysis for our variable estimates, we created a slightly more complex model to validate coefficient estimates. This model, which can be found in Table INSERT, was indentical to our final model, except it also had a random party slope over congressional district. Virtually all of the estimated coefficients of the main effects converged to be within two standard errors of our final model. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates, which can be found in Table INSERT in the INSERT.
+In order to conduct sensitivity analysis for our variable estimates, we created a slightly more complex model to validate coefficient estimates. This model, which can be found in Table INSERT, was identical to our final model, except it also had a random party slope over congressional district. Virtually all of the estimated coefficients of the main effects converged to be within two standard errors of our final model. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates, which can be found in Table INSERT in the INSERT.
 
 ## Results
 
@@ -400,16 +396,15 @@ glmer.fit <- model.intrx.age.party.ri.cty.dst.res[[2]]
 glmer.probs <- predict(glmer.fit,  grouped_voter_only_data,  type = "response")
 ```
 
-The results of our final model can be viewed in Table INSERT in our Appendix. The average accuracy, F1-score, and AUC from cross-validation were `r cv_df$Accuracy`, `r cv_df$F1`, and `r cv_df$AUC`, respectively. From the confusion matrix, we see that our model is predisposed to committing false negatives. As we described in the methods section, we were unable to find any other model that achieved a notably lower rate. A possible reason for this issue are the nuanced relationships we saw with likelihood to vote Democratic across age, race/ethnicity identities, and gender.
+The results of our final model can be viewed in Table INSERT in our Appendix. The average accuracy, F1-score, and AUC from cross-validation were `r cv_df$Accuracy`, `r cv_df$F1`, and `r cv_df$AUC`, respectively. From the confusion matrix, we see that our model is predisposed to committing false negatives. As we described in the methods section, we were unable to find any other model that achieved a notably lower rate.
 
 ```{r warning=F, fig.height=2.5, fig.align="center"}
 model.intrx.age.party.ri.cty.dst.cm[[3]]
 ```
 
+Figure INSERT in the Appendix shows a heatmap of the estimated random intercepts for congressional districts. While the intercepts generally capture relative trends, they appear to be more homogeneous than the true percent of likely voters (see Figures INSERT). This is likely a consequence of our assumption that they stem from the same distribution. From Figure INSERT, we see the distribution of these intercepts and their intervals. We labeled a few notably extreme counties, including Avery, Davie, Anson, Bladen, Camden, and Columbus.
 
-Figure INSERT in the Appendix shows a heatmap of the estimated random intercepts for congressional districts. While the intercepts appear to generally capture relative trends, they appear to be more homogeneous than the true percent of likely voters (see Figures INSERT). This is likely a consequence of our assumption that they stem from the same distribution. From Figure INSERT, we see the distribution of these intercepts and their intervals. From the plot of county intercepts, we labled a few notably extreme counties, including Avery, Davie, Anson, Bladen, Camden, and Columbus. Almost of these counties tend to exacerbate their districts' estimated intercepts, such as Avery County in District 11. One exception is that the estimated intercept for District 13 is a bit higher relative to other districts, while Davie County is low relative to other counties. 
-
-From the plot of district intercepts, we can see how swing districts, such as congressional districts 8, 9, and 11 are closely centered around the estimated random district mean. Historically Democratic districts, such as district 1 are notably above the mean. However, it's important to note that districts plot alone certainly doesn't paint a full picture, and there are a few discrepancies with current summary estimates of party preference [[12]][Bibliography].
+From the plot of district intercepts, we can see how swing districts, such as 8, 9, and 11 are closely centered around the estimated random district mean. Historically Democratic districts, such as district 1 are notably above the mean. However, it's important to note that the districts plot alone does not paint a full picture, and that there are a few discrepancies with current summary estimates of party preference [[12]][Bibliography].
 
 ```{r district estimates plot, warning=F, message=F, fig.height=4, fig.width=9,fig.align="center"}
 random.effects.plots <- plot_model(glmer.fit, type = "re", facet.grid=FALSE) 
@@ -644,7 +639,7 @@ pander(multiplicative_odds_rep, caption="Multiplicative Odds of Voting Democrat 
 
 ```
 
-Table ___ shows an increasing trend with age in the multiplicative odds of voting for a democratic candidate among registered Republicans. For example, with all else held constant, the odds of a 18-29 year old registered Republicans voting for a democratic candidate is `r age_18_29_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. For a registered Republican of 50-64 years, however, we see that the odds of voting for a democratic candidate is `r age_50_64_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. This is not as stark a difference as was seen between 18-29 year old and 65+ year old registered Republicans. 
+Table ___ shows an increasing trend with age in the multiplicative odds of voting for a democratic candidate among registered Republicans. For example, with all else held constant, the odds of a 18-29 year old registered Republicans voting for a democratic candidate is `r age_18_29_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. For a registered Republican of 50-64 years, however, we see that the odds of voting for a democratic candidate is `r age_50_64_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. This is not as stark of a difference as observed between 18-29 year old and 65+ year old registered Republicans. 
 
 ```{r}
 #Unafilliated
@@ -701,10 +696,9 @@ pander(multiplicative_odds_una, caption="Multiplicative Odds of Voting Democrat 
 
 ```
 
-Similar trends can be discerned among unafilliated voters, with the odds of voters aged 18-29, 20-29, 40-49, and 50-64 voting for a democratic candidate being `r age_18_29_estimate_multiplicative_una`, `r age_30_39_estimate_multiplicative_una`, `r age_40_49_estimate_multiplicative_una`, and `r age_50_64_estimate_multiplicative_una` times that of their more senior counterparts. 
-These trends indicate that, across party lines, the likelihood of voting for a democratic candidate increase as age increases. 
+Similar trends can be discerned among unafilliated voters, with the odds of voters aged 18-29, 20-29, 40-49, and 50-64 voting for a democratic candidate being `r age_18_29_estimate_multiplicative_una`, `r age_30_39_estimate_multiplicative_una`, `r age_40_49_estimate_multiplicative_una`, and `r age_50_64_estimate_multiplicative_una` times less than that of their more senior counterparts. 
 
-This phenomenon can potentially be  explained by the fact that a large number of older individuals with preconditions  rely on Obamacare [[10]][Bibliography].. Furthermore, the Republican push to shrink welfare and the growing retirement crisis can pose significant threat to older voters, even those registered as Republican [[10]][Bibliography]. In contrast, Democrats are making strong efforts to expand welfare for senior citizens -- a potential source of attraction among older voters [[16]][Bibliography].
+These trends indicate that, across party lines, the likelihood of voting for a democratic candidate increase as age increases. This phenomenon can potentially be  explained by the fact that a large number of older individuals with preconditions rely on Obamacare [[10]][Bibliography]. Furthermore, the Republicans pushed to shrink welfare and the growing retirement crisis can pose significant threat to older voters, even those registered as Republican [[10]][Bibliography]. In contrast, Democrats are making strong efforts to expand welfare for senior citizens -- a potential source of attraction among older voters [[16]][Bibliography].
 
 ## 2020 Predictions 
 
@@ -753,6 +747,16 @@ vote_shares_by_district <- function(district, j){
   }
 ```
 
+The model described above provides us with the likelihood that a voter of a certain gender, race/ethnic identity, age bin, party affiliation, congressional district, and county will vote democratically in a presidential election. We utilized this model in order to obtain the predicted probability that each group in *2020 Voters* will vote for the democratic candidate by performing an algorithm similar to that in INSERT. For each group *i* in *2020 Voters*, we executed the following procedure:
+
+1. Sample p* ~ Normal(p, 0.15). If p* \leq 0 or p* \geq 1, then set p* = p. 
+2. Sample from a $Binomial(n, p)$, where *n* is the number of individuals in the group *i* and *p* is the predicted probability of that group voting democratically.
+
+Note that step two was conducted in order to induce more variance and randomization in the predicted number of democratic voters in each group. After executing this procedure for each group $i$, we have a prediction for the number of Democratic voters in that group. Then, grouping by congressional district, we can computing the number of likely democratic voters divided by the number of total voters. This value represents a prediction for the Democratic vote share in that specific congressional district. 
+
+It is important to note that, as this model was trained on voter outcomes for the 2016 presidential elections, we are making an assumption that groups vote for the same party in both presidential and congressional elections. This assumption is valid given literature [] citing that many individuals will be filling out a straight party ballot in 2020. Thus, the predicted democratic vote share for one district can safely be considered a proxy for the vote share going to the democratic congressional candidate in that district. 
+
+The procedure delineated above was executed 500 times in order to obtain interval estimates for the predicted vote share in each district. Table ___ shows the point and interval predictions for the democratic vote share in all districts, barring 12. 
 
 ```{r, cache=T}
 districts <- unique(likely_2020_with_pred_prob$cong_dist_abbrv)

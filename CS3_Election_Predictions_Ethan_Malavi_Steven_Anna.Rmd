@@ -30,6 +30,8 @@ pkgTest("tidyverse")
 pkgTest("coda")
 pkgTest("kableExtra")
 pkgTest("matrixStats")
+pkgTest("grid")
+pkgTest("gridExtra")
 ```
 
 ```{r load packages, include=FALSE, results="hide"}
@@ -40,6 +42,8 @@ library(tidyverse)
 library(coda)
 library(kableExtra)
 library(matrixStats)
+library(grid)
+library(gridExtra)
 ```
 
 ```{r include=FALSE}
@@ -278,7 +282,7 @@ presidential_results_plot <- ggplot(data = tibble(final_results_presidential),  
   geom_vline(xintercept = 270, color = "#1b7837", size = 1.1) + 
   geom_vline(xintercept = mean_electoral, color = "#542788", size = 1.1) + 
   geom_vline(xintercept = c(lower_q_presidential_electoral_college,upper_q_presidential_electoral_college), color = "#542788", linetype = 2, size = 0.7) + 
-  labs(title = "Predicted Number of Biden's Electoral Votes",
+  labs(title = "Biden's Predicted Number of Electoral Votes",
        subtitle = paste0("Predicted Probability of Biden Winning: ", prob_of_biden_winning, "%"),
        x = "Number of Biden's Electoral Votes",
        y = "Count")
@@ -304,19 +308,19 @@ predictions_per_state_presidential <- function(model_output, state){
   return(probability_voting_dem)
 }
 
-probs_voting_dem <- c()
+probs_voting_dem_pres <- c()
 i = 1
 for (state in states){
-  prob_voting_dem <- predictions_per_state_presidential(presidential_model_gamma_2_0.5_prior, state)
-  probs_voting_dem[i] <- prob_voting_dem
+  probs_voting_dem_pres[i] <- predictions_per_state_presidential(presidential_model_gamma_2_0.5_prior, state)
   i = i + 1
 }
 
-prob_voting_dem_table <- data.frame(states, probs_voting_dem) %>%
+prob_voting_dem_table_pres <- data.frame(states, probs_voting_dem_pres) %>%
   mutate(State = states) %>%
-  mutate(Probability = probs_voting_dem/100) %>%
-  select(State, Probability)
-kable(prob_voting_dem_table, caption = "Presidential Election: Probability of Democratic Victory in each Swing State")
+  mutate(Probability = probs_voting_dem_pres/100) %>%
+  select(State, Probability) %>% 
+  arrange(State)
+#kable(prob_voting_dem_table_pres, caption = "Presidential Election: Probability of Democratic Victory in each Swing State")
 
 ```
 
@@ -331,7 +335,7 @@ vote_share_by_state <- data.frame(states, lower_q_presidential, mean_vote_share,
   mutate(`97.5%` = round(upper_q_presidential, 1)) %>%
   mutate(Mean = round(mean_vote_share, 1)) %>%
   select(State, `2.5%`, Mean, `97.5%`)
-kable(vote_share_by_state, caption = "Presidential Elections: Predicted Democratic Vote Share in each Swing State")
+#kable(vote_share_by_state, caption = "Presidential Elections: Predicted Democratic Vote Share in each Swing State")
 ```
 
 ```{r}
@@ -537,11 +541,81 @@ sensitivity_plot_presidential <- do.call(bind_rows, sen_tbl_list) %>%
   geom_vline(xintercept = mean_electoral, color = "#542788") + 
   geom_vline(xintercept = c(lower_q_presidential_electoral_college,upper_q_presidential_electoral_college), color = "#542788", linetype = 2) + 
   facet_wrap(model~., labeller = "label_parsed") + 
-  labs(title = "Sensitivity Analysis",
-       subtitle = "Predicted Number of Biden's Electoral Votes",
+  labs(title =  "Predicted Number of Biden's Electoral Votes",
        x = "Number of Biden's Electoral Votes",
        y = "Density")
 ```
+
+
+```{r presidential time trends}
+PA_Pres <-  as.data.frame(presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,5,1:154]) %>%
+  mutate_all(as.character()) %>%
+  gather("variable", "value") %>%
+  mutate(variable = gsub( "V", "", variable) %>% as.integer()) %>%
+  group_by(variable) %>%
+  summarise(mean = mean(value),
+            lower = quantile(value, probs = 0.025),
+            upper = quantile(value, probs = 0.975)) %>%
+  mutate(party = ifelse(mean > 50, "Democrat", "Republican"),
+         bounds = case_when(
+           lower < 50 & upper < 50 ~ "Red",
+           lower < 50 & upper > 50 ~ "Unclear",
+           lower > 50 & upper > 50 ~ "Blue"
+         )) %>%
+  ungroup() 
+
+p5 <- PA_Pres %>%
+  ggplot(mapping = aes(x = variable, y = mean, group = bounds, color = bounds)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.3, alpha = 0.6) +
+  geom_point(color = ifelse(PA_Pres$mean > 50, "#0000FF", "#FF0000"), alpha = 0.6) +
+  scale_color_manual(values=c('#0000FF', '#808080', '#FF0000')) +
+  labs(title = "Pennsylvania",
+       subtitle = paste0("Probability of Biden Winning: ", prob_voting_dem_table_pres %>% filter(State == "PA") %>% pull(Probability) %>% {.*100}, "%"),
+       caption = "Biden is predicted to win",
+       x = "Number of Days Before Election",
+       y = "Percent Difference",
+       color = "Bound Coverage") +
+  theme(axis.text.x = element_text(size = 7),
+        legend.position="none") +
+  scale_x_reverse() + labs(caption = "Figure 2") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+
+WI_Pres <-  as.data.frame(presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,6,1:154]) %>%
+  mutate_all(as.character()) %>%
+  gather("variable", "value") %>%
+  mutate(variable = gsub( "V", "", variable) %>% as.integer()) %>%
+  group_by(variable) %>%
+  summarise(mean = mean(value),
+            lower = quantile(value, probs = 0.025),
+            upper = quantile(value, probs = 0.975)) %>%
+  mutate(party = ifelse(mean > 50, "Democrat", "Republican"),
+         bounds = case_when(
+           lower < 50 & upper < 50 ~ "Red",
+           lower < 50 & upper > 50 ~ "Unclear",
+           lower > 50 & upper > 50 ~ "Blue"
+         )) %>%
+  ungroup() 
+
+p6 <- WI_Pres %>%
+  ggplot(mapping = aes(x = variable, y = mean, group = bounds, color = bounds)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.3, alpha = 0.6) +
+  geom_point(color = ifelse(WI_Pres$mean > 50, "#0000FF", "#FF0000"), alpha = 0.6) +
+  scale_color_manual(values=c('#0000FF', '#808080', '#FF0000')) +
+  labs(title = "Wisconsin",
+       subtitle = paste0("Probability of Biden Winning: ", prob_voting_dem_table_pres %>% filter(State == "WI") %>% pull(Probability) %>% {.*100}, "%"),
+       caption = "Biden is predicted to win",
+       x = "Number of Days Before Election",
+       
+       color = "Bound Coverage") +
+  theme(axis.text.x = element_text(size = 7),
+        #axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        # axis.ticks.y = element_blank(),
+        legend.position="none") +
+  scale_x_reverse() + labs(caption = "Figure 3")  +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
 
 # Introduction
 
@@ -573,6 +647,7 @@ Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\
 \end{aligned}
 $$
 
+\noindent
 (1) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Clinton’s vote share from swing state $i$ in 2016, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$, so more similar states can pull information from one another.
 
 Using JAGS, we run (1) with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This leaves us with 2,000 samples. Then, for each sample, we perform the following:
@@ -581,37 +656,57 @@ Using JAGS, we run (1) with 2 chains, each with 75,000 simulations, 25,000 burn-
 
 2. If $\theta_{i 1}$ > 50%, the model predicts Biden will win the electoral votes from swing state $i$. Then sum the total number of predicted electoral votes Biden will gain from swing states.
 
-3. Add 200 to the previous sum, as Biden is expected to safely win 200 electoral votes from 16 states [SOURCE]. Biden is predicted to win the election if this value is greater than 270.
+3. Add 200 to the previous sum, as Biden is expected to safely win 200 electoral votes from 16 states [[20]][Bibliography]. Biden is predicted to win the election if this value is greater than 270.
 
 We iterate this process for each of the 2,000 samples to predict the electoral college vote and the outcome of the presidential election.
 
 ## Results
 
-```{r fig.align="center"}
+Figure 1 displays the posterior predictions for Biden's number of electoral votes. The green line is drawn at 270 and the solid and dashed purple lines indicate the mean and 95% credible interval, respectively. The posterior predictions indicate that Biden will win an average of `r mean_electoral` electoral college votes, with a 95% credible interval of (`r lower_q_presidential_electoral_college`, `r upper_q_presidential_electoral_college`). In `r prob_of_biden_winning`% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win the election with probability `r prob_of_biden_winning/100`. 
+
+Table 1 shows the probability of Democratic victory in each swing state. To obtain this probability for each state, we count the number of samples in which Biden's predicted vote share is greater than 50% and divide by 2,000, the total number of samples. We note that there is a low chance of Biden winning in Texas, Ohio and Iowa. However, Colorado, New Hampshire and Maine show promising results for Biden. 
+
+
+```{r fig.align="center", fig.height=3.35}
 presidential_results_plot + labs(caption = "Figure 1") +
   theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
 
-Figure 1 displays the posterior predictions for Biden's number of electoral votes. The green line is drawn at 270 and the solid and dashed purple lines indicate the mean and 95% credible interval, respectively. The posterior predictions indicate that Biden will win an average of `r mean_electoral` electoral college votes, with a 95% credible interval of (`r lower_q_presidential_electoral_college`, `r upper_q_presidential_electoral_college`). In `r prob_of_biden_winning`% of our samples, Biden is predicted to have over 270 electoral votes. Thus, we predict Biden will win the election with probability `r prob_of_biden_winning/100`. 
+```{r}
+list(
+  prob_voting_dem_table_pres %>% slice(1:5),
+  matrix(numeric(), nrow=0, ncol=1),
+  prob_voting_dem_table_pres %>% slice(6:10),
+  matrix(numeric(), nrow=0, ncol=1),
+  prob_voting_dem_table_pres %>% slice(11:15)
+) %>% 
+  kableExtra::kable(caption = "Probability of Democratic Victory in each Swing State",
+                    booktabs = TRUE, align = "c") %>% 
+  kableExtra::kable_styling(latex_options = c("hold_position"))
+```
 
-**STICK TABLE 1 ND STVEN'S PLOTS elifuahslkdfjaweifuaskldfjalwLWEIAUFHSLKDFJHAWELIFUHASKDLFJAWEIUAKLSDJFHALWIUEFALKSDJFAWOIEUFKL
+Biden's probabilities of winning Pennsylvania and Wisconsin are the closest to 50%. Figures 2 and 3 displays the change in voter preferences in these states since June 1st. Looking at these two key swing states, Wisconsin and Pennsylvania show considerable insights. For both states, our model predicts the mean and 95% credible intervals fully within the bounds of a Democrat winning, right up until a couple of days before the election, with a steep curve. 
 
-Table XXXXX shows the probability of Democratic victory in each swing state. To obtain this probability for each state, we count the number of samples in which Biden's predicted vote share is greater than 50% and divide by 2,000, the total number of samples. We note that there is a low chance of Biden winning in Texas, Ohio and Iowa. However, Colorado, New Hampshire and Maine show promising results for Biden. 
+```{r fig.align="center", fig.height=4, fig.width=12}
+gridExtra::grid.arrange(p5,p6,ncol=2,
+                        top = textGrob("US Presidential Election Outcomes",
+                                       gp = gpar(fontsize=20)))
+```
 
-Biden's probabilities of winning Pennsylvania and Wisconsin are the closest to 50%. Figure XXX displays the change in voter preferences in these states since June 1st. ADD ONE-TWO  SENTENCES ABOUT PLOT.
 
 ### Model Diagnostics
 
-Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. RHAT values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the RHAT value to 1, the better the model has converged. The traceplots show the chains have mixed well and RHAT values close to 1, indicating that our model has sufficiently converged. 
+Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. $\hat{R}$ values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the $\hat{R}$  value to 1, the better the model has converged. The traceplots show the chains have mixed well and $\hat{R}$  values close to 1, indicating that our model has sufficiently converged. 
 
 ### Sensitivity Analysis
 
-```{r fig.align="center"}
-sensitivity_plot_presidential + labs(caption = "Figure 2") +
+```{r fig.align="center", fig.height=3.8}
+sensitivity_plot_presidential + labs(caption = "Figure 4") +
   theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ``` 
 
 In Figure 2, we explore the posterior predictive distributions of Biden’s electoral votes across different priors on $\frac{1}{\sigma^2_{0}}$. The solid purple lines indicate the posterior mean of `r mean_electoral` electoral votes from (1). The distribution of Biden's predicted electoral votes appears to be roughly consistent across different priors. Thus, our results are relatively insensitive to prior choice [[7]][Bibliography].
+
 
 ### External Validation
 
@@ -652,7 +747,6 @@ vote_share_2008 <- distinct(vote_share_2008) %>%
     polls2012.state == "OH" ~ 51/(51 + 47),
     polls2012.state == "VA" ~ 53/(53 + 46),
     polls2012.state == "WI" ~ 56/(56 + 42)
-    
   )) %>%
   mutate(obama_percent = 100*obama_percent)
 obama2008 <- vote_share_2008$obama_percent
@@ -674,7 +768,7 @@ if (file.exists("gamma_2_0.5_2012.Rds")) {
                                                                N_states=N_states_2012, N_days=N_days_2012, h=obama2008, I_states=I_states_2012),  
                                                    parameters.to.save = c("theta", "Sigma", 
                                                                           "p","sigma2_y", "sigma2_0"),
-                                                   n.iter = 15000, n.burnin = 5000, n.thin = 10, n.chains = 2,
+                                                   n.iter = 75000, n.burnin = 25000, n.thin = 50, n.chains = 2,
                                                    model.file = model_file)
   
   saveRDS(presidential2012_model_gamma_2_0.5_prior, file = "gamma_2_0.5_2012.Rds")
@@ -695,7 +789,7 @@ electoral_data$states_2012 <- c("AL", "AK","AZ","AR","CA","CO","CT","DC",
 #we need to add to this the votes that he is guaranteed from other states
 
 prediction_per_simulation_obama <- function(model_output, i){
-  elec_sims <- presidential2012_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[i,,1]
+  elec_sims <- model_output$BUGSoutput$sims.list$theta[i,,1]
   vote_share_by_state <- data.frame(states_2012, elec_sims)
   
   
@@ -709,7 +803,9 @@ prediction_per_simulation_obama <- function(model_output, i){
   biden_votes = obama_votes + obama_electoral_votes
   return(biden_votes)
 }
+```
 
+```{r}
 final_results2012 <- c()
 
 for (i in 1:iterations){
@@ -719,8 +815,13 @@ for (i in 1:iterations){
 prob_of_obama_winning <- mean(final_results2012 > 270) * 100
 mean_electoral <- mean(final_results2012)
 lower_q_obama <- quantile(final_results2012, probs = c(0.025))
-upper_q_obama <- quantile(final_results2012, probs = c(0.975)) + 4
+upper_q_obama <- quantile(final_results2012, probs = c(0.975))
+```
 
+For external validation, we estimate Obama’s electoral vote share in 2012 using (1). We only keep polls that sample populations of registered and likely voters and polls that begin in August, since the Republican National Convention was near the end of the month. We predict the outcomes from 9 swing states: Colorado, Florida, Iowa, Nevada, New Hampshire, North Carolina, Ohio, Virginia, and Wisconsin [SOURCE]. The one difference from the parametrization in (1) is the prior on $\theta_{i 1}$, which now follows a $N(o_i, \sigma^2_0)$ distribution, where $o_i$ represents Obama’s vote share in 2008 from swing state $i \in (1 \dots 9)$. We assume he would win 237 electoral votes from solid blue states [[8]][Bibliography]. Using the prediction methodology outlined in Section 2.2, our 95% credible interval for President Obama’s 2012 electoral vote share is (`r lower_q_obama`, `r upper_q_obama`). This captures the true number of electoral votes he won, 332. Additionally, we also predict in 100% of our samples that Obama will win. Therefore, there is reasonable evidence that our model may generalize well to the 2020 election, given the evidence that it is able to balance prior election results and polling information. 
+
+
+```{r fig.align="center", fig.height=3.6}
 ggplot(data = tibble(final_results2012),  aes(x = final_results2012)) + 
   geom_histogram(bins = 16, colour="black",fill = "#4d4d4d") + 
   geom_vline(xintercept = 332, color = "#1b7837", size = 1.1) + 
@@ -730,11 +831,9 @@ ggplot(data = tibble(final_results2012),  aes(x = final_results2012)) +
        subtitle = paste0("Predicted Probability of Obama Winning: ", prob_of_obama_winning, "%"),
        x = "Number of Obama's Electoral Votes",
        y = "Count",
-       caption = "Figure XXXXXx") +
+       caption = "Figure 5") +
   theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
-
-For external validation, we estimate Obama’s electoral vote share in 2012 using (1). We predict the outcomes from 9 swing states: Colorado, Florida, Iowa, Nevada, New Hampshire, North Carolina, Ohio, Virginia, and Wisconsin [SOURCE]. The one difference from the parametrization in (1) is the prior on $\theta_{i 1}$, which now follows a $N(o_i, \sigma^2_0)$ distribution, where $o_i$ represents Obama’s vote share in 2008 from swing state $i \in (1 \dots 9)$. We assume he would win 237 electoral votes from solid blue states [[8]][Bibliography]. Using the prediction methodology outlined in Section 2.2, our 95% credible interval for President Obama’s 2012 electoral vote share is (`r lower_q_obama`, `r upper_q_obama`). This captures the true number of electoral votes he won, 332. Despite President Obama winning in a landslide, this result was uncertain at the time due to misrepresentation of voter sentiment in the polls. Therefore, there is reasonable evidence that our model may generalize well to the 2020 election, given the evidence that it is able to balance prior election results and polling information. 
 
 
 # US Senate Election
@@ -1141,7 +1240,7 @@ Figure XXXXX displays the posterior predictions for the number of senate seats D
 
 **STICK TABLE 1 ND STVEN'S PLOTS elifuahslkdfjaweifuaskldfjalwLWEIAUFHSLKDFJHAWELIFUHASKDLFJAWEIUAKLSDJFHALWIUEFALKSDJFAWOIEUFKL
 
-```{r}
+```{r cache=TRUE}
 predictions_per_state_senate <- function(model_output, state){
   win_dem <- c()
   for (i in 1:iterations){
@@ -1173,7 +1272,7 @@ prob_voting_dem_table <- data.frame(states_senate, probs_voting_dem) %>%
   mutate(State = states_senate) %>%
   mutate(Probability = probs_voting_dem/100) %>%
   select(State, Probability)
-kable(prob_voting_dem_table, caption = "Senate Elections: Probability of Democratic Victory in each Swing State")
+#kable(prob_voting_dem_table, caption = "Senate Elections: Probability of Democratic Victory in each Swing State")
 ```
 
 Table XXXXX shows the probability of a Democratic senate victory for each battleground race. To obtain this probability for each state, we count the number of samples in which the predicted vote share is greater than 50% and divide by 2,000, the total number of samples. There is a low probability of Democrats winning senate seats in Alabama and Kentucky, while Colorado and Michigan show promising results for Democrats. 
@@ -1238,6 +1337,33 @@ GAsenate_results_plot + labs(caption = "Figure XXXX") +
   theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
 
+# NC Senate
+
+## Results 
+
+```{r}
+NC_senate_vote_shares <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,16,1]
+
+mean_NC_senate_vote_shares <- mean(NC_senate_vote_shares) 
+lower_NC_senate_vote_shares <- quantile(NC_senate_vote_shares, probs = c(0.025)) 
+upper_NC_senate_vote_shares <- quantile(NC_senate_vote_shares, probs = c(0.975)) 
+
+NCsenate_results_plot <- ggplot(data = tibble(NC_senate_vote_shares),  aes(x = NC_senate_vote_shares)) + 
+  geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
+  geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
+  geom_vline(xintercept = mean_NC_senate_vote_shares, color = "#542788", size = 1.1) + 
+  geom_vline(xintercept = c(lower_NC_senate_vote_shares,upper_NC_senate_vote_shares), color = "#542788", linetype = 2, size = 0.7) + 
+  labs(title = "Cunningham's Predicted Vote Share",
+       subtitle = paste0("Predicted Probability of Cunningham Winning: ", (prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)) * 100, "%"),
+       x = "Predicted Vote Share",
+       y = "Count")
+NCsenate_results_plot + labs(caption = "Figure XXXX") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+We can further use (2) to examine the results of the North Carolina Senate election more closely, a hotly contested election between Republican Thom Tillis and Democrat Cal Cunningham. Figure  XXX displays the posterior predictive distribution of Cunningham's vote share. Our posterior mean vote share going to Cunningham is `r mean_NC_senate_vote_shares`, with a 95% credible interval of (`r lower_NC_senate_vote_shares`, `r upper_NC_senate_vote_shares`). We further note that in `r (prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)) * 100`% of the posterior samples, the predicted vote share for Cunningham was above 50%. Thus, we predict that Cunningham will win the North Carolina senate race with probability `r prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)`, which is promising for the Democratic party. 
+
+
 
 ## Discussion
 
@@ -1283,30 +1409,53 @@ One strength of our model is the covariance estimates that pull information of v
 
 
 
-# NC Senate
 
-## Results 
 
-```{r}
-NC_senate_vote_shares <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,16,1]
 
-mean_NC_senate_vote_shares <- mean(NC_senate_vote_shares) 
-lower_NC_senate_vote_shares <- quantile(NC_senate_vote_shares, probs = c(0.025)) 
-upper_NC_senate_vote_shares <- quantile(NC_senate_vote_shares, probs = c(0.975)) 
 
-NCsenate_results_plot <- ggplot(data = tibble(NC_senate_vote_shares),  aes(x = NC_senate_vote_shares)) + 
-  geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
-  geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
-  geom_vline(xintercept = mean_NC_senate_vote_shares, color = "#542788", size = 1.1) + 
-  geom_vline(xintercept = c(lower_NC_senate_vote_shares,upper_NC_senate_vote_shares), color = "#542788", linetype = 2, size = 0.7) + 
-  labs(title = "Cunningham's Predicted Vote Share",
-       subtitle = paste0("Predicted Probability of Cunningham Winning: ", (prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)) * 100, "%"),
-       x = "Predicted Vote Share",
-       y = "Count")
-NCsenate_results_plot + labs(caption = "Figure XXXX") +
-  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
-```
+# Appendix
 
-We can further use (2) to examine the results of the North Carolina Senate election more closely, a hotly contested election between Republican Thom Tillis and Democrat Cal Cunningham. Figure  XXX displays the posterior predictive distribution of Cunningham's vote share. Our posterior mean vote share going to Cunningham is `r mean_NC_senate_vote_shares`, with a 95% credible interval of (`r lower_NC_senate_vote_shares`, `r upper_NC_senate_vote_shares`). We further note that in `r prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)) * 100`% of the posterior samples, the predicted vote share for Cunningham was above 50%. Thus, we predict that Cunningham will win the North Carolina senate race with probability `r (prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability))`, which is promising for the Democratic party. 
+## Bibliography 
+
+1).“ Braced for impact; America's presidential election." The Economist, 10 Oct. 2020, p. 66(US). Gale OneFile: CPI.Q, https://link.gale.com/apps/doc/A637802159/CPI?u=duke_perkins&sid=CPI&xid=e45fed0d. Accessed 28 Oct. 2020.
+
+2). Martin, Susan F. “Commentary: The 2020 U.S. Presidential Election and Immigration.” International Migration, vol. 58, no. 5, 2020, pp. 274–276., doi:10.1111/imig.12772. 
+
+3). Drew A. Linzer (2013) Dynamic Bayesian Forecasting of Presidential Elections in the States, Journal of the American Statistical Association, 108:501, 124-134, DOI: 10.1080/01621459.2012.737735
+
+4). Linge, M. (2020, October 31). Inside the nine swing states the 2020 presidential election hinges on. Retrieved November 01, 2020, from https://nypost.com/2020/10/31/the-9-swing-states-the-2020-presidential-election-hinges-on/
+
+5). Tamman, M., & Faulconbridge, G. (2016, November 09). How the polls, including ours, missed Trump's victory. Retrieved November 01, 2020, from https://www.reuters.com/article/us-usa-election-polls/how-the-polls-including-ours-missed-trumps-victory-idUSKBN1343O6
+
+6). https://www.nbcnews.com/politics/2020-election/biden-secures-democratic-presidential-nomination-november-showdown-against-trump-n1226101
+
+7). Hoff, P. D. (2010). Chapter 1: Introduction and examples. In A first course in bayesian statistical methods (pp. 5-7). Dordrecht: Springer.
+
+8). https://www.politico.com/2012-election/swing-state/
+
+9). DeSilver, Drew. “Voter Turnout Always Drops off for Midterm Elections, but Why?” Pew Research Center, Pew Research Center, 30 May 2020, www.pewresearch.org/fact-tank/2014/07/24/voter-turnout-always-drops-off-for-midterm-elections-but-why/.
+
+10). https://www.aarp.org/content/dam/aarp/ppi/2017-01/ACA-Protects-Millions-of-Older-Adults-with-Preexisting-Health-Conditions-PPI-AARP.pdf
+
+11). https://www.govtrack.us/congress/members/NC/12
+
+12). https://indyweek.com/news/archives/drawing-dem-friendly-congressional-districts-north-carolina-easy-think/
+
+13). https://en.wikipedia.org/wiki/List_of_special_elections_to_the_United_States_Senate
+
+14). https://ballotpedia.org/Statewide_primary_election_dates,_2020
+
+15). 538
+
+16). https://nymag.com/intelligencer/2019/03/the-republican-party-has-an-older-voters-problem.html
+
+17). https://ballotpedia.org/North_Carolina_House_of_Representatives_elections,_2020
+
+18). https://flipnc.org/most-competitive-nc-senate-districts-2020
+
+19). Darwish, A., Ravindran M., Herrera Tenorio, S., Shen, E., “Case Study 3 Interim Report: Who Votes in North Carolina?” 3 Nov 2020.
+
+20). 270towin.com
+
 
 
