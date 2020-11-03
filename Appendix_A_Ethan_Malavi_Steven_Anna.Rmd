@@ -5,14 +5,14 @@ geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
 fontsize: 12pt
 output: 
   pdf_document:
-     number_sections: true
+
 ---
 
 ```{r}
 library(pander)
 ```
 
-# 2020 Presidential Election & Electoral College Vote
+# 2020 Presidential Election & Electoral College Vote (1.1)
 
 $$
 \begin{aligned}
@@ -28,7 +28,7 @@ $$
 \noindent
 (1) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Clinton’s vote share from swing state $i$ in 2016, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$, so more similar states can pull information from one another.
 
-# 2012 Presidential Election & Electoral College Vote
+# 2012 Presidential Election & Electoral College Vote (1.2)
 
 $$
 \begin{aligned}
@@ -42,7 +42,7 @@ $$
 
 (2) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 9)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $o_i$, Obama’s vote share from swing state $i$ in 2008, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{9}}, 10)$, so more similar states can pull information from one another.
 
-# US Senate Election & NC Senate Election
+# US Senate Election & NC Senate Election (2)
 
 $$
 \begin{aligned}
@@ -55,5 +55,34 @@ Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\
 $$
 Let $Y_k$, the Democratic candidate’s share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in battleground race $i \in (1 \dots 18)$. Each race has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered about 50 with variance $\sigma^2_0$. Since we also estimate the correlation structure between races, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{18}}, 19)$
 
-
 # NC Congressional Election
+
+## Who Votes (Interim Report) (3.1)
+
+$$ 
+\begin{aligned}
+log(\frac{P_{ijk}}{1-P_{ijk}}) = \alpha_{0} + \alpha_{j} + \alpha_{k} + \alpha_{3} * I(Gender_{ijk}=Male &) + \sum_{a = 2}^5\alpha_{4a}*I(Age_{ijk}=a) + \sum_{p = 2}^{3}\alpha_{5r}*I(Party_{ijk}=p) \\
+ + \sum_{r = 2}^{6}\alpha_{6r}*I(Race/ Ethnicity_{ijk}=r) + \sum_{p = 2}^{3}\sum_{r =2}^6&\gamma_{1pr}*I (Party_{ijk} = p)*I(Race/Ethnicity_{ijk}=r) \ (4) \\
+\alpha_j \sim N(0,\tau_0^2), & \ \alpha_k \sim N(0,\tau_1^2)
+\end{aligned}
+$$
+Age is a categorical variable, which belonged to one of five categories: 18-29, 30-39, 40-49, 50-64, and 65+. In addition, the individual race and ethnic identities were combined into a race/ethnicity variable with categories: Hispanic Any Race, Non Hispanic White, Non Hispanic Black, Non Hispanic Asian, Non Hispanic Multi-Racial, Non Hispanic American Indian. For gender, we chose to limit our analysis to include Female and Male as most of the subgroups did not include Undetermined gender groups. Finally, we only included registered Democrats, Republicans, and Unaffiliated groups for Party.
+
+$P_{ijk}$ is the probability that individual $i$ from county $j$ in district $k$ voted in the 2016 election. $\alpha_j$ represents the random intercept term for county $j$, and $\alpha_k$ represents the random intercept term for district $k$. For the Age term, $a=1$ represents our baseline, which is $65+$ year olds. For our Race/Ethnicitiy term,  $r=1$, our baseline group, was Hispanic Any Race. Finally, there are three party groups and six race/ethnicity groups, yielding eighteen possible combinations. Eight of these involve the baseline terms, leaving ten other combinations to appear as evaluated terms in the interaction effect of our model. 
+
+For each group $i$ of size $n_i$, the resulting prediction $p_i$ was used as the probability of success in a $Binomial(n_i, p_i)$. This generated an estimate of the number of likely voters among registered voters.
+
+## Congressional Elections Prediction (3.2)
+
+$$ 
+\begin{aligned}
+log(\frac{P_{ijk}}{1-P_{ijk}}) = \alpha_{0} + \alpha_{j} + \alpha_{k} + \alpha_{3} * I(Gender_{ijk}=Male &) + \sum_{a = 2}^5\alpha_{4a}*I(Age_{ijk}=a) \sum_{p = 2}^{3}\alpha_{5r}*I(Party_{ijk}=p) +\ \\
++ \sum_{r =  2}^{6}\alpha_{6r}*I(Race/ Ethnicity_{ijk}=r)   + \sum_{p = 2}^{3}\sum_{a =  2}^5&\gamma_{1pr}*I (Party_{ijk} = p)*I(Age_{ijk}=a) \ \ \ \ \ (5) \\
+\alpha_j \sim N(0,\tau_0^2), & \ \alpha_k \sim N(0,\tau_1^2)
+\end{aligned}
+$$
+
+The co-variates in this model have the same ranges/levels and baselines (where appropriate) as the one in the previous section. $P_{ijk}$ is the probability that individual $i$ from county $j$ in district $k$ voted Democrat for their congressional district.
+
+For each group $i$ with likely voters $n_i$, the resulting prediction $p_i$ was used as the mean probability of success. From this, we sampled $p_i^* \sim Normal(p_i, 0.15)$. If $p_i^* \leq 0$ or $p_i^* \geq 1$, then set $p_i^* = p_i$. Finally, we used this resulting $p_i^*$ in $Binomial(n_i, p_i^*)$ to generate an estimate of the number of Democrat voters among voters in group $i$.
+
