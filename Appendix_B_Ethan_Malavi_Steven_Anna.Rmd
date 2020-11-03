@@ -12,7 +12,7 @@ output:
 library(pander)
 ```
 
-# 2020 Presidential Election & Electoral College Vote
+# 2012 2020 Presidential Election & Electoral College Vote (1.1 and 1.2)
 
 The Presidential Election & Electoral College Vote model (Model 1 from Appendix A) used the following dataset: `2020 US presidential election polls - all_polls.csv`.
 
@@ -36,7 +36,7 @@ hilary's election results, x  y z  variables,  Model 1
 # US Senate Election & NC Senate Election (2)
 
 
-# Who Votes (Interim Report)
+# Who Votes (Interim Report) (3.1)
 
 Our "Who Votes" model utilizes the following datasets. These datasets were both located on the cluster, and originally come from https://dl.ncsbe.gov/?prefix=data/. Note that they were joined by a covariate, voter_reg_num, that appeared in both and represented an individual's unique registration number. 
 
@@ -48,7 +48,7 @@ pander(data.frame(Data, Variables, Notes), caption = "Data: Who Votes (Interim R
 ```
 
 
-# Congressional Elections Prediction
+# Congressional Elections Prediction (3.2)
 
 Our Congressional Election models utilize the same two datasets. Again, these datasets were both located on the cluster, and originally come from https://dl.ncsbe.gov/?prefix=data/. Note that they were joined by a covariate, voter_reg_num, that appeared in both and represented an individual's unique registration number. 
 
@@ -62,7 +62,6 @@ pander(data.frame(Data, Variables , Notes), caption = "Data: Congressional Elect
 * NC Voter Registration Data: County, Congressional District, Race Code, Ethnic Code, Age, Party Affiliation (Note that in our model, "Age" was rebinned into age_bin, and "Race Code" and "Ethnic Code" were combined into a singular race_ethnicity variable)
 
 * Note that they were joined by a covariate, voter_reg_num, that appeared in both and represented an individual's unique registration number. 
-
 
 
 

@@ -12,7 +12,7 @@ output:
 library(pander)
 ```
 
-# 2020 Presidential Election & Electoral College Vote
+# 2020 Presidential Election & Electoral College Vote (1.1)
 
 $$
 \begin{aligned}
@@ -28,7 +28,7 @@ $$
 \noindent
 (1) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Clinton’s vote share from swing state $i$ in 2016, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$, so more similar states can pull information from one another.
 
-# 2012 Presidential Election & Electoral College Vote
+# 2012 Presidential Election & Electoral College Vote (1.2)
 
 $$
 \begin{aligned}
@@ -42,7 +42,7 @@ $$
 
 (2) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 9)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $o_i$, Obama’s vote share from swing state $i$ in 2008, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{9}}, 10)$, so more similar states can pull information from one another.
 
-# US Senate Election & NC Senate Election
+# US Senate Election & NC Senate Election (2)
 
 $$
 \begin{aligned}
@@ -57,7 +57,7 @@ Let $Y_k$, the Democratic candidate’s share of the two-party vote from each po
 
 # NC Congressional Election
 
-## Who Votes (Interim Report)
+## Who Votes (Interim Report) (3.1)
 
 $$ 
 \begin{aligned}
@@ -72,7 +72,7 @@ $P_{ijk}$ is the probability that individual $i$ from county $j$ in district $k$
 
 For each group $i$ of size $n_i$, the resulting prediction $p_i$ was used as the probability of success in a $Binomial(n_i, p_i)$. This generated an estimate of the number of likely voters among registered voters.
 
-## Congressional Elections Prediction
+## Congressional Elections Prediction (3.2)
 
 $$ 
 \begin{aligned}
