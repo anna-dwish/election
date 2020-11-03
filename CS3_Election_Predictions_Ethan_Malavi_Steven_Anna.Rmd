@@ -32,6 +32,20 @@ pkgTest("kableExtra")
 pkgTest("matrixStats")
 pkgTest("grid")
 pkgTest("gridExtra")
+pkgTest("tidyverse")
+pkgTest("dplyr")
+pkgTest("lubridate")
+pkgTest("readr")
+pkgTest("groupdata2")
+pkgTest("lme4")
+pkgTest("pander")
+pkgTest("kableExtra")
+pkgTest("merTools")
+pkgTest("sjPlot")
+pkgTest("gridExtra")
+pkgTest("sf")
+pkgTest("cvms")
+pkgTest("glmmTMB")
 ```
 
 ```{r load packages, include=FALSE, results="hide"}
@@ -44,6 +58,20 @@ library(kableExtra)
 library(matrixStats)
 library(grid)
 library(gridExtra)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(readr)
+library(groupdata2)
+library(lme4)
+library(knitr)
+library(pander)
+library(kableExtra)
+library(sjPlot)
+library(gridExtra)
+library(sf)
+library(cvms)
+library(glmmTMB)
 ```
 
 ```{r include=FALSE}
@@ -318,7 +346,7 @@ for (state in states){
 prob_voting_dem_table_pres <- data.frame(states, probs_voting_dem_pres) %>%
   mutate(State = states) %>%
   mutate(Probability = probs_voting_dem_pres/100) %>%
-  select(State, Probability) %>% 
+  dplyr::select(State, Probability) %>% 
   arrange(State)
 #kable(prob_voting_dem_table_pres, caption = "Presidential Election: Probability of Democratic Victory in each Swing State")
 
@@ -334,7 +362,7 @@ vote_share_by_state <- data.frame(states, lower_q_presidential, mean_vote_share,
   mutate(`2.5%` = round(lower_q_presidential, 1)) %>%
   mutate(`97.5%` = round(upper_q_presidential, 1)) %>%
   mutate(Mean = round(mean_vote_share, 1)) %>%
-  select(State, `2.5%`, Mean, `97.5%`)
+  dplyr::select(State, `2.5%`, Mean, `97.5%`)
 #kable(vote_share_by_state, caption = "Presidential Elections: Predicted Democratic Vote Share in each Swing State")
 ```
 
@@ -680,7 +708,7 @@ list(
   matrix(numeric(), nrow=0, ncol=1),
   prob_voting_dem_table_pres %>% slice(11:15)
 ) %>% 
-  kableExtra::kable(caption = "Probability of Democratic Victory in each Swing State",
+  kableExtra::kable(caption = "Probability of Biden Winning in each Swing State",
                     booktabs = TRUE, align = "c") %>% 
   kableExtra::kable_styling(latex_options = c("hold_position"))
 ```
@@ -843,12 +871,12 @@ ggplot(data = tibble(final_results2012),  aes(x = final_results2012)) +
 # add New Mexico  and Missisipi 
 `%notin%` <- Negate(`%in%`)
 senate_polls <- read_csv("senate_polls.csv")
-senate_polls$state %>% unique
-senate_polls %>%
-  filter(cycle == "2020") %>%
-  filter(candidate_party %notin% c("DEM", "REP")) %>%
-  arrange(desc(pct)) %>%
-  select(poll_id, state, candidate_name, candidate_party, pct)
+# senate_polls$state %>% unique
+# senate_polls %>%
+#   filter(cycle == "2020") %>%
+#   filter(candidate_party %notin% c("DEM", "REP")) %>%
+#   arrange(desc(pct)) %>%
+#   dplyr::select(poll_id, state, candidate_name, candidate_party, pct)
 
 #TOP THREE: DUNBAR, HARRINGTON, WILSON
 #Dunbar (AK) is a democrat, but running as an independent against republican and democratic candidates- but as of more recent polls he isn't relevant
@@ -1193,8 +1221,6 @@ sensitivity_plot_senate <- do.call(bind_rows, senate_sen_tbl_list) %>%
        y = "Density") 
 ```
 
-# Senate
-
 The Senate currently has 53 Republicans and 47 Democrats (including 2 Independents who caucus with the Democratic party). 35 Democrats and 30 Republicans are *not* up for election in 2020, while the 35 remaining seats are up. Thus, in order to reach 51 and “flip” the Senate, Democrats will need to win 16 of the 35 seats up for election. Of the 35 seats up, 8 are in states that are very likely to vote for the Democratic candidate (Virginia, Oregon, Illinois, New Jersey, Delaware, Massachusetts, New Hampshire, and Rhode Island) while 9 states are very likely to vote Republican (Arkansas, Idaho, Louisiana, Nebraska, Oklahoma, Tennessee, South Dakota, West Virginia and Wyoming) [[15]][Bibliography]. The remaining 18 races (in 17 states) will be instrumental in determining if the senate flips: Alaska, Alabama, Arizona, Colorado, Georgia, Iowa, Kansas, Kentucky, Maine, Michigan, Minnesota, Mississippi, Montana, New Mexico, North Carolina, South Carolina, and Texas [[15]][Bibliography]. These include two special elections [[13]][Bibliography]: one in Arizona and one in Georgia (where both seats are up). Of these 18 races, Democrats need to win 8 in order to reach 16 seats and flip the senate. For this reason, we are primarily interested in modelling the outcomes in only these 18 “battleground” races. 
 
 ## Data
@@ -1218,27 +1244,28 @@ Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\
 \end{aligned}
 $$
 
+\noindent
 (2) represents the final model we use to predict the presidential election. Let $Y_k$, the Democratic candidate’s share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in battleground race $i \in (1 \dots 18)$. Each race $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each race. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered about 50 with variance $\sigma^2_0$. Note that, unlike the model for the Presidential election, we did not center $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$ around vote shares from previous senate elections in each state. This was due to the fact that, barring special elections, the last senate elections for this group of states occurred six years ago. As this is a considerable amount of time, we did not believe it sensible to strongly center our priors on the previous election.  Since we also estimate the correlation structure between states, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{18}}, 19)$. 
 
 Using JAGS, we run (2) with 2 chains, each with 75,000 simulations, 25,000 burn-in, and thinned the sampler by keeping every 50th sample. This leaves us with 2,000 samples. Then, for each sample, we performed the following:
 
 1. Extract the 18 values of  $\theta_{\cdot 1}$, the Democratic candidate’s estimated vote share on the day of the election from each battleground race $i \in (1 \dots 18)$.
+
 2. If $\theta_{i 1}$ > 50%, the model predicts the Democratic candidate will win in race $i$.  
+
 3. 8 races are very likely to elect the Democratic candidate [[15]][Bibliography]. If Democratic candidates win in at least 8 swing races, the Senate will flip.  
 
 We iterate this process for each of the 2,000 samples to predict the outcome of the U.S. Senate election.
 
 ## Results
 
-```{r}
-senate_results_plot + labs(caption = "Figure XXXX") +
+Figure 6 displays the posterior predictions for the number of senate seats Democrats will win, out of the 18 seats up for reelection which we deemed “battleground.” The green line is drawn at 8 and the solid and dashed purple lines indicate the mean and 95% credible interval, respectively. The posterior predictions indicate Democrats will win an average of `r mean_senate %>% round(2)` of the 18 battleground seats, with a 95% credible interval of (`r lower_q_senate`, `r upper_q_senate`). In `r (mean(final_results_senate >= 8) * 100)`% of our samples, Democrats are predicted to win at least 8 battleground senate seats. Thus, adding this number to the 8 already guaranteed to Democrats, we predict that Democrats will win 16 seats and “flip” the senate with probability `r mean(final_results_senate >= 8)`. 
+
+
+```{r fig.align="center", fig.height=3.6}
+senate_results_plot + labs(caption = "Figure 6") +
   theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
-
-Figure XXXXX displays the posterior predictions for the number of senate seats Democrats will win, out of the 18 seats up for reelection which we deemed “battleground.” The green line is drawn at 8 and the solid and dashed purple lines indicate the mean and 95% credible interval, respectively. The posterior predictions indicate Democrats will win an average of `r mean_senate` of the 18 battleground seats, with a 95% credible interval of (`r lower_q_senate`, `r upper_q_senate`). In `r mean(final_results_senate >= 8) * 100`% of our samples, Democrats are predicted to win at least 8 battleground senate seats. Thus, adding this number to the 8 already guaranteed to Democrats, we predict that Democrats will win 16 seats and “flip” the senate with probability `r mean(final_results_senate >= 8)`. 
-
-
-**STICK TABLE 1 ND STVEN'S PLOTS elifuahslkdfjaweifuaskldfjalwLWEIAUFHSLKDFJHAWELIFUHASKDLFJAWEIUAKLSDJFHALWIUEFALKSDJFAWOIEUFKL
 
 ```{r cache=TRUE}
 predictions_per_state_senate <- function(model_output, state){
@@ -1271,21 +1298,111 @@ for (state in states_senate){
 prob_voting_dem_table <- data.frame(states_senate, probs_voting_dem) %>%
   mutate(State = states_senate) %>%
   mutate(Probability = probs_voting_dem/100) %>%
-  select(State, Probability)
+  dplyr::select(State, Probability)
 #kable(prob_voting_dem_table, caption = "Senate Elections: Probability of Democratic Victory in each Swing State")
+
+
+list(
+  prob_voting_dem_table %>% slice(1:6),
+  matrix(numeric(), nrow=0, ncol=1),
+  prob_voting_dem_table %>% slice(7:12),
+  matrix(numeric(), nrow=0, ncol=1),
+  prob_voting_dem_table %>% slice(13:18)
+) %>% 
+  kableExtra::kable(caption = "Probability of Democratic Victory in each Swing Senate Race",
+                    booktabs = TRUE, align = "c") %>% 
+  kableExtra::kable_styling(latex_options = c("hold_position"))
 ```
 
-Table XXXXX shows the probability of a Democratic senate victory for each battleground race. To obtain this probability for each state, we count the number of samples in which the predicted vote share is greater than 50% and divide by 2,000, the total number of samples. There is a low probability of Democrats winning senate seats in Alabama and Kentucky, while Colorado and Michigan show promising results for Democrats. 
+Table 2 shows the probability of a Democratic senate victory for each battleground race. To obtain this probability for each state, we count the number of samples in which the predicted vote share is greater than 50% and divide by 2,000, the total number of samples. There is a low probability of Democrats winning senate seats in Alabama and Kentucky, while Colorado and Michigan show promising results for Democrats. 
 
-Biden's probabilities of winning Pennsylvania and Wisconsin are the closest to 50%. Figure XXX displays the change in voter preferences in these states since June 1st. ADD ONE-TWO  SENTENCES ABOUT PLOT. FIX THIS PLS
+The Democratic candidates' probabilities of winning the Georgia and Montana elections are the closest to 50%. Figure XXX displays the change in voter preferences in these states in the past 100 days. Here, we see the probability that the respective Democratic candidates in Montana and Georgia win their elections with mean and 95% credible intervals. For Montana, we see that the candidate is predicted to be Republican, despite the credible intervals not being conclusive of which candidate was going to win several days before the election. On the other hand, Georgia shows more ambiguous results, with the Republican candidate predicted to win at the end. We are less sure about this result since the credible intervals contained the potential for the Democratic candidate to win.
+
+```{r senate time trends}
+GA_Pres <-  as.data.frame(senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,5,1:101]) %>%
+  mutate_all(as.character()) %>%
+  gather("variable", "value") %>%
+  mutate(variable = gsub( "V", "", variable) %>% as.integer()) %>%
+  group_by(variable) %>%
+  summarise(mean = mean(value),
+            lower = quantile(value, probs = 0.025),
+            upper = quantile(value, probs = 0.975)) %>%
+  mutate(party = ifelse(mean > 50, "Democrat", "Republican"),
+         bounds = case_when(
+           lower < 50 & upper < 50 ~ "Red",
+           lower < 50 & upper > 50 ~ "Unclear",
+           lower > 50 & upper > 50 ~ "Blue"
+         )) %>%
+  ungroup() 
+
+GA_senate_plot <- GA_Pres %>%
+  ggplot(mapping = aes(x = variable, y = mean, group = bounds, color = bounds)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.3, alpha = 0.6) +
+  geom_point(color = ifelse(GA_Pres$mean > 50, "#0000FF", "#FF0000"), alpha = 0.6) +
+  scale_color_manual(values=c('#FF0000', '#808080', '#0000FF')) +
+  labs(title = "Georgia",
+       subtitle = paste0("Probability of Democratic Candidate Winning: ", prob_voting_dem_table %>% filter(State == "Georgia") %>% pull(Probability) %>% {.*100}, "%"),
+       caption = "Democratic candidate is predicted to win",
+       x = "Number of Days Before Election",
+       y = "Percent Difference",
+       color = "Bound Coverage") +
+  theme(axis.text.x = element_text(size = 7),
+        legend.position="none") +
+  scale_x_reverse() + labs(caption = "Figure 2") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+
+Montana_Pres <-  as.data.frame(presidential_model_gamma_2_0.5_prior$BUGSoutput$sims.list$theta[,14,1:154]) %>%
+  mutate_all(as.character()) %>%
+  gather("variable", "value") %>%
+  mutate(variable = gsub( "V", "", variable) %>% as.integer()) %>%
+  group_by(variable) %>%
+  summarise(mean = mean(value),
+            lower = quantile(value, probs = 0.025),
+            upper = quantile(value, probs = 0.975)) %>%
+  mutate(party = ifelse(mean > 50, "Democrat", "Republican"),
+         bounds = case_when(
+           lower < 50 & upper < 50 ~ "Red",
+           lower < 50 & upper > 50 ~ "Unclear",
+           lower > 50 & upper > 50 ~ "Blue"
+         )) %>%
+  ungroup() 
+
+Montana_senate_plot <- Montana_Pres %>%
+  ggplot(mapping = aes(x = variable, y = mean, group = bounds, color = bounds)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.3, alpha = 0.6) +
+  geom_point(color = ifelse(Montana_Pres$mean > 50, "#0000FF", "#FF0000"), alpha = 0.6) +
+  scale_color_manual(values=c('#FF0000', '#808080', '#0000FF')) +
+  labs(title = "Montana",
+       subtitle = paste0("Probability of Democratic Candidate Winning: ", prob_voting_dem_table %>% filter(State == "Montana") %>% pull(Probability) %>% {.*100}, "%"),
+       caption = "Democratic candidate is predicted to win",
+       x = "Number of Days Before Election",
+       
+       color = "Bound Coverage") +
+  theme(axis.text.x = element_text(size = 7),
+        #axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        # axis.ticks.y = element_blank(),
+        legend.position="none") +
+  scale_x_reverse() + labs(caption = "Figure 3")  +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
+```
+
+
+```{r fig.align='center', fig.width=12}
+gridExtra::grid.arrange(GA_senate_plot,
+                        Montana_senate_plot,
+                        ncol=2,
+                        top = textGrob("Posterior Predictive Distribution of Democratic Vote Share",gp=gpar(fontsize=20))
+)
+```
 
 ### Model Diagnostics
 
-Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. RHAT values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the RHAT value to 1, the better the model has converged. The traceplots show the chains have mixed well and RHAT values close to 1, indicating that our model has sufficiently converged. 
+Traceplots for select parameters and quantiles for values can be found in the Appendix. To determine if our model has converged sufficiently, we first examine traceplots for each of the parameters. Traceplots with random scatter around a mean value indicates that the model has converged. $\hat{R}$ values provide an estimate of convergence based on the variance of an estimated parameter between chains, and the variance within a chain. The closer the $\hat{R}$  value to 1, the better the model has converged. The traceplots show the chains have mixed well and $\hat{R}$  values close to 1, indicating that our model has sufficiently converged. 
 
 ### Sensitivity Analysis
 
-```{r}
+```{r fig.align="center", fig.height=3.8}
 sensitivity_plot_senate  + labs(caption = "Figure XXXX") +
   theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
@@ -1304,16 +1421,14 @@ upper_AZ_senate_vote_shares <- quantile(AZ_senate_vote_shares, probs = c(0.975))
 
 AZsenate_results_plot <- ggplot(data = tibble(AZ_senate_vote_shares),  aes(x = AZ_senate_vote_shares)) + 
   geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
-  geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
+  #geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
   geom_vline(xintercept = 51.2295, color = "#bf812d", size = 1.1) + 
   geom_vline(xintercept = mean_AZ_senate_vote_shares, color = "#542788", size = 1.1) + 
   geom_vline(xintercept = c(lower_AZ_senate_vote_shares,upper_AZ_senate_vote_shares), color = "#542788", linetype = 2, size = 0.7) + 
-  labs(title = "Predicted Democratic Vote Share in Arizona (Special Election)",
+  labs(title = "Arizona (Special Election)",
        subtitle = paste0("Predicted Probability of Mark Kelly (Dem) Winning: ", (prob_voting_dem_table %>% filter(State == "Arizona*") %>% pull(Probability)) * 100, "%"),
        x = "Predicted Vote Share",
        y = "Count")
-AZsenate_results_plot + labs(caption = "Figure XXXX") +
-  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
 
 ```{r}
@@ -1325,23 +1440,37 @@ upper_GA_senate_vote_shares <- quantile(GA_senate_vote_shares, probs = c(0.975))
 
 GAsenate_results_plot <- ggplot(data = tibble(GA_senate_vote_shares),  aes(x = GA_senate_vote_shares)) + 
   geom_histogram(bins = 18, colour="black",fill = "#4d4d4d") + 
-  geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
+  #geom_vline(xintercept = 50, color = "#1b7837", size = 1.1) + 
   geom_vline(xintercept = 42.797, color = "#bf812d", size = 1.1) + 
   geom_vline(xintercept = mean_GA_senate_vote_shares, color = "#542788", size = 1.1) + 
   geom_vline(xintercept = c(lower_GA_senate_vote_shares,upper_GA_senate_vote_shares), color = "#542788", linetype = 2, size = 0.7) + 
-  labs(title = "Predicted Democratic Vote Share in Georgia (Special Election)",
+  labs(title = "Georgia (Special Election)",
        subtitle = paste0("Predicted Probability of Democratic Candidate Winning: ", (prob_voting_dem_table %>% filter(State == "Georgia*") %>% pull(Probability)) * 100, "%"),
        x = "Predicted Vote Share",
        y = "Count")
-GAsenate_results_plot + labs(caption = "Figure XXXX") +
-  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5))
 ```
+
+```{r fig.align='center', fig.width=12}
+gridExtra::grid.arrange(AZsenate_results_plot + labs(caption = "Figure XXXX") +
+                          theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5)),
+                        GAsenate_results_plot + labs(caption = "Figure XXXX") +
+                          theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5)),
+                        ncol=2,
+                        top = textGrob("Posterior Predictive Distribution of Democratic Vote Share",gp=gpar(fontsize=20))
+)
+```
+
+We then perform external validation on our model by comparing our posterior predictions for the Democratic vote shares in Arizona and Georgia to the Democratic vote share of Arizona’s 2018 senate race and Georgia’s 2016 senate race, respectively. Our motivation for performing validation with these two states was because they both have special senate elections this year, meaning previous senate races in these states occurred more recently than 2014. We believed that our performance would be best validated by making comparisons to senate elections occurring in more recent years. 
+
+In Arizona, our posterior mean vote share (solid purple line) going to the Democratic candidate is `r mean_AZ_senate_vote_shares %>% round(2)`, with a 95% credible interval of (`r lower_AZ_senate_vote_shares %>% round(2)`, `r upper_AZ_senate_vote_shares %>% round(2)`). The tan line in Figure XXXXX shows the vote share going to the Democratic candidate in 2018, which was 51.23%. As can be seen, our predictions are quite comparable. 
+
+In Georgia, our posterior mean vote share (solid purple line) going to the Democratic candidate is `r mean_GA_senate_vote_shares %>% round(2)`, with a 95% credible interval of (`r lower_GA_senate_vote_shares %>% round(2)`, `r upper_GA_senate_vote_shares %>% round(2)`). The tan line in Figure  XXX once again shows the vote share going to the Democratic candidate in 2016, which was at 42.8%. Though our credible interval does not capture this value, we note that our model’s prediction of  Republican victory is consistent with 2016 results. Furthermore, our results are consistent with the rapidly changing political landscape of Georgia. Once  heavily red, the state has been consistently shifting further left throughout the past three presidential elections (https://www.cnn.com/2020/05/23/politics/georgia-2020-election/index.html). Our predictions reflect this shift, as we estimate a higher Democratic vote share in the 2020 Senate election than in 2016. 
 
 # NC Senate
 
 ## Results 
 
-```{r}
+```{r fig.align="center", fig.height=3.6}
 NC_senate_vote_shares <- senate_gamma_2_1_mu_7.5.prior_model$BUGSoutput$sims.list$theta[,16,1]
 
 mean_NC_senate_vote_shares <- mean(NC_senate_vote_shares) 
@@ -1362,8 +1491,6 @@ NCsenate_results_plot + labs(caption = "Figure XXXX") +
 ```
 
 We can further use (2) to examine the results of the North Carolina Senate election more closely, a hotly contested election between Republican Thom Tillis and Democrat Cal Cunningham. Figure  XXX displays the posterior predictive distribution of Cunningham's vote share. Our posterior mean vote share going to Cunningham is `r mean_NC_senate_vote_shares`, with a 95% credible interval of (`r lower_NC_senate_vote_shares`, `r upper_NC_senate_vote_shares`). We further note that in `r (prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)) * 100`% of the posterior samples, the predicted vote share for Cunningham was above 50%. Thus, we predict that Cunningham will win the North Carolina senate race with probability `r prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)`, which is promising for the Democratic party. 
-
-
 
 ## Discussion
 
@@ -1387,31 +1514,808 @@ One strength of our model is the covariance estimates that pull information of v
 
 ### External Validation
 
-## Discussion
+
+
+```{r read in voter only data, include=FALSE, cache=TRUE}
+grouped_voter_only_data <- read_csv("grouped_voter_only_data_2016.csv") %>% ungroup()
+grouped_voter_only_data  <- grouped_voter_only_data %>% filter(!is.na(gender))
+grouped_voter_only_data <- grouped_voter_only_data %>% filter(race_ethnicity != "Non-Hispanic Other")
+```
+
+# Congressional Elections in North Carolina
+
+Sufficient polling data was not readily available for the 13 congressional elections in North Carolina. Thus, in order to predict the outcomes of the congressional elections, we utilized North Carolina registration and voting history data. Note that we will not be specifying any predictions for congressional district 12, as Alma Adams is running unopposed [[11]][Bibliography]. In order to make these predictions, we will 1) estimate *who* among registered individuals is likely to vote, and then 2) predict whether they are more likely to support the Democratic or Republican candidate.
+
+## Data
+
+### Registered Individuals
+
+In order to address the first step, we utilized the North Carolina voter registration dataset, which contains all legally available information for eligible voters in the state. Information provided for each voter includes their county and congressional district of residence, unique voter registration number, race, ethnicity, gender, registered party affiliation, and age. In this dataset, race could take on one of the following categories: Asian, Black or African American, American Indian or Alaska Native, Two or more races, Other, Native Hawaiian or Pacific Islander, Undesignated, and White. Ethnicity was one of the following: Hispanic or Latino, Not Hispanic or Not Latino, and Undesignated. Gender belonged to one of: Male, Female, and Undetermined. Finally, party affiliation included Democrat, Republican, Unaffiliated, Libertarian, Green, and Constitution. 
+
+Certain modifications were made to facilitate analysis. Firstly, age was converted to a categorical variable, age bin, which belonged to one of five categories: 18-29, 30-39, 40-49, 50-64, and 65+. In addition, the individual race and ethnic identities were combined into a race/ethnicity variable with the following categories: Hispanic any race, Non Hispanic White, Non Hispanic Black, Non Hispanic Other, Non Hispanic Asian, Non Hispanic Multi-Racial, Non Hispanic American Indian or Alaska Native, Non Hispanic Native Hawaiian or Pacific Islander, and Undetermined. For gender, we chose to limit our analysis to include Female and Male as there was not sufficient data for undetermined gender groups. We additionally only included registered Democrats, Republicans, and Unaffiliated individuals.
+
+While congressional district lines have changed in recent presidential election years, we maintained the 2020 congressional district lines for our final dataset so we could better understand who votes within these boundaries for the upcoming congressional elections. However, given that some voters were registered in areas that were redistricted later on, there were some missing values for districts in the dataset. For those individuals whose counties reside wholly in one district, we simply assigned them to their 2020 congressional district. For counties that were split between two districts, we allocated registered voters evenly between the two. 
+
+Once these modifications were made, the data was grouped by $district$, $county$, $race/ethnicity$, $age \ bin$, $gender$, and $party$. The size of each group, which was synonymous with the number of registered voters in that group, was included in the data frame as well. For example, one row of the grouped data frame would report the number of registered voters among 18-29 year old, Democratic, Hispanic women in Alamance county. This dataset will be referred to as *Registered*.
+
+Our next step was to predict who of these registered voters will vote. We utilized a random effects logistic regression model from our previous paper, "Who Votes in North Carolina" [[19]][Bibliography], which is described more thoroughly in Appendix A and in our interim report. 
+
+### 2016 Voters
+
+Our next step was to construct a dataset to help us predict how expected voters will vote in the upcoming election. We utilized the North Carolina voter history dataset, which shows how each registered voter in North Carolina voted in the 2016 presidential and 2018 congressional elections. As not all voters participated in both elections, we considered only those who voted in 2016. This decision was made because both 2016 and 2020 are presidential election years, and there is generally lower turnout for midterm elections [[8]][Bibliography]. 
+
+We joined North Carolina voter registration and voter history datasets by the unique voter registration number. During this process, only those individuals who were both registered and voted in the 2016 election were kept. We then utilized an identical process as described in the *Registered Individuals* section to group voters by demographic identities. Finally, we counted the number of Democratic and Republican voters in 2016 for each group. This dataset will be referred to as *2016 Voters*. We will utilize this data to model the probability that a specific group of likely voters vote for the Democratic candidate in the upcoming election.  
+
+## Exploratory Data Analysis
+
+```{r, fig.width=8, fig.align="center",warning=F, message=F, cache=TRUE}
+# This code chunk prefaces some of the other package load-ins because of conflicts with select fuctionality 
+grouped_voter_only_data %>% 
+  filter(gender %in% c("F", "M")) %>%
+  mutate(sums = Democrat + Republican) %>%
+  mutate(race_ethnicity = case_when(
+    race_ethnicity == "Hispanic Any Race" ~  paste0("Hispanic Any Race (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican) %>%
+                                                      filter(race_ethnicity == "Hispanic Any Race") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic American Indian" ~  paste0("Non-Hispanic American Indian (n=",
+                                                               grouped_voter_only_data %>%
+                                                                 mutate(sums = Democrat + Republican) %>%
+                                                                 filter(race_ethnicity == "Non-Hispanic American Indian") %>%
+                                                                 summarise(sum(sums)),
+                                                               ")"),
+    race_ethnicity == "Non-Hispanic Asian" ~ paste0("Non-Hispanic Asian (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican) %>%
+                                                      filter(race_ethnicity == "Non-Hispanic Asian") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic Black" ~ paste0("Non-Hispanic Black (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican)  %>%
+                                                      filter(race_ethnicity == "Non-Hispanic Black") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic Mixed" ~ paste0("Non-Hispanic Multi-Racial (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican)  %>%
+                                                      filter(race_ethnicity == "Non-Hispanic Mixed") %>%
+                                                      summarise(sum(sums)),
+                                                    ")"),
+    race_ethnicity == "Non-Hispanic White" ~ paste0("Non-Hispanic White (n=",
+                                                    grouped_voter_only_data %>%
+                                                      mutate(sums = Democrat + Republican)  %>%
+                                                      filter(race_ethnicity == "Non-Hispanic White") %>%
+                                                      summarise(sum(sums)),
+                                                    ")")
+  )) %>%
+  dplyr::select(race_ethnicity, age_bin, gender, Democrat, Republican) %>%
+  dplyr::group_by(race_ethnicity, age_bin, gender) %>% 
+  dplyr::summarize(Democrat = sum(Democrat), 
+                   Republican = sum(Republican), 
+                   proportion = Democrat/(Democrat+Republican)) %>% ungroup()%>% 
+  ggplot(aes(x = age_bin, y = proportion, fill = gender)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  facet_wrap(~race_ethnicity, nrow = 2) + 
+  geom_text(aes(label=paste0(sprintf("%.2f", proportion)), y=proportion/2), 
+            position = position_dodge(width = 1),  
+            colour="Black", 
+            size = 2.2) + 
+  labs(x = expression("Age Group"), 
+       y= ("Proportion of Democratic Voters"), 
+       title = "Democratic Voters Across Age Groups, Race/Ethnicity, and Sex", 
+       caption="Figure INSERT") +
+  theme(plot.caption = element_text(hjust = 0.5, vjust = -0.5, size = 12)) +
+  guides(fill=guide_legend(title="Sex"))
+```
+
+Figure INSERT shows the proportion of Democratic voters in North Carolina across age groups, race/ethnicity, and sex. We see that as age increases, the proportion Non-Hispanic, American Indian, and Non-Hispanic Multi-Racial voters who vote democratically tends to increase. Conversely, for Hispanic Any Race individuals, Non-Hispanic Asians, and Non-Hispanic Whites, the proportion of democratic voters among total voters does not have any obvious increase with age.
+
+Furthermore, this figure indicates that women are more likely to vote democratically relative to men for the majority of race/ethnicity and age combinations. As age increases, this discrepancy becomes less notable for Hispanic Any Race individuals and Non-Hispanic American Indians, but remains relatively constant for Non-Hispanic Black, Non-Hispanic Multi-Racial, and Non-Hispanic Black individuals.
+
+Figure INSERT shows the proportion of Democratic voters in each of the congressional districts in 2016. The heterogeneity in this figure necessitates a consideration of random effects in district and county.
+
+```{r EDA district map, fig.width=5.5, fig.height=2.5,fig.align="center", warning=F,message=F,echo=FALSE,results='hide',fig.keep='all',cache=T}
+# https://beanumber.github.io/mdsr2e/ch-spatial.html#congressional-districts
+dsn_districts <- read_sf(dsn = "districtShapes", layer = "districts113")
+districts <-  dsn_districts %>% mutate(DISTRICT = parse_number(as.character(DISTRICT)))
+nc_shp <- districts %>% filter(STATENAME == "North Carolina")
+
+likely.by.district <- grouped_voter_only_data %>% dplyr::select(everything()) %>%
+  dplyr::group_by(cong_dist_abbrv) %>% 
+  dplyr::summarise(Democrat=sum(Democrat),
+                   Republican=sum(Republican),
+                   Prop=sum(Democrat)/(sum(Democrat) + sum(Republican)))
+
+likely.by.district$cong_dist_abbrv <- as.double(likely.by.district$cong_dist_abbrv)
+
+nc_merged <- nc_shp %>%
+  st_transform(4326) %>%
+  inner_join(likely.by.district, by = c("DISTRICT" = "cong_dist_abbrv"))
+
+eda2 <- ggplot(data = nc_merged, aes(fill = Prop)) + 
+  geom_sf(alpha = 0.5) +
+  scale_fill_gradient2(midpoint = 0.6, mid="#ffffff", high="#0000ff", low="#ff0803", 
+                       "Proportion of Democrat Voters") +
+  geom_sf_label(aes(label = DISTRICT), fill = "white") + 
+  theme_void()
+eda2  + labs(caption="Figure INSERT")
+```
+
+## Methods
+
+To begin with our model development, we conducted exploratory data analysis to get a sense of which covariates were influential in determining likelihood to vote democratically, along with any possible interactions. This led to an exploration of models with main effects for gender, age, party, and race/ethnicity, various interaction effects between these, random intercepts for county and congressional districts, and a random slope for party affiliation. A full summary of each model explored, along with their in-sample F1-scores and false negative scores, are in Table INSERT. In this context, a false negative occuts when our model incorrectly predicts that a group will vote conservatively when the majority of them actually voted democratically.
+
+In order to compare different models, we began by examining their in-sample F1-scores. This provided us with an overview of each model’s fit. We also examined their confusion matrices and noticed that our models had a slight predisposition to committing false negatives. Despite exploring a multitude of different models, we could not find one that notably mitigated this issue. After this initial look into the models’ performances, we observed that a model with a race/ethnicity and age interaction, along with a party affiliation random slope across congressional districts, had the highest F1-score. However, this model, along with a similar performing one without a random party slope, had inflated standard errors that led to unstable estimates. This motivated us to select a similar performing model with a slightly lower F1-score:
+
+$$ 
+\begin{aligned}
+log(\frac{P_{ijk}}{1-P_{ijk}}) = \alpha_{0} + \alpha_{j} + \alpha_{k} + \alpha_{3} * I(Gender_{ijk}=Male &) + \sum_{a = 2}^5\alpha_{4a}*I(Age_{ijk}=a) + \sum_{p = 2}^{3}\alpha_{5r}*I(Party_{ijk}=p) +\ \\
+\sum_{r =  2}^{6}\alpha_{6r}*I(Race/ Ethnicity_{ijk}=r)   + \sum_{p = 2}^{3}\sum_{a =  2}^5&\gamma_{1pr}*I (Party_{ijk} = p)*I(Age_{ijk}=a) \\
+\alpha_j \sim N(0,\tau_0^2), & \ \alpha_k \sim N(0,\tau_1^2)
+\end{aligned}
+$$
+
+As can be seen, this model has the aforementioned main effects, an interaction effect between age bin and party affiliation, and random intercepts for district and county. In the above formulation, $P_{ijk}$ is the probability that individual $i$ from county $j$ in district $k$ voted Democratic in the 2016 election. $\alpha_j$j represents the random intercept term for county $j$, and $\alpha_k$ represents the random intercept term for district $k$. For the Age term, $a = 1$ represents our baseline, which is 65+ year olds. For our Race/Ethnicity term, $r = 1$, our baseline group, was Hispanic Any Race. Finally, there are three party groups and five age groups, yielding fifteen possible combinations. Seven of these involve the baseline terms, leaving eight other combinations to appear as evaluated terms in our model. 
+
+In order to conduct sensitivity analysis for our variable estimates, we created a slightly more complex model to validate coefficient estimates. This model, which can be found in Table INSERT, was identical to our final model, except it also had a random party slope over congressional district. Virtually all of the estimated coefficients of the main effects converged to be within two standard errors of our final model. In addition to sensitivity analysis for our variable estimates, we also re-binned the age groups by collapsing them into $18-39$, $40-64$, and $65+$. We then recreated our final model and observed similar estimates for the other covariates, which can be found in Table INSERT in the INSERT.
+
+## Results
+
+```{r cache=TRUE}
+round_perc = function(x) {
+  if (is.double(x)) {
+    round(x*100, digits = 2)
+  }
+}
+
+# DEPENDING ON perform_cv FLAG, RETURNS LIST WITH OF CROSS VALIDATION, GLMER MODEL OBJECT ON ENTIRE DATASET, RANDOM RESULTS, FIXED EFFECT RESULTS
+create_model <- function(model_formula_text, election_data, perform_cv=TRUE){
+  model_results = list()
+  results_idx = 1
+  
+  model_formula <- formula(model_formula_text)
+  
+  # STEP 1: CROSS VALIDATION
+  if (perform_cv){
+    acc_list = c()
+    f1_list = c()
+    AUC_list = c()
+    for (i in 1:5) {
+      train <- election_data %>% filter(.folds != i)
+      test <- election_data %>% filter(.folds == i)
+      
+      glmer.fit <- glmer(model_formula,
+                         data = train,
+                         family = binomial,
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+      
+      glmer.probs <- predict(glmer.fit,  test,  type = "response",allow.new.levels = TRUE)
+      glmer.pred <- rep(0, nrow(test))
+      glmer.pred[glmer.probs > 0.5] <- 1
+      
+      acc_list[i] <-  mean(glmer.pred == test$vote)
+      f1_list[i] <- (caret::confusionMatrix(glmer.pred %>% as.factor(), test$vote %>% as.factor()))$byClass["F1"]
+      AUC_list[i] <- cvAUC::AUC(glmer.pred %>% as.double(), test$vote %>% as.double())
+    }
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc()
+    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc()
+    f1_mean = f1_list %>% mean(na.rm=T)  %>% round_perc()
+    f1_sd = f1_list %>% sd(na.rm=T)  %>% round_perc()
+    AUC_mean = AUC_list %>% mean(na.rm=T)  %>% round_perc()
+    AUC_sd = AUC_list %>% sd(na.rm=T)  %>% round_perc()
+    
+    cv_df <- tibble(
+      Accuracy = paste0(acc_mean, "% ± ", acc_sd, "%"),
+      F1 = paste(f1_mean, "±", f1_sd),
+      AUC = paste(AUC_mean, "±", AUC_sd))
+    
+    model_results[[results_idx]] = cv_df
+    results_idx = results_idx + 1
+  }
+  
+  # STEP 2: FIT FULL MODEL WITH ALL DATA
+  glmer.fit.final <- glmer(model_formula,
+                           data = election_data,
+                           family = binomial,
+                           control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun=2e5)))
+  model_results[[results_idx]] = glmer.fit.final
+  results_idx = results_idx + 1
+  
+  # STEP 3: CREATE FORMATTED DATAFRAME WITH RANDOM MODEL RESULTS
+  results <- data.frame(VarCorr(glmer.fit.final))
+  final.model.random.results <- data.frame("Intercept"=c(round(results[1,4],3)),"Std.Dev"=c(round(results[1,5],3)))
+  model_results[[results_idx]] = final.model.random.results
+  results_idx = results_idx + 1
+  
+  # STEP 4: CREATE FORMATTED DATAFRAME WITH FIXED MODEL RESULTS
+  final.model.fixed.results = data.frame(Estimates=summary(glmer.fit.final)$coefficients[, 1], 
+                                         Std.Err=summary(glmer.fit.final)$coefficients[, 2], 
+                                         P.Value=summary(glmer.fit.final)$coefficients[, 4])
+  model_results[[results_idx]] = final.model.fixed.results
+  return(model_results)
+}
+
+```
+
+```{r cv function for model performance, warning=F,message=F,echo=FALSE,results='hide',fig.keep='all', cache=TRUE}
+# Returns list(accuracy, F1-score, plot of confusion matrix)
+cv_plot <- function(mod, election_data,base_level="Republican",positive_level="Democrat"){
+  fit_results = list()
+  test.glmer.probs = predict(mod, election_data,type="response")
+  test.glmer.preds = ifelse(test.glmer.probs <= 0.5, base_level, positive_level)
+  test.actual.cm = ifelse(election_data$vote == 0, base_level, positive_level)
+  
+  for (i in 1:length(test.glmer.preds)){
+    if(is.na(test.glmer.preds[i])){
+      test.glmer.preds[i] = positive_level
+    }
+  }
+  
+  fit_results[[1]] = mean(test.glmer.preds == test.actual.cm)
+  fit_results[[2]] = (caret::confusionMatrix(test.glmer.preds %>% as.factor(), test.actual.cm %>% as.factor()))$byClass["F1"]
+  fit_results[[3]] = plot_confusion_matrix(confusion_matrix(test.glmer.preds,test.actual.cm))
+  fit_results[[4]] = test.glmer.probs
+  
+  cv.table <- caret::confusionMatrix(test.glmer.preds %>% as.factor(), test.actual.cm %>% as.factor(), positive=positive_level)$table
+  fit_results[[5]] = cv.table[1,2]/(cv.table[1,1] + cv.table[1,2] + cv.table[2,1] + cv.table[2,2])
+  return(fit_results)
+}
+```
+
+
+```{r create models, warning=F, cache=TRUE}
+set.seed(658392)
+grouped_voter_only_data <-grouped_voter_only_data %>% ungroup()
+grouped_voter_only_data$age_bin <- relevel(grouped_voter_only_data$age_bin %>% as.factor(), ref = "65+")
+grouped_voter_only_data$vote <- ifelse(grouped_voter_only_data$Democrat > grouped_voter_only_data$Republican,1,0)
+
+grouped_voter_only_data <- groupdata2::fold(grouped_voter_only_data, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv")) 
+
+model.no.intrx.party.race.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + (1|cong_dist_abbrv) + (1|county_desc)"
+model.no.intrx.party.race.ri.cty.dst.res <- create_model(model.no.intrx.party.race.ri.cty.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.no.intrx.party.race.ri.cty.dst.cm <- cv_plot(model.no.intrx.party.race.ri.cty.dst.res[[1]], grouped_voter_only_data)
+
+model.intrx.age.party.ri.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * party_cd + (1|cong_dist_abbrv)"
+model.intrx.age.party.ri.dst.res <- create_model(model.intrx.age.party.ri.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.party.ri.dst.cm <- cv_plot(model.intrx.age.party.ri.dst.res[[1]], grouped_voter_only_data)
+
+
+model.intrx.age.race.ri.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv)"
+model.intrx.age.race.ri.dst.res <- create_model(model.intrx.age.race.ri.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.race.ri.dst.cm <- cv_plot(model.intrx.age.race.ri.dst.res[[1]], grouped_voter_only_data)
+
+# final model, perform cross validation
+model.intrx.age.party.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * age_bin + (1|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.party.ri.cty.dst.res <- create_model(model.intrx.age.party.ri.cty.dst.text,grouped_voter_only_data,perform_cv=TRUE)
+# first index is results of cross validation so take one step forward
+model.intrx.age.party.ri.cty.dst.cm <- cv_plot(model.intrx.age.party.ri.cty.dst.res[[2]], grouped_voter_only_data)
+
+
+model.intrx.age.race.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + age_bin * race_ethnicity + (1|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.race.ri.cty.dst.res <- create_model(model.intrx.age.race.ri.cty.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.race.ri.cty.dst.cm <- cv_plot(model.intrx.age.race.ri.cty.dst.res[[1]], grouped_voter_only_data)
+
+model.intrx.party.race.ri.cty.dst.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + party_cd + party_cd * race_ethnicity + (1|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.party.race.ri.cty.dst.res <- create_model(model.intrx.party.race.ri.cty.dst.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.party.race.ri.cty.dst.cm <- cv_plot(model.intrx.party.race.ri.cty.dst.res[[1]], grouped_voter_only_data)
+
+model.intrx.age.race.ri.cty.rs.dst.party.text <- "cbind(Democrat, Republican) ~ age_bin * race_ethnicity + gender + party_cd + (1 + party_cd|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.race.ri.cty.rs.dst.party.res <- create_model(model.intrx.age.race.ri.cty.rs.dst.party.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.race.ri.cty.rs.dst.party.cm <- cv_plot(model.intrx.age.race.ri.cty.rs.dst.party.res[[1]], grouped_voter_only_data)
+
+model.intrx.age.party.ri.cty.rs.dst.party.text <- "cbind(Democrat, Republican) ~ age_bin + race_ethnicity + gender + age_bin * party_cd + (1 + party_cd|cong_dist_abbrv) + (1|county_desc)"
+model.intrx.age.party..ri.cty.rs.dst.party.res <- create_model(model.intrx.age.party.ri.cty.rs.dst.party.text,grouped_voter_only_data,perform_cv=FALSE)
+model.intrx.age.party.ri.cty.rs.dst.party.cm <- cv_plot(model.intrx.age.party..ri.cty.rs.dst.party.res[[1]], grouped_voter_only_data)
+
+model_performances <- data.frame(Interactions = c("None",
+                                                  "Age * Party",        
+                                                  "Age * Race",
+                                                  "Age * Party",
+                                                  "Age * Race",
+                                                  "Party * Race",
+                                                  "Age * Race",
+                                                  "Age * Party"),
+                                 Random.Intercept = c("District, County",
+                                                      "District",
+                                                      "District",
+                                                      "District, County",
+                                                      "District, County",
+                                                      "District, County",
+                                                      "District, County",
+                                                      "District, County"),
+                                 Random.Slope=c("None",
+                                                "None",
+                                                "None",
+                                                "None",
+                                                "None",
+                                                "None",
+                                                "Party | District",
+                                                "Party | District"),
+                                 In.F1=c(round(model.no.intrx.party.race.ri.cty.dst.cm[[2]],3),
+                                         round(model.intrx.age.party.ri.dst.cm[[2]],3),
+                                         round(model.intrx.age.race.ri.dst.cm[[2]],3),
+                                         round(model.intrx.age.party.ri.cty.dst.cm[[2]],3),
+                                         round(model.intrx.age.race.ri.cty.dst.cm[[2]],3),
+                                         round(model.intrx.party.race.ri.cty.dst.cm[[2]],3),
+                                         round(model.intrx.age.race.ri.cty.rs.dst.party.cm[[2]],3),
+                                         round(model.intrx.age.party.ri.cty.rs.dst.party.cm[[2]],3)),
+                                 False.Negative=c(round(model.no.intrx.party.race.ri.cty.dst.cm[[5]],3),
+                                                  round(model.intrx.age.party.ri.dst.cm[[5]],3),
+                                                  round(model.intrx.age.race.ri.dst.cm[[5]],3),
+                                                  round(model.intrx.age.party.ri.cty.dst.cm[[5]],3),
+                                                  round(model.intrx.age.race.ri.cty.dst.cm[[5]],3),
+                                                  round(model.intrx.party.race.ri.cty.dst.cm[[5]],3),
+                                                  round(model.intrx.age.race.ri.cty.rs.dst.party.cm[[5]],3),
+                                                  round(model.intrx.age.party.ri.cty.rs.dst.party.cm[[5]],3)))
+
+kable(model_performances, escape=F, booktabs = T, align = "lllcc", caption = "Model Performances") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"))
+```
+
+```{r cache=TRUE}
+cv_df <- model.intrx.age.party.ri.cty.dst.res[[1]]
+glmer.fit <- model.intrx.age.party.ri.cty.dst.res[[2]]
+glmer.probs <- predict(glmer.fit,  grouped_voter_only_data,  type = "response")
+```
+
+The results of our final model can be viewed in Table INSERT in our Appendix. The average accuracy, F1-score, and AUC from cross-validation were `r cv_df$Accuracy`, `r cv_df$F1`, and `r cv_df$AUC`, respectively. From the confusion matrix, we see that our model is predisposed to committing false negatives. As we described in the methods section, we were unable to find any other model that achieved a notably lower rate.
+
+```{r warning=F, fig.height=2.5, fig.align="center", cache=TRUE}
+model.intrx.age.party.ri.cty.dst.cm[[3]]
+```
+
+Figure INSERT in the Appendix shows a heatmap of the estimated random intercepts for congressional districts. While the intercepts generally capture relative trends, they appear to be more homogeneous than the true percent of likely voters (see Figures INSERT). This is likely a consequence of our assumption that they stem from the same distribution. From Figure INSERT, we see the distribution of these intercepts and their intervals. We labeled a few notably extreme counties, including Avery, Davie, Anson, Bladen, Camden, and Columbus.
+
+From the plot of district intercepts, we can see how swing districts, such as 8, 9, and 11 are closely centered around the estimated random district mean. Historically Democratic districts, such as district 1 are notably above the mean. However, it's important to note that the districts plot alone does not paint a full picture, and that there are a few discrepancies with current summary estimates of party preference [[12]][Bibliography].
+
+```{r district estimates plot, warning=F, message=F, fig.height=4, fig.width=9,fig.align="center", cache=TRUE}
+random.effects.plots <- plot_model(glmer.fit, type = "re", facet.grid=FALSE) 
+
+random.effects.plots[[1]] <- random.effects.plots[[1]] + scale_x_discrete(breaks=c(), labels=c())
+
+random.effects.plots[[1]] <- random.effects.plots[[1]] + geom_text(x=10, y=-0.5, label="Avery") +
+  geom_text(x=34, y=-0.45, label="Davie") +
+  geom_text(x=4, y=0.7, label="Anson",color="#117fbd") + 
+  geom_text(x=12, y=0.75, label="Bladen",color="#117fbd") + 
+  geom_text(x=27, y=0.85, label="Columbus",color="#117fbd") + 
+  geom_text(x=18, y=0.49, label="Camden",color="#117fbd")
+
+grid.arrange(random.effects.plots[[1]], 
+             random.effects.plots[[2]], 
+             ncol=2,
+             top="Figure INSERT: Random Effects over Counties and Districts")
+```
+
+```{r, fig.height=3,fig.align="center", cache=TRUE}
+arm::binnedplot(x=cv_plot(glmer.fit, grouped_voter_only_data)[[4]],
+                y=residuals(glmer.fit, "pearson"),
+                xlab="Predicted Probabilities", 
+                ylab="Binned Residuals",
+                main = "Figure INSERT: Binned Residuals vs Predicted Probabilities",
+                cex.main=0.9, cex.lab=0.8)
+```
+
+Figure INSERT shows our binned residuals over the predicted probabilities. While we witness a slight fanning of residuals at the extreme ends of predicted probabilities, particularly for lower predicted probabilities, there is generally a random scatter about the 0 line in our residuals plot.
+
+## Interpretation
+
+```{r cache=TRUE}
+final.model.fixed.results <- data.frame(Estimates=summary(glmer.fit)$coefficients[, 1:4])
+final.model.fixed.results$id <- rownames(final.model.fixed.results) 
+final.model.fixed.results <- final.model.fixed.results %>%
+  mutate(Estimate = Estimates.Estimate, Std.Err = Estimates.Std..Error) %>%
+  dplyr::select(id, Estimate, Std.Err)  %>%
+  mutate(lower = Estimate - 1.96*Std.Err) %>%
+  mutate(upper = Estimate + 1.96*Std.Err)
+```
+
+```{r cache=TRUE}
+#gender interpretation 
+gender <- final.model.fixed.results%>% 
+  filter(id == "genderM")
+gender_estimate <- gender$Estimate
+gender_lower <- gender$lower
+gender_upper <- gender$upper
+
+gender_multiplicative <- round(exp(gender_estimate), 3)
+gender_multiplicative_CI <- paste0("(", round(exp(gender_lower), 3), ", ", round(exp(gender_upper), 3), ")")
+```
+
+Having addressed assumptions and validated our model with in sample  predictions, we now interpret the results. 
+
+Table __ in the Appendix shows that, with all else held constant, we are 95% confident that the odds of a male voting for a Democratic candidate is expected to be `r gender_multiplicative` times that of a female, with a 95% confidence interval of `r gender_multiplicative_CI`.
+
+```{r cache=TRUE}
+#race/ethnicity interpretation
+
+am_ind <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic American Indian")
+
+am_ind_estimate <- am_ind$Estimate
+am_ind_lower <- am_ind_estimate- 1.96*am_ind$Std.Err
+am_ind_upper <- am_ind_estimate + 1.96*am_ind$Std.Err
+
+am_ind_multiplicative <- round(exp(am_ind_estimate), 4)
+am_ind_multiplicative_CI <- paste0("(", round(exp(am_ind_lower), 4), ", ", round(exp(am_ind_upper), 4), ")")
+
+
+asian <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic Asian")
+
+asian_estimate <- asian$Estimate
+asian_lower <- asian_estimate- 1.96*asian$Std.Err
+asian_upper <- asian_estimate + 1.96*asian$Std.Err
+
+asian_multiplicative <- round(exp(asian_estimate), 4)
+asian_multiplicative_CI <- paste0("(", round(exp(asian_lower), 4), ", ", round(exp(asian_upper), 4), ")")
+
+black <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic Black")
+
+black_estimate <- black$Estimate
+black_lower <- black_estimate- 1.96*black$Std.Err
+black_upper <- black_estimate + 1.96*black$Std.Err
+
+black_multiplicative <- round(exp(black_estimate), 4)
+black_multiplicative_CI <- paste0("(", round(exp(black_lower), 4), ", ", round(exp(black_upper), 4), ")")
+
+mixed <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic Mixed")
+mixed_estimate <- mixed$Estimate
+mixed_lower <- mixed_estimate- 1.96*mixed$Std.Err
+mixed_upper <- mixed_estimate + 1.96*mixed$Std.Err
+
+mixed_multiplicative <- round(exp(mixed_estimate), 4)
+mixed_multiplicative_CI <- paste0("(", round(exp(mixed_lower), 4), ", ", round(exp(mixed_upper), 4), ")")
+
+white <- final.model.fixed.results%>% 
+  filter(id == "race_ethnicityNon-Hispanic White")
+white_estimate <- white$Estimate
+white_lower <- white_estimate- 1.96*white$Std.Err
+white_upper <- white_estimate + 1.96*white$Std.Err
+
+white_multiplicative <- round(exp(white_estimate), 4)
+white_multiplicative_CI <- paste0("(", round(exp(white_lower), 4), ", ", round(exp(white_upper), 4), ")")
+
+race_eth <- c("American Indian", "Asian", "Black", "Multi-Race", "White")
+mult_odds <- c(am_ind_multiplicative, asian_multiplicative, black_multiplicative, mixed_multiplicative, white_multiplicative)
+mult_odds_ci <- c(am_ind_multiplicative_CI, asian_multiplicative_CI, black_multiplicative_CI, mixed_multiplicative_CI, white_multiplicative_CI)
+
+multiplicative_odds <- data.frame(race_eth, mult_odds, mult_odds_ci) %>%
+  mutate(`Race/Ethnicity` = race_eth, `Multiplicative Odds` = mult_odds, `95% CI` = mult_odds_ci) %>%
+  dplyr::select(`Race/Ethnicity`, `Multiplicative Odds`, `95% CI`)
+
+pander(multiplicative_odds, caption="Multiplicative Odds of Voting Democrat relative to Hispanic Any Race Voters")
+
+```
+
+Table INSERT displays the multiplicative odds of voting for a Democratic candidate for various race/ethnic groups, relative to the Hispanic Any Race baseline group. We see that the odds of American Indians and Black voters voting for a democratic candidate are, respectively, `r am_ind_multiplicative` and `r black_multiplicative` times that of a Hispanic voter, with all else held constant. Conversely, holding all else constant, the odds of a White voter voting for a Democratic candidate are `r white_multiplicative` times less than that of a Hispanic Any Race voter. Our confidence intervals indicate that, holding all else constant, there is not a significant difference in the odds of voting for a Democratic candidate for Non-Hispanic Asian and Non-Hispanic Multi-Race voters, relative to Hispanic Any Race Voters. 
+
+```{r  cache=TRUE}
+#Democrats 
+age_18_29  <- final.model.fixed.results%>% 
+  filter(id == "age_bin18-29")
+
+age_18_29_estimate <- age_18_29$Estimate
+age_18_29_lower <- age_18_29$lower
+age_18_29_upper <- age_18_29$upper
+
+age_18_29_estimate_multiplicative <- round(exp(age_18_29_estimate), 4)
+age_18_29_estimate_multiplicative_CI <- paste0("(", round(exp(age_18_29_lower), 4), ", ", round(exp(age_18_29_upper), 4), ")")
+
+
+age_30_39  <- final.model.fixed.results%>% 
+  filter(id == "age_bin30-39")
+
+age_30_39_estimate <- age_30_39$Estimate
+age_30_39_lower <- age_30_39$lower
+age_30_39_upper <- age_30_39$upper
+
+age_30_39_estimate_multiplicative <- round(exp(age_30_39_estimate), 4)
+age_30_39_estimate_multiplicative_CI <- paste0("(", round(exp(age_30_39_lower), 4), ", ", round(exp(age_30_39_upper), 4), ")")
+
+age_40_49  <- final.model.fixed.results%>% 
+  filter(id == "age_bin40-49")
+
+age_40_49_estimate <- age_40_49$Estimate
+age_40_49_lower <- age_40_49$lower
+age_40_49_upper <- age_40_49$upper
+
+age_40_49_estimate_multiplicative <- round(exp(age_40_49_estimate), 4)
+age_40_49_estimate_multiplicative_CI <- paste0("(", round(exp(age_40_49_lower), 4), ", ", round(exp(age_40_49_upper), 4), ")")
+
+age_50_64  <- final.model.fixed.results%>% 
+  filter(id == "age_bin50-64")
+
+age_50_64_estimate <- age_50_64$Estimate
+age_50_64_lower <- age_50_64$lower
+age_50_64_upper <- age_50_64$upper
+
+age_50_64_estimate_multiplicative <- round(exp(age_50_64_estimate), 4)
+age_50_64_estimate_multiplicative_CI <- paste0("(", round(exp(age_50_64_lower), 4), ", ", round(exp(age_50_64_upper), 4), ")")
+
+Age <- c("18-29", "30-39", "40-49", "50-64")
+Mult_Odds <- c(age_18_29_estimate_multiplicative, age_30_39_estimate_multiplicative, age_40_49_estimate_multiplicative, age_50_64_estimate_multiplicative)
+Mult_Odds_CI <- c(age_18_29_estimate_multiplicative_CI, age_30_39_estimate_multiplicative_CI, age_40_49_estimate_multiplicative_CI, age_50_64_estimate_multiplicative_CI)
+
+multiplicative_odds_dem <- data.frame(Age, Mult_Odds, Mult_Odds_CI) %>%
+  mutate(`Multiplicative Odds` = Mult_Odds, `95% CI` = Mult_Odds_CI) %>%
+  dplyr::select(Age, `Multiplicative Odds`, `95% CI`)
+pander(multiplicative_odds_dem, caption="Multiplicative Odds of Voting Democrat (relative to 65+) for Registered Democrats")
+```
+
+Tables INSERT through INSERT display the relationship between age and voting party by party of registration. Table ___ indicates that, among registered Democrats, the odds of a voter younger than 65 voting for a democratic candidate is lower than than that of a registered democrat aged 65 or older, with all else being held constant. Specifically, the odds of registered democrats aged 18-29, 30-39, 40-49, and 50-64 voting for a democratic candidate are, respectively, `r age_18_29_estimate_multiplicative`, `r age_30_39_estimate_multiplicative` , `r age_40_49_estimate_multiplicative`, and `r age_50_64_estimate_multiplicative` times smaller than that of their more senior counterparts.  
+
+```{r cache=TRUE}
+#Republicans
+
+age_18_29_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin18-29:party_cdREP")
+
+age_18_29_estimate_rep <- age_18_29$Estimate + age_18_29_rep$Estimate
+age_18_29_lower_rep <- age_18_29$lower + age_18_29_rep$lower
+age_18_29_upper_rep <- age_18_29$upper + age_18_29_rep$upper
+
+age_18_29_estimate_multiplicative_rep <- round(exp(age_18_29_estimate_rep), 4)
+age_18_29_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_18_29_lower_rep), 4), ", ", round(exp(age_18_29_upper_rep), 4), ")")
+
+
+age_30_39_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin30-39:party_cdREP")
+
+age_30_39_estimate_rep <- age_30_39$Estimate + age_30_39_rep$Estimate
+age_30_39_lower_rep <- age_30_39$lower + age_30_39_rep$lower
+age_30_39_upper_rep <- age_30_39$upper + age_30_39_rep$upper
+
+age_30_39_estimate_multiplicative_rep <- round(exp(age_30_39_estimate_rep), 4)
+age_30_39_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_30_39_lower_rep), 4), ", ", round(exp(age_30_39_upper_rep), 4), ")")
+
+age_40_49_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin40-49:party_cdREP")
+
+age_40_49_estimate_rep <- age_40_49$Estimate + age_40_49_rep$Estimate
+age_40_49_lower_rep <- age_40_49$lower + age_40_49_rep$lower
+age_40_49_upper_rep <- age_40_49$upper + age_40_49_rep$upper
+
+age_40_49_estimate_multiplicative_rep <- round(exp(age_40_49_estimate_rep), 4)
+age_40_49_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_40_49_lower_rep), 4), ", ", round(exp(age_40_49_upper_rep), 4), ")")
+
+age_50_64_rep <- final.model.fixed.results%>% 
+  filter(id == "age_bin50-64:party_cdREP")
+
+age_50_64_estimate_rep <- age_50_64$Estimate + age_50_64_rep$Estimate
+age_50_64_lower_rep <- age_50_64$lower + age_50_64_rep$lower
+age_50_64_upper_rep <- age_50_64$upper + age_50_64_rep$upper
+
+age_50_64_estimate_multiplicative_rep <- round(exp(age_50_64_estimate_rep), 4)
+age_50_64_estimate_multiplicative_CI_rep <- paste0("(", round(exp(age_50_64_lower_rep), 4), ", ", round(exp(age_50_64_upper_rep), 4), ")")
+
+Mult_Odds_rep <- c(age_18_29_estimate_multiplicative_rep, age_30_39_estimate_multiplicative_rep, age_40_49_estimate_multiplicative_rep, age_50_64_estimate_multiplicative_rep)
+
+Mult_Odds_CI_rep <- c(age_18_29_estimate_multiplicative_CI_rep, age_30_39_estimate_multiplicative_CI_rep, age_40_49_estimate_multiplicative_CI_rep, age_50_64_estimate_multiplicative_CI_rep)
+
+multiplicative_odds_rep <- data.frame(Age, Mult_Odds_rep, Mult_Odds_CI_rep) %>%
+  mutate(`Multiplicative Odds` = Mult_Odds_rep, `95% CI` = Mult_Odds_CI_rep) %>%
+  dplyr::select(Age, `Multiplicative Odds`, `95% CI`)
+pander(multiplicative_odds_rep, caption="Multiplicative Odds of Voting Democrat (relative to 65+) for Registered Republicans")
+
+```
+
+Table ___ shows an increasing trend with age in the multiplicative odds of voting for a democratic candidate among registered Republicans. For example, with all else held constant, the odds of a 18-29 year old registered Republicans voting for a democratic candidate is `r age_18_29_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. For a registered Republican of 50-64 years, however, we see that the odds of voting for a democratic candidate is `r age_50_64_estimate_multiplicative_rep` times smaller than that of a registered Republican aged 65 or older. This is not as stark of a difference as observed between 18-29 year old and 65+ year old registered Republicans. 
+
+```{r cache=TRUE}
+#Unafilliated
+
+age_18_29_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin18-29:party_cdUNA")
+
+age_18_29_estimate_una <- age_18_29$Estimate + age_18_29_una$Estimate
+age_18_29_lower_una <- age_18_29$lower + age_18_29_una$lower
+age_18_29_upper_una <- age_18_29$upper + age_18_29_una$upper
+
+age_18_29_estimate_multiplicative_una <- round(exp(age_18_29_estimate_una), 4)
+age_18_29_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_18_29_lower_una), 4), ", ", round(exp(age_18_29_upper_una), 4), ")")
+
+
+age_30_39_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin30-39:party_cdUNA")
+
+age_30_39_estimate_una <- age_30_39$Estimate + age_30_39_una$Estimate
+age_30_39_lower_una <- age_30_39$lower + age_30_39_una$lower
+age_30_39_upper_una <- age_30_39$upper + age_30_39_una$upper
+
+age_30_39_estimate_multiplicative_una <- round(exp(age_30_39_estimate_una), 4)
+age_30_39_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_30_39_lower_una), 4), ", ", round(exp(age_30_39_upper_una), 4), ")")
+
+age_40_49_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin40-49:party_cdUNA")
+
+age_40_49_estimate_una <- age_40_49$Estimate + age_40_49_una$Estimate
+age_40_49_lower_una <- age_40_49$lower + age_40_49_una$lower
+age_40_49_upper_una <- age_40_49$upper + age_40_49_una$upper
+
+age_40_49_estimate_multiplicative_una <- round(exp(age_40_49_estimate_una), 4)
+age_40_49_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_40_49_lower_una), 4), ", ", round(exp(age_40_49_upper_una), 4), ")")
+
+age_50_64_una <- final.model.fixed.results%>% 
+  filter(id == "age_bin50-64:party_cdUNA")
+
+age_50_64_estimate_una <- age_50_64$Estimate + age_50_64_una$Estimate
+age_50_64_lower_una <- age_50_64$lower + age_50_64_una$lower
+age_50_64_upper_una <- age_50_64$upper + age_50_64_una$upper
+
+age_50_64_estimate_multiplicative_una <- round(exp(age_50_64_estimate_una), 4)
+age_50_64_estimate_multiplicative_CI_una <- paste0("(", round(exp(age_50_64_lower_una), 4), ", ", round(exp(age_50_64_upper_una), 4), ")")
+
+Mult_Odds_una <- c(age_18_29_estimate_multiplicative_una, age_30_39_estimate_multiplicative_una, age_40_49_estimate_multiplicative_una, age_50_64_estimate_multiplicative_una)
+
+Mult_Odds_CI_una <- c(age_18_29_estimate_multiplicative_CI_una, age_30_39_estimate_multiplicative_CI_una, age_40_49_estimate_multiplicative_CI_una, age_50_64_estimate_multiplicative_CI_una)
+
+multiplicative_odds_una <- data.frame(Age, Mult_Odds_una, Mult_Odds_CI_una) %>%
+  mutate(`Multiplicative Odds` = Mult_Odds_una, `95% CI` = Mult_Odds_CI_una) %>%
+  dplyr::select(Age, `Multiplicative Odds`, `95% CI`)
+pander(multiplicative_odds_una, caption="Multiplicative Odds of Voting Democrat (relative to 65+) for Unafilliated Voters")
+
+```
+
+Similar trends can be discerned among unafilliated voters, with the odds of voters aged 18-29, 20-29, 40-49, and 50-64 voting for a democratic candidate being `r age_18_29_estimate_multiplicative_una`, `r age_30_39_estimate_multiplicative_una`, `r age_40_49_estimate_multiplicative_una`, and `r age_50_64_estimate_multiplicative_una` times less than that of their more senior counterparts. 
+
+These trends indicate that, across party lines, the likelihood of voting for a democratic candidate increase as age increases. This phenomenon can potentially be  explained by the fact that a large number of older individuals with preconditions rely on Obamacare [[10]][Bibliography]. Furthermore, the Republicans pushed to shrink welfare and the growing retirement crisis can pose significant threat to older voters, even those registered as Republican [[10]][Bibliography]. In contrast, Democrats are making strong efforts to expand welfare for senior citizens -- a potential source of attraction among older voters [[16]][Bibliography].
+
+## 2020 Predictions 
+
+```{r  cache=TRUE}
+grouped_voter_only_data$pred_prob <- glmer.probs
+```
+
+```{r cache=TRUE}
+likely_2020 <- read_csv("likely_voters_2020.csv")
+only_likely <- likely_2020 %>%
+  filter(predicted_likely != 0) %>%
+  dplyr::select(-c(pred_prob, total))
+```
+
+
+```{r cache=TRUE}
+likely_2020_with_pred_prob <- inner_join(grouped_voter_only_data, only_likely, by=c("age_bin", "race_ethnicity", "gender", "party_cd", "county_desc", "cong_dist_abbrv"))
+```
+
+
+```{r, cache=T}
+vote_shares_by_district <- function(district, j){
+  district_df <- likely_2020_with_pred_prob %>% filter(cong_dist_abbrv == district)
+  totals <- district_df$predicted_likely
+  probs <- district_df$pred_prob
+  set.seed(j)
+  n_likely_dem <- c()
+  for (i in 1:length(totals)){
+    total <- totals[i]
+    prob <- probs[i]
+    jittered_prob <- rnorm(1, prob, 0.15)
+    if (jittered_prob >= 1 | jittered_prob <= 0){
+      jittered_prob = prob
+    }
+    likely <- sum(rbinom(total,1,jittered_prob))
+    n_likely_dem[i] <- likely
+  }
+  
+  district_df$predicted_likely_dems <- n_likely_dem #likely democratic voters in each group
+  
+  
+  total_voters <- sum(district_df$predicted_likely)
+  dem_voters <- sum(district_df$predicted_likely_dems)
+  return(dem_voters/total_voters)
+  
+}
+```
+
+The model described above provides us with the likelihood that a voter of a certain gender, race/ethnic identity, age bin, party affiliation, congressional district, and county will vote democratically in a presidential election. We utilized this model in order to obtain the predicted probability that each group in *2020 Voters* will vote for the democratic candidate by performing an algorithm similar to that in INSERT. For each group *i* in *2020 Voters*, we executed the following procedure:
+
+1. Sample $p* ~ Normal(p, 0.15)$. If $p* \leq 0$ or $p* \geq 1$, then set $p* = p$. 
+2. Sample from a $Binomial(n, p*)$, where *n* is the number of individuals in the group *i* and *p* is the predicted probability of that group voting democratically.
+
+Note that step two was conducted in order to induce more variance and randomization in the predicted number of democratic voters in each group. After executing this procedure for each group $i$, we have a prediction for the number of Democratic voters in that group. Then, grouping by congressional district, we can computing the number of likely democratic voters divided by the number of total voters. This value represents a prediction for the Democratic vote share in that specific congressional district. 
+
+It is important to note that, as this model was trained on voter outcomes for the 2016 presidential elections, we are making an assumption that groups vote for the same party in both presidential and congressional elections. This assumption is valid given literature [] citing that many individuals will be filling out a straight party ballot in 2020. Thus, the predicted democratic vote share for one district can safely be considered a proxy for the vote share going to the democratic congressional candidate in that district. 
+
+The procedure delineated above was executed 500 times in order to obtain interval estimates for the predicted vote share in each district. Table ___ shows the point and interval predictions for the democratic vote share in all districts, barring 12. 
+
+```{r, cache=T}
+districts <- unique(likely_2020_with_pred_prob$cong_dist_abbrv)
+lowers <- c()
+means <- c()
+uppers <- c()
+
+i = 1
+for (district in districts){
+  district_sims <- c()
+  for (j in 1:500){
+    prop_dem_in_district <- vote_shares_by_district(district, j)
+    district_sims[j] <- prop_dem_in_district
+  }
+  lower <- quantile(district_sims,  probs = c(0.025))
+  mean <- mean(district_sims)
+  upper <- quantile(district_sims,  probs = c(0.975))
+  lowers[i] <- lower
+  means[i] <- mean
+  uppers[i] <- upper
+  i = i + 1
+}
+
+#output results
+vote_shares_by_district <- data.frame(districts, lowers, means, uppers)
+vote_shares_by_district <- vote_shares_by_district %>%
+  mutate(District = districts, `2.5%` = round(lowers, 2), Mean = round(means, 2), `97.5%` = round(uppers, 2)) %>%
+  dplyr::select(District, `2.5%`, Mean, `97.5%`) %>%
+  arrange(District)
+
+pander(vote_shares_by_district, caption = "Predicted Vote Share in North Carolina Congressional Elections")
+```
+
+For Districts 1, 2, 4, and 6, which historically lean heavily Democratic, our model predicts both counties will elect Emily Nicholson (D), Cindy Deporter (D), Christopher Shulte (D), and Tommy Fulcher (D), respectively [[17]][Bibliography]. 
+
+For Districts 5, 8, 9, 10, and 13, our model predicts that voters will support the Republican candidate in their respective districts. This is unsurprising given that all five of these counties heavily lean red.
+
+For Districts 3, 7, and 11, our model predicts Democratic wins despite these districts leaning Republican. It is worth noting however that congressional districts 7 and 11 are not excessively conservative and have been termed as "long shots" for a potential flip in 2020 [[18]][Bibliography].
+
+## Final Model
+
+```{r cache=TRUE}
+pander(model.intrx.age.party.ri.cty.dst.res[[4]], caption="Congressional Model Results")
+```
+
+
+## Age Bin Sensitivity
+
+```{r age bin sensitivity df, warning=F, cache=T}
+grouped_voter_only_data_reaged <- read_csv("grouped_voter_only_data_2016.csv") %>% ungroup()
+grouped_voter_only_data_reaged <- grouped_voter_only_data_reaged %>% filter(!is.na(gender))
+grouped_voter_only_data_reaged <- grouped_voter_only_data_reaged %>% filter(race_ethnicity != "Non-Hispanic Other")
+
+grouped_voter_only_data_reaged$age_bin <- as.character(grouped_voter_only_data_reaged$age_bin)
+grouped_voter_only_data_reaged <- grouped_voter_only_data_reaged %>% mutate(age_bin = case_when(
+  age_bin == "18-29" ~ "18-39",
+  age_bin == "30-39" ~ "18-39",
+  age_bin == "40-49" ~ "40-64",
+  age_bin == "50-64" ~ "40-64",
+  age_bin == "65+" ~ "65+",
+  TRUE ~ age_bin))
+
+grouped_voter_only_data_reaged_reaged<-grouped_voter_only_data_reaged %>% ungroup()
+grouped_voter_only_data_reaged$age_bin <- relevel(grouped_voter_only_data_reaged$age_bin %>% as.factor(), ref = "65+")
+grouped_voter_only_data_reaged$vote <- ifelse(grouped_voter_only_data_reaged$Democrat > grouped_voter_only_data_reaged$Republican,1,0)
+
+grouped_voter_only_data_reaged <- groupdata2::fold(grouped_voter_only_data_reaged, k = 5, cat_col = c("age_bin", "race_ethnicity", "gender","county_desc", "party_cd", "cong_dist_abbrv"))  
+
+reaged_results <- create_model(model.intrx.age.party.ri.cty.dst.text, 
+                               grouped_voter_only_data_reaged, perform_cv=F)
+pander(reaged_results[[3]], caption="Age Bin Sensitivity")
+```
+
+
+
+
+# Discussion and Limitations
+
+This paper utilized both Bayesian forecasting and multilevel logistic regression models in order to predict the outcomes of the upcoming Presidential, Senate, and North Carolina Congressional Elections. Our major findings are the following:
+
+1. We predict that Joe Biden will win the Presidential election with probability `r prob_of_biden_winning/100`. We expect him to win `r mean_electoral` (`r lower_q_presidential_electoral_college`, `r upper_q_presidential_electoral_college`) electoral votes.
+
+2. We predict that the Senate will flip with probability `r mean(final_results_senate >= 8)`, and expect that Democrats will win a `r mean_senate + 8` (`r lower_q_senate+8`, `r upper_q_senate+8`) seats of the 35 up for reelection. We expect resounding Democratic Senate victories in Colorado and Michigan, but losses in Alabama and Kentucky. 
+3. We predict that Cal Cunningham will win the North Carolina Senate election with probability `r prob_voting_dem_table %>% filter(State == "North Carolina") %>% pull(Probability)`  We expect him to win `r mean_NC_senate_vote_shares %>% round(2)`% (`r lower_NC_senate_vote_shares %>% round(2)`%, `r upper_NC_senate_vote_shares %>% round(2)`%) of the vote share. 
+
+4. Within the 12 Congressional elections in North Carolina (barring district 12), we predict that districts 1, 2, 3, 4, 6, 7, and 11 will vote for their respective democratic candidates. The remaining 5 districts are predicted to vote Republican. 
+
 
 # Conclusion
 
 # Appendix A
 
 # Appendix B
-
-# Bibliography
-
-1). “Braced for impact; America's presidential election." The Economist, 10 Oct. 2020, p. 66(US). Gale OneFile: CPI.Q, https://link.gale.com/apps/doc/A637802159/CPI?u=duke_perkins&sid=CPI&xid=e45fed0d. Accessed 28 Oct. 2020.
-2). Martin, Susan F. “Commentary: The 2020 U.S. Presidential Election and Immigration.” International Migration, vol. 58, no. 5, 2020, pp. 274–276., doi:10.1111/imig.12772. 
-3). Drew A. Linzer (2013) Dynamic Bayesian Forecasting of Presidential Elections in the States, Journal of the American Statistical Association, 108:501, 124-134, DOI: 10.1080/01621459.2012.737735
-4). Linge, M. (2020, October 31). Inside the nine swing states the 2020 presidential election hinges on. Retrieved November 01, 2020, from https://nypost.com/2020/10/31/the-9-swing-states-the-2020-presidential-election-hinges-on/
-5). Tamman, M., & Faulconbridge, G. (2016, November 09). How the polls, including ours, missed Trump's victory. Retrieved November 01, 2020, from https://www.reuters.com/article/us-usa-election-polls/how-the-polls-including-ours-missed-trumps-victory-idUSKBN1343O6
-6). Hoff, P. D. (2010). Chapter 1: Introduction and examples. In A first course in bayesian statistical methods (pp. 5-7). Dordrecht: Springer.
-
-
-
-
-
-
-
-
-
 
 # Appendix
 
@@ -1427,35 +2331,33 @@ One strength of our model is the covariance estimates that pull information of v
 
 5). Tamman, M., & Faulconbridge, G. (2016, November 09). How the polls, including ours, missed Trump's victory. Retrieved November 01, 2020, from https://www.reuters.com/article/us-usa-election-polls/how-the-polls-including-ours-missed-trumps-victory-idUSKBN1343O6
 
-6). https://www.nbcnews.com/politics/2020-election/biden-secures-democratic-presidential-nomination-november-showdown-against-trump-n1226101
+6). Edelman, Adam. “Biden Secures Democratic Presidential Nomination for November Showdown against Trump.” NBCNews.com, NBCUniversal News Group, 6 June 2020, www.nbcnews.com/politics/2020-election/biden-secures-democratic-presidential-nomination-november-showdown-against-trump-n1226101. 
 
 7). Hoff, P. D. (2010). Chapter 1: Introduction and examples. In A first course in bayesian statistical methods (pp. 5-7). Dordrecht: Springer.
 
-8). https://www.politico.com/2012-election/swing-state/
+8). Politico. “Swing-State Map, List &amp; Polls.” POLITICO, www.politico.com/2012-election/swing-state/.
 
 9). DeSilver, Drew. “Voter Turnout Always Drops off for Midterm Elections, but Why?” Pew Research Center, Pew Research Center, 30 May 2020, www.pewresearch.org/fact-tank/2014/07/24/voter-turnout-always-drops-off-for-midterm-elections-but-why/.
 
-10). https://www.aarp.org/content/dam/aarp/ppi/2017-01/ACA-Protects-Millions-of-Older-Adults-with-Preexisting-Health-Conditions-PPI-AARP.pdf
+10). Noel-Miller , Claire, and Jane Sung. “In Health Reform, Stakes Are High for Older Americans with Preexisting Health Conditions.” AARP Public Policy Institute, Mar. 2017. 
 
-11). https://www.govtrack.us/congress/members/NC/12
+11). “North Carolina's 12th Congressional District.” GovTrack.us, 2020, www.govtrack.us/congress/members/NC/12. 
 
-12). https://indyweek.com/news/archives/drawing-dem-friendly-congressional-districts-north-carolina-easy-think/
+12). Billman, Jeffrey C. “Drawing Dem-Friendly Congressional Districts in North Carolina Isn't as Easy as You Think.” INDY Week, 26 Jan. 2018, indyweek.com/news/archives/drawing-dem-friendly-congressional-districts-north-carolina-easy-think/. 
 
-13). https://en.wikipedia.org/wiki/List_of_special_elections_to_the_United_States_Senate
+13). “List of Special Elections to the United States Senate.” Wikipedia, Wikimedia Foundation, 30 Oct. 2020, en.wikipedia.org/wiki/List_of_special_elections_to_the_United_States_Senate. 
 
-14). https://ballotpedia.org/Statewide_primary_election_dates,_2020
+14). “Statewide Primary Election Dates, 2020.” Ballotpedia, ballotpedia.org/Statewide_primary_election_dates,_2020. 
 
-15). 538
+15). NateSilver538. “2020 Election Forecast.” FiveThirtyEight, 1 Nov. 2020, projects.fivethirtyeight.com/2020-election-forecast/. 
 
-16). https://nymag.com/intelligencer/2019/03/the-republican-party-has-an-older-voters-problem.html
+16). Levitz, Eric. “The Republican Party Has an Older Voters Problem.” Intelligencer, Intelligencer, 28 Mar. 2019, nymag.com/intelligencer/2019/03/the-republican-party-has-an-older-voters-problem.html. 
 
-17). https://ballotpedia.org/North_Carolina_House_of_Representatives_elections,_2020
+17).“North Carolina House of Representatives Elections, 2020.” Ballotpedia, 2020, ballotpedia.org/North_Carolina_House_of_Representatives_elections,_2020. 
 
-18). https://flipnc.org/most-competitive-nc-senate-districts-2020
+18). “The Most Competitive NC Senate Districts in 2020.” FLIP NC, 2020, flipnc.org/most-competitive-nc-senate-districts-2020. 
 
 19). Darwish, A., Ravindran M., Herrera Tenorio, S., Shen, E., “Case Study 3 Interim Report: Who Votes in North Carolina?” 3 Nov 2020.
 
-20). 270towin.com
-
-
+20). “2020 Presidential Election Interactive Map.” 270toWin.Com, 2020, www.270towin.com/. 
 
