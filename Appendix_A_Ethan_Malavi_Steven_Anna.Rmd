@@ -1,0 +1,59 @@
+---
+title: "Appendix A - Models"
+author: "Ethan Shen, Malavi Ravindran, Steven Herrera Tenorio, Anna Darwish"
+geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
+fontsize: 12pt
+output: 
+  pdf_document:
+     number_sections: true
+---
+
+```{r}
+library(pander)
+```
+
+# 2020 Presidential Election & Electoral College Vote
+
+$$
+\begin{aligned}
+Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
+\theta_{i 1} \sim N(h_i, \sigma^2_0) , \ \mathbf{\theta_{\mathbf{ \cdot} t}} \sim MVN&(\mathbf{\theta_{\mathbf{\cdot} t-1}},\mathbf{\Sigma}) \\ 
+\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16&) &  (1) \\
+\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim & \ Ga(2, 0.5)\\
+\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
+\end{aligned}
+$$
+
+
+\noindent
+(1) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 15)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $h_i$, Clinton’s vote share from swing state $i$ in 2016, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{15}}, 16)$, so more similar states can pull information from one another.
+
+# 2012 Presidential Election & Electoral College Vote
+
+$$
+\begin{aligned}
+Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
+\theta_{i 1} \sim N(o_i, \sigma^2_0) , \ \mathbf{\theta_{\mathbf{ \cdot} t}} \sim MVN&(\mathbf{\theta_{\mathbf{\cdot} t-1}},\mathbf{\Sigma}) \\ 
+\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{9}}, 10&) &  (2) \\
+\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim & \ Ga(2, 0.5)\\
+\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
+\end{aligned}
+$$
+
+(2) represents the final model we use to predict the presidential election. Let $Y_k$, Biden's share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in swing state $i \in (1 \dots 9)$. Each state $i$ has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered on $o_i$, Obama’s vote share from swing state $i$ in 2008, with variance $\sigma^2_0$. We also estimate the correlation structure between states, where $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{9}}, 10)$, so more similar states can pull information from one another.
+
+# US Senate Election & NC Senate Election
+
+$$
+\begin{aligned}
+Y_{k} \sim  N(\theta_{i[k]t[k]},\sigma^2_{yi}) \\ 
+\theta_{i 1} \sim N(\mu_0, \sigma^2_0) , \ \boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN&(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma}) \\ 
+\mu_0 \sim N(50, 0.1), \ \mathbf{\Sigma}^{-1} \sim Wis&h(\mathbf{I_{18}}, 19) &  (3) \\
+\frac{1}{\sigma^2_{yi}} \sim Ga(\nu_y,\nu_y*\tau_y) , \ \frac{1}{\sigma^2_{0}} \sim  \ &Ga(2, 0.5)\\
+\nu_y \sim Unif(0,100), \ \tau_y \sim Un&if(0,100)\\
+\end{aligned}
+$$
+Let $Y_k$, the Democratic candidate’s share of the two-party vote from each poll $k$, be normally distributed with mean $\theta_{i[k]t[k]}$, where poll $k$ ended $t$ days before the election and was conducted in battleground race $i \in (1 \dots 18)$. Each race has its own observation variance, $\sigma^2_{yi}$, where the indice $y$ indicates that it is the observation variance from each state. We set a Gamma prior on $\frac{1}{\sigma^2_{yi}}\sim Ga(\nu_y,\nu_y*\tau_y)$, where both $\nu_y, \tau_y \sim Unif(0,100)$. We set normal priors on $\boldsymbol{\theta}_{\boldsymbol{ \cdot}  1}$, centered about 50 with variance $\sigma^2_0$. Since we also estimate the correlation structure between races, we let $\boldsymbol{\theta}_{\boldsymbol{ \cdot} t} \sim MVN(\boldsymbol{\theta}_{\boldsymbol{\cdot} t-1},\mathbf{\Sigma})$, where $\mathbf{\Sigma}^{-1} \sim Wish(\mathbf{I_{18}}, 19)$
+
+
+# NC Congressional Election
